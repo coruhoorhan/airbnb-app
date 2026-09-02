@@ -162,10 +162,25 @@ Her skill'in dosyası: `.scaffolding/skills/<ad>/SKILL.md`. Subagent o dosyayı 
 6. **AGENTS.md/CLAUDE.md drift:** Bu dosyalar harness-automation plan/apply tarafından yönetilir.
    Elle düzenleme sonrası `harness plan` + `apply` çalıştırılarak manifest güncellenir.
 
+
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked as local markdown files under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Five canonical labels: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` at repo root + `docs/adr/` for ADRs. See `docs/agents/domain.md`.
+
 <!-- harness-automation:v2:start -->
 ## Harness engineering continuity
 
-Effective policy digest: `c2600ed6dcfb24d621929bc4b9669056dfc047b0a8dcb24692f684b33f8126d6`
+Effective policy digest: `21eec4901a346c95fc036bfc9fda059c203fe21670afb9a13497048177350d11`
 
 Before editing code in a new session:
 

@@ -1,6 +1,6 @@
 # Effective Engineering Policy
 
-Policy digest: `c2600ed6dcfb24d621929bc4b9669056dfc047b0a8dcb24692f684b33f8126d6`
+Policy digest: `21eec4901a346c95fc036bfc9fda059c203fe21670afb9a13497048177350d11`
 Owner: tester
 Stack: typescript
 

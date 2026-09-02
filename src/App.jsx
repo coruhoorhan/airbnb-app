@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Navbar } from "./components/Navbar.jsx";
 import { CategoryBar } from "./components/CategoryBar.jsx";
 import { ListingCard } from "./components/ListingCard.jsx";
-import { SortBar } from "./components/SortBar.jsx";
+import { SortBar, SORT_OPTIONS } from "./components/SortBar.jsx";
 import { RecentlyViewed } from "./components/RecentlyViewed.jsx";
 import { ListingDetail } from "./components/ListingDetail.jsx";
 import { ListingGridSkeleton } from "./components/ListingSkeleton.jsx";
@@ -78,7 +78,10 @@ export function App() {
   const [selectedListing, setSelectedListing] = useState(null);
   const [currentView, setCurrentView] = useState("explore"); // "explore", "detail", "trips", "wishlist", "host_dashboard"
   const [showMap, setShowMap] = useState(false);
-  const [sortOrder, setSortOrder] = useState("recommended");
+  const [sortOrder, setSortOrder] = useState(() => {
+    const stored = localStorage.getItem("veys-sort-order");
+    return stored && SORT_OPTIONS.some((opt) => opt.id === stored) ? stored : "recommended";
+  });
   const [recentlyViewedIds, setRecentlyViewedIds] = useState(() => {
     try {
       const stored = JSON.parse(localStorage.getItem("veys-recently-viewed") || "[]");
@@ -117,6 +120,10 @@ export function App() {
       document.documentElement.classList.remove("dark");
     }
   }, [currency, isDarkMode]);
+
+  useEffect(() => {
+    localStorage.setItem("veys-sort-order", sortOrder);
+  }, [sortOrder]);
 
   useEffect(() => {
     fetch("/api/weather?lat=41.0451&lng=37.5010")

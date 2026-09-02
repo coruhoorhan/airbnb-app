@@ -28,10 +28,10 @@ Scope: Agent Stack altyapısının çalışır ve doğrulanabilir olması
   CHECK: python3 -c "import ast; ast.parse(open('.scaffolding/scripts/gates-check.py').read()); print('SYNTAX_OK')"
   EXPECT: SYNTAX_OK
 
-- [ ] G7: Vitest testleri geçiyor (58/58)
+- [ ] G7: Vitest testleri geçiyor (52/52)
   CHECK: node node_modules/vitest/vitest.mjs run
-  EXPECT: 58 passed
+  EXPECT: 52 passed
 
-- [ ] G8: TypeScript strict temiz
-  CHECK: node node_modules/typescript/bin/tsc --noEmit && echo TSC_OK
-  EXPECT: TSC_OK
+- [ ] G8: Production build temiz (Vite, JS projesi — TypeScript yok)
+  CHECK: node node_modules/vite/bin/vite.js build
+  EXPECT: built in

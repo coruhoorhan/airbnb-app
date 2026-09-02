@@ -97,7 +97,7 @@ Single-context layout: `CONTEXT.md` at repo root, ADRs in `docs/adr/`, symlinked
 <!-- harness-automation:v2:start -->
 ## Harness engineering continuity
 
-Effective policy digest: `c2600ed6dcfb24d621929bc4b9669056dfc047b0a8dcb24692f684b33f8126d6`
+Effective policy digest: `21eec4901a346c95fc036bfc9fda059c203fe21670afb9a13497048177350d11`
 
 Before editing code in a new session:
 
