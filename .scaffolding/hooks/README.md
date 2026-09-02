@@ -4,7 +4,7 @@ This directory contains hooks that run automatically during Claude Code workflow
 
 ## Available Hooks
 
-### 1. post-edit-review.sh
+### 1. post-edit.sh
 **Type:** PostToolUse hook
 **Triggers:** After Edit or Write tool usage
 **Purpose:** Suggests running code review commands after making code changes
@@ -96,7 +96,7 @@ The registered order in **both** `.claude-plugin/plugin.json` and `settings.json
 MUST be:
 
 ```
-1. post-edit-review.sh       (advisory, unchanged)
+1. post-edit.sh       (advisory, unchanged)
 2. post-edit-format.sh       (NEW — mutates the file, bumps mtime)
 3. file-staleness-update.sh  (MUST stay LAST — records post-format mtime)
 ```
@@ -136,7 +136,7 @@ On Windows with Git Bash, this is handled automatically.
 
 ## Testing Hooks
 
-### Test post-edit-review.sh
+### Test post-edit.sh
 ```bash
 # Make a test edit and see the suggestion
 echo "test" >> test.txt

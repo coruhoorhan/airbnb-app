@@ -6,7 +6,7 @@ Scope: Agent Stack altyapısının çalışır ve doğrulanabilir olması
 
 - [ ] G1: Tüm skill dosyaları geçerli SKILL.md içeriyor
   CHECK: ls .scaffolding/skills/*/SKILL.md | wc -l
-  EXPECT: 55
+  EXPECT: 59
 
 - [ ] G2: Tüm ajan rol dosyaları geçerli frontmatter içeriyor
   CHECK: bash run.sh validate

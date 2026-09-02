@@ -94,7 +94,7 @@ Görev detayı:
 
 ```bash
 ./run.sh hook pre-commit        # .scaffolding/hooks/pre-commit-validation.sh
-./run.sh hook post-edit         # .scaffolding/hooks/post-edit-review.sh
+./run.sh hook post-edit         # .scaffolding/hooks/post-edit.sh
 ./run.sh hook file-size         # .scaffolding/hooks/file-size-warn.sh
 ```
 

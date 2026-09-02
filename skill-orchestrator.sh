@@ -17,10 +17,10 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Orchestrator'ı çalıştır (npx tsx ile)
 echo "  → orchestrator başlıyor: goal='$GOAL' out='$OUT_DIR'"
-npx tsx "$SCRIPT_DIR/src/orchestrator.ts" --goal "$GOAL" --out-dir "$OUT_DIR" 2>&1 || {
+npx tsx "$SCRIPT_DIR/orchestrator-src/orchestrator.ts" --goal "$GOAL" --out-dir "$OUT_DIR" 2>&1 || {
     echo "⚠️  tsx CLI hatası, fallback..."
     node --input-type=module -e "
-    import { runTaskWorkflow } from '$SCRIPT_DIR/src/orchestrator.ts';
+    import { runTaskWorkflow } from '$SCRIPT_DIR/orchestrator-src/orchestrator.ts';
     const r = await runTaskWorkflow(process.argv[1], process.argv[2]);
     console.log('flow=' + r.flowType);
     console.log('skills=' + r.skills.join(','));

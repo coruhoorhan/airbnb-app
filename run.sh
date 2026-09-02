@@ -278,7 +278,7 @@ EOF
         # Ask-matt router: task goal → flow + skills (deterministic, LLM yok)
         GOAL="${2:-}"
         if [ -z "$GOAL" ]; then echo "Usage: run.sh route <goal>"; exit 1; fi
-        npx tsx src/orchestrator.ts --goal "$GOAL" 2>&1
+        npx tsx "${SCRIPT_DIR}/orchestrator-src/orchestrator.ts" --goal "$GOAL" 2>&1
         ;;
 
     fetch)
@@ -288,7 +288,7 @@ EOF
         if [ -z "$SKILL_NAME" ]; then echo "Usage: run.sh fetch <skill-name> [out-dir]"; exit 1; fi
         echo "Fetching '$SKILL_NAME' → $OUT_DIR/.agents/skills/..."
         npx tsx -e "
-        import { searchSkill, ejectSkill, MATTPOCOCK_CATALOG } from '${SCRIPT_DIR}/src/skill-registry.ts';
+        import { searchSkill, ejectSkill, MATTPOCOCK_CATALOG } from '${SCRIPT_DIR}/orchestrator-src/skill-registry.ts';
         (async () => {
             const ref = searchSkill('${SKILL_NAME}', MATTPOCOCK_CATALOG);
             if (!ref) { console.log('not found in catalog'); process.exit(1); }
