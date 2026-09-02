@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "2.0",
+  "owner": "tester",
+  "approvedAt": "2026-09-02T10:25:33.453Z",
+  "sources": [
+    {
+      "id": "prd",
+      "kind": "prd",
+      "path": "docs/PRD.md",
+      "sha256": "35e810941f324fb575e2826490a7d0cd2c00d9f54cfe677fdf67a0dfdf6f9518",
+      "approved": true
+    },
+    {
+      "id": "research-evidence",
+      "kind": "research",
+      "path": "docs/research/evidence.md",
+      "sha256": "36b09efc65190737e06861918498df4f7b86d6b0344c2699f77bd62016e9eb07",
+      "approved": true
+    }
+  ]
+}

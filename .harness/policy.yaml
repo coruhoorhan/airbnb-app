@@ -1,0 +1,270 @@
+{
+  "schemaVersion": "2.0",
+  "compiler": {
+    "package": "@realpkuasule/harness-automation",
+    "version": "2.8.11"
+  },
+  "project": {
+    "name": "airbnb-stage",
+    "owner": "tester",
+    "phase": "design-approved",
+    "profile": "custom",
+    "stacks": [
+      "typescript"
+    ],
+    "deliveryProfiles": [],
+    "domainProfiles": [],
+    "qualityProfiles": []
+  },
+  "sources": [
+    {
+      "id": "prd",
+      "kind": "prd",
+      "path": "docs/PRD.md",
+      "sha256": "35e810941f324fb575e2826490a7d0cd2c00d9f54cfe677fdf67a0dfdf6f9518",
+      "approved": true
+    },
+    {
+      "id": "research-evidence",
+      "kind": "research",
+      "path": "docs/research/evidence.md",
+      "sha256": "36b09efc65190737e06861918498df4f7b86d6b0344c2699f77bd62016e9eb07",
+      "approved": true
+    }
+  ],
+  "agents": {
+    "portableInstructionFile": "AGENTS.md",
+    "adapters": [
+      {
+        "id": "portable",
+        "capabilities": [
+          "root-instructions",
+          "scoped-instructions",
+          "structured-output"
+        ]
+      },
+      {
+        "id": "claude-code",
+        "capabilities": [
+          "root-instructions",
+          "scoped-instructions",
+          "instruction-imports",
+          "session-hooks",
+          "mcp"
+        ]
+      },
+      {
+        "id": "codex",
+        "capabilities": [
+          "root-instructions",
+          "scoped-instructions",
+          "mcp",
+          "structured-output"
+        ]
+      }
+    ]
+  },
+  "policies": [
+    {
+      "id": "single-implementation-owner",
+      "title": "Single implementation owner",
+      "statement": "Before implementation, search for an existing implementation and record the owning module; do not create a parallel implementation of the same capability.",
+      "rationale": "Parallel AI sessions otherwise duplicate the same capability and split maintenance ownership.",
+      "scope": {
+        "include": [
+          "**/*"
+        ],
+        "exclude": [
+          ".harness/**",
+          "**/generated/**"
+        ],
+        "boundaries": [
+          "code"
+        ]
+      },
+      "formalization": "procedural",
+      "severity": "error",
+      "targets": [
+        {
+          "kind": "agent-instruction",
+          "adapter": "portable",
+          "configPath": "AGENTS.md"
+        }
+      ],
+      "verification": {
+        "commands": [
+          [
+            "harness-automation",
+            "context",
+            "--project",
+            "."
+          ]
+        ],
+        "passCriteria": "The session receipt records policy digest and implementation ownership review."
+      },
+      "owner": "tester",
+      "sourceRefs": [
+        "prd",
+        "research-evidence"
+      ],
+      "status": "active",
+      "changeControl": {
+        "approvalRequired": true,
+        "migrationRequired": false
+      }
+    },
+    {
+      "id": "contract-first-change",
+      "title": "Contract-first interface changes",
+      "statement": "Change shared API, RPC, schema, database, or queue contracts before changing consumers; update compatibility tests in the same change.",
+      "rationale": "A stable source of truth prevents different sessions from implementing different interface assumptions.",
+      "scope": {
+        "include": [
+          "**/*"
+        ],
+        "exclude": [
+          ".harness/**"
+        ],
+        "boundaries": [
+          "api",
+          "rpc",
+          "database",
+          "queue"
+        ]
+      },
+      "formalization": "cognitive",
+      "severity": "error",
+      "targets": [
+        {
+          "kind": "agent-instruction",
+          "adapter": "portable",
+          "configPath": ".harness/generated/effective-policy.md"
+        }
+      ],
+      "verification": {
+        "commands": [],
+        "passCriteria": "Review confirms that contract sources and consumers changed together."
+      },
+      "owner": "tester",
+      "sourceRefs": [
+        "prd",
+        "research-evidence"
+      ],
+      "status": "active",
+      "changeControl": {
+        "approvalRequired": true,
+        "migrationRequired": false
+      }
+    },
+    {
+      "id": "generated-files-immutable",
+      "title": "Generated files are immutable",
+      "statement": "Never edit generated code or Harness compiler outputs directly; change their source and regenerate them.",
+      "rationale": "Direct edits are overwritten and create cross-session drift.",
+      "scope": {
+        "include": [
+          "**/generated/**",
+          ".harness/generated/**"
+        ],
+        "exclude": [],
+        "boundaries": [
+          "generated-code"
+        ]
+      },
+      "formalization": "procedural",
+      "severity": "error",
+      "targets": [
+        {
+          "kind": "agent-instruction",
+          "adapter": "portable",
+          "configPath": "AGENTS.md"
+        }
+      ],
+      "verification": {
+        "commands": [
+          [
+            "harness-automation",
+            "drift",
+            "--project",
+            "."
+          ]
+        ],
+        "passCriteria": "Generated output hashes match the Harness manifest."
+      },
+      "owner": "tester",
+      "sourceRefs": [
+        "prd",
+        "research-evidence"
+      ],
+      "status": "active",
+      "changeControl": {
+        "approvalRequired": true,
+        "migrationRequired": false
+      }
+    },
+    {
+      "id": "typescript-naming",
+      "title": "TypeScript naming",
+      "statement": "Use camelCase for variables, functions, parameters, methods, and local properties; PascalCase for classes, interfaces, types, enums, React components, and exported Zod schemas; UPPER_SNAKE_CASE is allowed for module constants, imported constants, and static readonly class constants. Node __dirname/__filename and the exact unused-parameter placeholder _ are allowed.",
+      "rationale": "A deterministic naming gate prevents fresh sessions from alternating between camelCase and snake_case.",
+      "scope": {
+        "include": [
+          "**/*.ts",
+          "**/*.tsx"
+        ],
+        "exclude": [
+          "**/*.d.ts",
+          "**/generated/**",
+          ".harness/**"
+        ],
+        "boundaries": [
+          "code"
+        ]
+      },
+      "formalization": "deterministic",
+      "severity": "error",
+      "targets": [
+        {
+          "kind": "linter",
+          "adapter": "harness-typescript-ast"
+        }
+      ],
+      "verification": {
+        "commands": [
+          [
+            "harness-automation",
+            "check",
+            "--project",
+            "."
+          ]
+        ],
+        "passCriteria": "The AST naming verifier passes its invalid fixture and the repository contains no unapproved violations."
+      },
+      "examples": {
+        "valid": [
+          "const userId = 1",
+          "class UserService {}"
+        ],
+        "invalid": [
+          "const user_id = 1",
+          "class user_service {}"
+        ]
+      },
+      "owner": "tester",
+      "sourceRefs": [
+        "prd",
+        "research-evidence"
+      ],
+      "status": "active",
+      "changeControl": {
+        "approvalRequired": true,
+        "migrationRequired": true
+      }
+    }
+  ],
+  "typescriptNamingBaseline": {
+    "ruleId": "typescript-naming",
+    "approvedIntakeHash": "6b89cce9e4db9b11ed3f7f148ef006b00fceaf5cd5756258a82e98aaece175c1",
+    "fingerprints": []
+  }
+}
