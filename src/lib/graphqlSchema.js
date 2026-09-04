@@ -1,15 +1,13 @@
 import { buildSchema } from "graphql";
 import * as db from "./db.js";
 
-export const schema = buildSchema(\`
+export const schema = buildSchema(`
   type User {
     id: ID!
     name: String!
-    email: String!
     avatarUrl: String
     isHost: Boolean
     bio: String
-    phone: String
     createdAt: Float
   }
 
@@ -76,50 +74,5 @@ export const schema = buildSchema(\`
     bookings(guestId: String, hostId: String): [Booking]
     reviews(listingId: ID!): [Review]
   }
-\`);
+`);
 
-function hydrateListing(listing) {
-  if (!listing) return listing;
-  if (typeof listing.amenities === 'string') listing.amenities = JSON.parse(listing.amenities);
-  if (typeof listing.images === 'string') listing.images = JSON.parse(listing.images);
-  listing.host = () => db.getUserById(listing.hostId);
-  listing.reviews = () => db.getReviewsForListing(listing.id);
-  return listing;
-}
-
-export const rootValue = {
-  user: ({ id }) => {
-    return db.getUserById(id);
-  },
-  users: () => {
-    return db.getAllUsers();
-  },
-  listing: ({ id }) => {
-    const listing = db.getListingById(id);
-    return hydrateListing(listing);
-  },
-  listings: ({ city, category }) => {
-    const filters = {};
-    if (city) filters.city = city;
-    if (category) filters.category = category;
-    return db.getAllListings(filters).map(hydrateListing);
-  },
-  booking: ({ id }) => {
-    const b = db.getBookingById(id);
-    if (b) {
-      b.listing = () => hydrateListing(db.getListingById(b.listingId));
-      b.guest = () => db.getUserById(b.guestId);
-    }
-    return b;
-  },
-  bookings: ({ guestId, hostId }) => {
-    return db.getAllBookings(guestId, hostId).map(b => {
-      b.listing = () => hydrateListing(db.getListingById(b.listingId));
-      b.guest = () => db.getUserById(b.guestId);
-      return b;
-    });
-  },
-  reviews: ({ listingId }) => {
-    return db.getReviewsForListing(listingId);
-  }
-};
