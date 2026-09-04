@@ -39,6 +39,7 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
           JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
           MAX_AUTO_REVISIONS: "3"
+          TRIGGER: ${{ github.event_name == 'workflow_dispatch' && 'manual' || 'auto' }}
         run: python3 scripts/jules_revise.py
 
       - name: Label PR for human review (circuit breaker)
