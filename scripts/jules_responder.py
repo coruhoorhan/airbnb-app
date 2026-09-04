@@ -100,19 +100,38 @@ def extract_texts(obj, out, depth=0):
 
 
 def latest_agent_text(activities):
-    """Return (text, is_question_like) of the newest agent activity, or (None, False)."""
-    for act in activities:
-        texts = []
-        extract_texts(act, texts)
-        blob = " ".join(texts)
-        origin = json.dumps(act)[:2000].lower()
-        is_agent = any(
-            w in origin for w in ("agent", "assistant", "jules")
-        ) and MARKER not in blob
-        if is_agent and blob.strip():
+    """Return (text, is_question_like) of the newest agent message, or (None, False).
+
+    Activities are sorted newest-first by createTime. The agent message text is
+    read from agentMessaged.agentMessage (falling back to generic extraction).
+    NOTE: when the session state is AWAITING_USER_FEEDBACK, the state itself is
+    the signal - the caller answers regardless of question-like heuristics.
+    """
+    def ts(act):
+        try:
+            return datetime.fromisoformat(
+                act.get("createTime", "1970-01-01T00:00:00Z").replace("Z", "+00:00"))
+        except Exception:
+            return datetime(1970, 1, 1, tzinfo=timezone.utc)
+
+    for act in sorted(activities, key=ts, reverse=True):
+        if act.get("originator") != "agent":
+            continue
+        blob = ""
+        am = act.get("agentMessaged") or {}
+        if isinstance(am, dict) and am.get("agentMessage"):
+            blob = am["agentMessage"]
+        else:
+            texts = []
+            extract_texts(act, texts)
+            blob = " ".join(texts)
+        blob = blob.strip()
+        if MARKER in blob:
+            continue
+        if blob:
             q = ("?" in blob) or any(
                 w in blob.lower()
-                for w in ("should i", "do you want", "confirm", "approve", "awaiting", "need your", "please let me know", "which one")
+                for w in ("should i", "do you want", "confirm", "approve", "awaiting", "need your", "please let me know", "which one", "would you like")
             )
             return blob[:MAX_DIFF_CHARS], q
     return None, False
