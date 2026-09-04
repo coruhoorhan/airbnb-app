@@ -16,20 +16,61 @@ jobs:
         github.event.pull_request.user.login == 'coruhoorhan'))
 
     steps:
+      - name: Check if merged PR actually completed a task
+        id: task_check
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual dispatch: proceeding."
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          REPO="${{ github.repository }}"
+          RESULT=$(python3 - "$BASE" "$HEAD_SHA" "$REPO" "$GH_TOKEN" <<'PYEOF'
+          import json, sys, urllib.request
+          base, head, repo, token = sys.argv[1:5]
+          def fetch_tasks(ref):
+              url = f"https://api.github.com/repos/{repo}/contents/agent_tasks.json?ref={ref}"
+              req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.raw"})
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  return {t["id"]: t.get("status", "") for t in json.load(r).get("tasks", [])}
+          try:
+              before, after = fetch_tasks(base), fetch_tasks(head)
+          except Exception as e:
+              print(f"compare failed ({e}); proceeding to be safe.")
+              print("SHOULD_RUN=true"); sys.exit(0)
+          completed = [tid for tid, st in after.items() if st == "done" and before.get(tid) != "done"]
+          print(f"newly done: {completed}")
+          print("SHOULD_RUN=" + ("true" if completed else "false"))
+          PYEOF
+          )
+          echo "$RESULT"
+          if echo "$RESULT" | grep -q "SHOULD_RUN=true"; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No task flipped to done: skipping Jules session (prevents duplicate loops)."
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Trigger Google Jules via Official API
+        if: steps.task_check.outputs.should_run == 'true'
         run: |
           PROMPT=$(cat <<'EOF'
           You are building and enhancing the Airbnb Fatsa Clone full-stack application (React, Node.js, Express, SQLite, Magda-Agent Cognitive System).
 
           TASK:
           1. Read AGENTS.md, MASTER_ROADMAP.md, and open agent_tasks.json in the repo root (the ONLY task manifest).
-          2. STRICT RULE: Look ONLY at the "tasks" array. Find the FIRST task where status is STRICTLY "todo". Never touch archived_tasks or status: "done".
-          3. Implement the ENTIRE task as described (backend API / frontend components / database operations).
-          4. Update agent_tasks.json: set the completed task status to "done".
-          5. Respect the allowed_paths declared by the selected task.
-          6. Write clean, modular, production-ready code with error handling.
-          7. Run python3 scripts/validate_agent_tasks.py agent_tasks.json mentally to ensure schema conformance.
-          8. NEVER ask the user anything. Decide and proceed autonomously. Implement the task, update agent_tasks.json, and open ONE complete PR.
+          2. STRICT RULE: Look ONLY at the "tasks" array. Find the FIRST task where status is "todo" OR "in_progress" (resume an in_progress task first, never start a second one in parallel).
+          3. The moment you start work, set that task status to "in_progress" in agent_tasks.json. Set "done" ONLY when the complete PR is ready to open.
+          4. Implement the ENTIRE task as described (backend API / frontend components / database operations).
+          5. Update agent_tasks.json: set the completed task status to "done".
+          6. Respect the allowed_paths declared by the selected task.
+          7. Write clean, modular, production-ready code with error handling.
+          8. Run python3 scripts/validate_agent_tasks.py agent_tasks.json mentally to ensure schema conformance.
+          9. FULLY AUTONOMOUS: there is NO human to answer you. NEVER ask questions, NEVER wait for confirmation, NEVER stall. If ambiguous, pick the safest reasonable option, note it in the PR body, and proceed. When done, open ONE complete PR immediately.
 
           STRICT RULES:
           - Implement the full feature in one PR. Do NOT split into smaller PRs.
