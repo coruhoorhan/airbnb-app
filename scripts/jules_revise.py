@@ -127,7 +127,8 @@ def main():
         f"You are continuing work on PR #{pr_number} (branch {head_ref}).\n"
         "The Magda AI auditor reviewed your PR and returned CHANGES REQUESTED.\n"
         "TASK: fix EVERY finding below, commit, and push to the SAME branch "
-        f"({head_ref}). Do NOT open a new PR. The existing PR updates automatically.\n"
+        f"({head_ref}). Do NOT open a new PR — opening one orphans your work "
+        f"outside the audit gate and it will be discarded. The existing PR updates automatically.\n"
         "RULES: implement all security fixes (httpOnly, sameSite, rate limiting, "
         "validation, helmet, CORS, JWT expiry, minimal claims). Keep tests green. "
         "Update agent_tasks.json only if the task is not yet marked done.\n"
@@ -140,7 +141,9 @@ def main():
         "prompt": prompt,
         "sourceContext": {"source": f"sources/github/{repo}",
                           "githubRepoContext": {"startingBranch": head_ref}},
-        "automationMode": "AUTO_CREATE_PR",
+        # NOTE: deliberately NO automationMode (no AUTO_CREATE_PR): revision
+        # work must land as commits on the SAME branch. Auto-PR mode kept
+        # spawning stacked PRs that bypass the audit gate.
         "title": rev_title,
     }
     req = urllib.request.Request(
