@@ -95,9 +95,12 @@ def main():
     print(f"PR #{pr_number} head branch: {head_ref}")
 
     reviews = gh(f"/repos/{repo}/pulls/{pr_number}/reviews?per_page=30", gh_token)
-    matches = [r for r in reviews
-               if "Magda AI Independent Code Auditor" in (r.get("body") or "")
-               and "CHANGES REQUESTED" in (r.get("body") or "")]
+    def _is_blocking(r):
+        body = r.get("body") or ""
+        return ("Magda AI Independent Code Auditor" in body
+                and "CHANGES REQUESTED" in body
+                and "BLOCKING: NO" not in body)
+    matches = [r for r in reviews if _is_blocking(r)]
     max_rev = int(os.getenv("MAX_AUTO_REVISIONS", "3"))
     print(f"Auditor rejections so far: {len(matches)} (max auto-revisions: {max_rev})")
     if len(matches) >= max_rev:

@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """
-Magda AI Independent PR Code Auditor & Quality Gate.
+Magda AI Independent PR Code Auditor & Quality Gate (tiered).
 Runs in GitHub Actions or locally to review PR diffs with Mercury-2 LLM,
-posts formal code reviews to GitHub PRs, and strictly enforces the merge blocker:
-- If verdict is APPROVED: Exits with 0 (allows Auto-Merge).
-- If verdict is CHANGES_REQUESTED or CRITICAL_FAIL: Exits with 1 (BLOCKS Auto-Merge).
+posts formal code reviews to GitHub PRs, and enforces the merge blocker:
+- BLOCKING YES (critical/high findings remain): Exits 1 (BLOCKS Auto-Merge).
+- BLOCKING NO (only polish/medium-low remain): files ONE follow-up todo
+  (pr<N>-hardening-followups) into agent_tasks.json on main, exits 0.
+- APPROVED: Exits 0. Rule: max ONE follow-up todo per PR (quota-safe).
+Fail-closed: unparseable verdicts block.
 """
 
 import os
@@ -88,13 +91,23 @@ AUDIT CRITERIA:
 3. Code Quality, Modularity & Performance (Clean structure, no avoidable overhead, sensible abstractions).
 4. Manifest & Test Coverage (Does it meet acceptance criteria and include proper tests?).
 
-DECISION RULES:
-- If there are critical security bugs, NaN errors, unhandled exceptions, or missing authorization: Output VERDICT: CHANGES REQUESTED.
-- If the code is secure, well-tested, handles edge-cases, and meets all criteria: Output VERDICT: APPROVED.
+DECISION RULES (tiered gate - read carefully):
+- CRITICAL/HIGH = exploitable vulnerability, auth bypass, injection, secret leak,
+  broken access control, data loss, unhandled crash on main paths. If ANY remain:
+  Output VERDICT: CHANGES REQUESTED and BLOCKING: YES.
+- MEDIUM/LOW = hardening & polish (signed cookies, CSP headers, dep pinning, log
+  hygiene, docs, micro-perf, style). List them with severity, but output
+  VERDICT: CHANGES REQUESTED and BLOCKING: NO. These become ONE follow-up task;
+  they must NOT block this PR.
+- If nothing to report: VERDICT: APPROVED and BLOCKING: NO.
 
 OUTPUT FORMAT (Strict Markdown):
 Line 1 must be:
 VERDICT: [APPROVED | CHANGES REQUESTED]
+Line 2 must be:
+BLOCKING: [YES | NO]
+Every findings table MUST have a Severity column with exactly one of
+CRITICAL, HIGH, MEDIUM, LOW per row.
 
 Then follow with:
 ## 🛡️ Audit Verdict: [APPROVED | CHANGES REQUESTED]
@@ -127,12 +140,20 @@ Then follow with:
         llm_resp = json.load(resp)
         review_content = llm_resp["choices"][0]["message"]["content"]
     
-    # 5. Extract verdict
+    # 5. Extract verdict + blocking flag (fail-closed: unparseable => block).
+    upper = review_content.upper()
     verdict = "CHANGES_REQUESTED"
-    if "VERDICT: APPROVED" in review_content.upper():
+    if "VERDICT: APPROVED" in upper:
         verdict = "APPROVED"
-    elif "VERDICT: CHANGES REQUESTED" in review_content.upper() or "CHANGES REQUESTED" in review_content.upper():
+    elif "VERDICT: CHANGES REQUESTED" in upper or "CHANGES REQUESTED" in upper:
         verdict = "CHANGES_REQUESTED"
+
+    blocking = True
+    m = re.search(r"^BLOCKING:\s*(YES|NO)\s*$", review_content,
+                  re.MULTILINE | re.IGNORECASE)
+    if m:
+        blocking = (m.group(1).upper() == "YES")
+    print(f"Gate decision: verdict={verdict} blocking={blocking}")
     
     review_body = f"## 🤖 Magda AI Independent Code Auditor Quality Gate\n\n{review_content}\n\n---\n*Audited autonomously by Inception Labs Mercury-2 Cognitive Quality Gate.*"
     
@@ -182,12 +203,85 @@ Then follow with:
         json.dump({
             "pr_number": pr_number,
             "verdict": verdict,
-            "passed": (verdict == "APPROVED"),
+            "blocking": blocking,
+            "passed": (verdict == "APPROVED" or not blocking),
+            "followup_filed": False,
             "head_ref": head_ref,
             "head_sha": head_sha
         }, f, indent=2)
-    
-    return verdict, review_body
+
+    return verdict, review_body, blocking
+
+
+def file_followup_todo(repo: str, token: str, pr_number: int) -> bool:
+    """Append ONE polish follow-up todo (pr<N>-hardening-followups) to main's
+    queue. Deduplicated by id. Returns True if a new todo was filed.
+    Writer failures must never block the merge (caller wraps in try/except)."""
+    import base64
+    todo_id = f"pr{pr_number}-hardening-followups"
+    api_headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+        "Content-Type": "application/json",
+        "User-Agent": "Magda-Followup-Writer"
+    }
+    meta_url = f"https://api.github.com/repos/{repo}/contents/agent_tasks.json?ref=main"
+    with urllib.request.urlopen(
+            urllib.request.Request(meta_url, headers=api_headers)) as resp:
+        meta = json.load(resp)
+    data = json.loads(base64.b64decode(meta["content"]).decode("utf-8"))
+    tasks = data.get("tasks", [])
+    if any(t.get("id") == todo_id for t in tasks):
+        print(f"Follow-up {todo_id} already in queue; skipping.")
+        return False
+
+    files_url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/files?per_page=30"
+    with urllib.request.urlopen(
+            urllib.request.Request(files_url, headers=api_headers)) as resp:
+        files = json.load(resp)
+    paths = set()
+    for f in files:
+        name = f.get("filename", "")
+        top = name.split("/")[0] if "/" in name else name
+        if top and not top.startswith("."):
+            paths.add(top if "/" in name else name)
+    allowed = sorted(paths)[:6] or ["src/"]
+
+    review_url = f"https://github.com/{repo}/pull/{pr_number}"
+    tasks.append({
+        "id": todo_id,
+        "status": "todo",
+        "area": "security",
+        "risk": "low",
+        "title": f"PR #{pr_number} auditor polish follow-ups",
+        "description": (
+            f"Address the non-blocking (MEDIUM/LOW) polish findings from the "
+            f"Magda AI auditor review on {review_url}. Read the latest auditor "
+            f"review on that PR and implement every MEDIUM/LOW item. Do NOT "
+            f"re-litigate BLOCKING items; those gate the original PR."),
+        "allowed_paths": allowed,
+        "acceptance": [
+            f"All MEDIUM/LOW auditor findings on PR #{pr_number} addressed",
+            "Repo test suite green",
+            "No new BLOCKING findings"
+        ]
+    })
+    data["tasks"] = tasks
+    new_content = base64.b64encode(
+        (json.dumps(data, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    ).decode("utf-8")
+    put_payload = {
+        "message": f"chore(queue): add {todo_id} polish follow-ups for PR #{pr_number}",
+        "content": new_content,
+        "sha": meta["sha"],
+        "branch": "main"
+    }
+    with urllib.request.urlopen(urllib.request.Request(
+            f"https://api.github.com/repos/{repo}/contents/agent_tasks.json",
+            data=json.dumps(put_payload).encode("utf-8"),
+            headers=api_headers, method="PUT")) as resp:
+        print(f"Follow-up todo filed on main (HTTP {resp.status}).")
+    return True
 
 
 if __name__ == "__main__":
@@ -203,12 +297,25 @@ if __name__ == "__main__":
         print("Missing required tokens (GH_PAT or OPENAI_API_KEY).")
         sys.exit(1)
         
-    verdict, _ = review_pr(pr_num, repo, token, openai_key, openai_base, model, strict_block=strict)
-    
-    if verdict != "APPROVED":
-        print(f"\n❌ [QUALITY GATE BLOCKED]: PR #{pr_num} received verdict '{verdict}'. Auto-merge is HALTED until issues are resolved.")
+    verdict, _, blocking = review_pr(pr_num, repo, token, openai_key, openai_base, model, strict_block=strict)
+
+    if verdict != "APPROVED" and blocking:
+        print(f"\n❌ [QUALITY GATE BLOCKED]: PR #{pr_num} has BLOCKING findings. Auto-merge is HALTED until issues are resolved.")
         if strict:
             sys.exit(1)
+    elif verdict != "APPROVED" and not blocking:
+        print(f"\n⚠️ [QUALITY GATE PASSED WITH FOLLOW-UPS]: PR #{pr_num} has only polish findings. Filing ONE follow-up todo.")
+        try:
+            filed = file_followup_todo(repo, token, pr_num)
+            if filed:
+                with open("audit_verdict.json", "w", encoding="utf-8") as f:
+                    json.dump({"pr_number": pr_num, "verdict": verdict,
+                               "blocking": False, "passed": True,
+                               "followup_filed": True}, f, indent=2)
+        except Exception as e:
+            print(f"⚠️ Follow-up writer failed ({e}); merge proceeds anyway.")
+        print(f"🎉 Proceeding to Auto-Merge.")
+        sys.exit(0)
     else:
         print(f"\n🎉 [QUALITY GATE PASSED]: PR #{pr_num} APPROVED by Magda AI Auditor. Proceeding to Auto-Merge.")
         sys.exit(0)
