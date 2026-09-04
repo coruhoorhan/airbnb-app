@@ -1,5 +1,7 @@
+import "express-async-errors";
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import path from "path";
 import { fileURLToPath } from "url";
 import { execFile } from "child_process";
@@ -96,6 +98,7 @@ import {
 import { createRateLimiter } from "./src/lib/rateLimiter.js";
 
 import cookieParser from "cookie-parser";
+import validator from "validator";
 import { authMiddleware, csrfMiddleware, generateToken, generateCsrfToken } from "./src/lib/auth.js";
 
 
@@ -105,11 +108,21 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(cors());
-app.use(express.json());
-
-app.use(express.urlencoded({ extended: true }));
+app.use(helmet());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+  exposedHeaders: ["x-csrf-token"]
+}));
 app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+const authRateLimiter = createRateLimiter({
+  windowMs: 60000,
+  maxRequests: 10,
+  message: "Çok fazla giriş denemesi. Lütfen 1 dakika bekleyin."
+});
 
 // --- Auth Endpoints ---
 
@@ -119,9 +132,11 @@ app.get("/api/auth/oauth/github", (req, res) => {
   res.redirect("https://github.com/login/oauth/authorize?client_id=simulated_client_id");
 });
 
-app.post("/api/auth/oauth/callback", (req, res) => {
+app.post("/api/auth/oauth/callback", authRateLimiter, (req, res) => {
   const { email } = req.body;
-  if (!email) return res.status(400).json({ success: false, error: "OAuth hatası: email alınamadı." });
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json({ success: false, error: "Authentication failed." });
+  }
 
   let user = getUserByEmail(email);
   if (!user) {
@@ -130,14 +145,14 @@ app.post("/api/auth/oauth/callback", (req, res) => {
   }
 
   const token = generateToken(user);
-  res.cookie("token", token, { httpOnly: false, secure: process.env.NODE_ENV === "production" });
+  res.cookie("token", token, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
   res.json({ success: true, token, user });
 });
 
-app.post("/api/auth/login", async (req, res) => {
+app.post("/api/auth/login", authRateLimiter, async (req, res) => {
   const { email } = req.body;
-  if (!email) {
-    return res.status(400).json({ success: false, error: "Email gerekli." });
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json({ success: false, error: "Geçerli bir email gerekli." });
   }
 
   const user = getUserByEmail(email);
@@ -146,13 +161,14 @@ app.post("/api/auth/login", async (req, res) => {
   }
 
   const token = generateToken(user);
-  res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
+  res.cookie("token", token, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
   res.json({ success: true, token, user });
 });
 
 app.get("/api/auth/csrf", (req, res) => {
   const token = generateCsrfToken();
-  res.cookie("csrfToken", token, { httpOnly: false, secure: process.env.NODE_ENV === "production" });
+  res.cookie("_csrf_secret", token, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  res.setHeader("x-csrf-token", token);
   res.json({ success: true, csrfToken: token });
 });
 
