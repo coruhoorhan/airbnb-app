@@ -163,7 +163,7 @@ export function MagdaConciergeWidget({ onSelectListing }) {
                         key={rec.id}
                         className="bg-white p-3 rounded-2xl border border-gray-200/90 shadow-sm hover:border-rose-400 hover:shadow-md transition flex gap-3 items-center cursor-pointer group"
                         onClick={() => onSelectListing && onSelectListing(rec.id)}
-                      >
+                       role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}>
                         <img
                           src={rec.imageUrl}
                           alt={rec.title}
@@ -177,7 +177,7 @@ export function MagdaConciergeWidget({ onSelectListing }) {
                             {rec.title}
                           </h4>
                           <p className="text-[11px] text-gray-500 flex items-center gap-1 mt-0.5">
-                            <MapPin className="w-3 h-3 text-gray-400" /> {rec.city}
+                            <MapPin className="w-3 h-3 text-gray-600" /> {rec.city}
                           </p>
                           <div className="flex items-center justify-between mt-1">
                             <span className="text-[12px] font-bold text-gray-900">
@@ -194,7 +194,7 @@ export function MagdaConciergeWidget({ onSelectListing }) {
                   </div>
                 )}
 
-                <span className="text-[10px] text-gray-400 mt-1 px-1">{msg.timestamp}</span>
+                <span className="text-[10px] text-gray-600 mt-1 px-1">{msg.timestamp}</span>
               </div>
             ))}
 

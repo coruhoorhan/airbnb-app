@@ -53,12 +53,10 @@ export function CancelBookingModal({ isOpen, onClose, booking, listing, onCancel
             <AlertTriangle className="w-5 h-5 text-rose-500" />
             Rezervasyonu İptal Et
           </h2>
-          <button
+          <button aria-label="X"
             onClick={onClose}
             className="p-2 rounded-full hover:bg-charcoal-bg transition-colors cursor-pointer"
-          >
-            <X className="w-4 h-4 text-charcoal" />
-          </button>
+          > <X /> </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4">

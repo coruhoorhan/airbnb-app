@@ -185,9 +185,7 @@ export function GiftCardModal({ isOpen, onClose, userId }) {
               <p className="text-[11px] text-charcoal-light font-medium">Hediye kartlarini yonetin</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-white transition-colors">
-            <X className="w-5 h-5 text-charcoal" />
-          </button>
+          <button aria-label="X" onClick={onClose} className="p-2 rounded-full hover:bg-white transition-colors"> <X /> </button>
         </div>
 
         {/* Tabs */}

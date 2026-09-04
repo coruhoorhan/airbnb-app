@@ -149,7 +149,7 @@ export function ListingDetail({
           <div className="flex items-center gap-1 font-bold">
             <Star className="w-3.5 h-3.5 fill-charcoal text-charcoal" />
             <span>{listing.avgRating > 0 ? listing.avgRating.toFixed(2) : "Yeni"}</span>
-            <span className="text-charcoal-light dark:text-gray-400 font-normal">({listing.reviewCount} yorum)</span>
+            <span className="text-charcoal-light dark:text-gray-600 font-normal">({listing.reviewCount} yorum)</span>
           </div>
           <span>•</span>
           <div className="flex items-center gap-1 underline cursor-pointer">
@@ -171,7 +171,7 @@ export function ListingDetail({
                   <span className="text-lg font-black font-mono text-amber-600 dark:text-amber-400">-%{listing.lastMinuteDiscount}</span>
                 </div>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-sm text-charcoal-light dark:text-gray-400 line-through">{formatCurrency(listing.lastMinuteOriginalPrice, currency)}</span>
+                  <span className="text-sm text-charcoal-light dark:text-gray-600 line-through">{formatCurrency(listing.lastMinuteOriginalPrice, currency)}</span>
                   <span className="text-lg font-black text-amber-600 dark:text-amber-400">{formatCurrency(effectivePrice, currency)}</span>
                   <span className="text-[11px] text-charcoal-light">/gece</span>
                 </div>
@@ -182,7 +182,7 @@ export function ListingDetail({
                 <TrendingDown className="w-4 h-4" />
                 <span className="font-mono">-{formatCurrency(savings, currency)}</span>
               </div>
-              <p className="text-[11px] text-charcoal-light dark:text-gray-400">Tasarruf</p>
+              <p className="text-[11px] text-charcoal-light dark:text-gray-600">Tasarruf</p>
             </div>
           </div>
         )}
@@ -221,7 +221,7 @@ export function ListingDetail({
               <h2 className="text-xl font-bold text-charcoal dark:text-white">
                 {listing.propertyType} • Ev Sahibi: Zeynep Kaya
               </h2>
-              <p className="text-xs text-charcoal-light dark:text-gray-400 mt-1 font-medium">
+              <p className="text-xs text-charcoal-light dark:text-gray-600 mt-1 font-medium">
                 {listing.maxGuests} misafir • {listing.bedrooms} yatak odası • {listing.beds} yatak • {listing.baths} banyo
               </p>
             </div>
@@ -238,14 +238,14 @@ export function ListingDetail({
               <Award className="w-5 h-5 text-airbnb shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-bold text-sm text-charcoal dark:text-white">Süper Ev Sahibi</h3>
-                <p className="text-xs text-charcoal-light dark:text-gray-400 font-normal">Deneyimli ve yüksek puanlı ev sahibi.</p>
+                <p className="text-xs text-charcoal-light dark:text-gray-600 font-normal">Deneyimli ve yüksek puanlı ev sahibi.</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
               <Shield className="w-5 h-5 text-airbnb shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-bold text-sm text-charcoal dark:text-white">Ücretsiz İptal İmkanı</h3>
-                <p className="text-xs text-charcoal-light dark:text-gray-400 font-normal">Girişe 24 saat kalana kadar %100 kesintisiz iade.</p>
+                <p className="text-xs text-charcoal-light dark:text-gray-600 font-normal">Girişe 24 saat kalana kadar %100 kesintisiz iade.</p>
               </div>
             </div>
           </div>
@@ -267,7 +267,7 @@ export function ListingDetail({
                 const Icon = item.icon;
                 return (
                   <div key={amenityKey} className="flex items-center gap-3 text-xs text-charcoal dark:text-white font-medium">
-                    <Icon className="w-4 h-4 text-charcoal-light dark:text-gray-400" />
+                    <Icon className="w-4 h-4 text-charcoal-light dark:text-gray-600" />
                     <span>{item.label}</span>
                   </div>
                 );
@@ -279,7 +279,7 @@ export function ListingDetail({
           <div className="bg-charcoal-bg/70 dark:bg-white/5 rounded-2xl p-5 flex items-center justify-between border border-charcoal-border dark:border-white/10">
             <div>
               <h4 className="font-bold text-sm text-charcoal dark:text-white">Ev Sahibiyle İletişime Geçin</h4>
-              <p className="text-xs text-charcoal-light dark:text-gray-400">Sorularınız ve özel talepleriniz için anında mesaj gönderin.</p>
+              <p className="text-xs text-charcoal-light dark:text-gray-600">Sorularınız ve özel talepleriniz için anında mesaj gönderin.</p>
             </div>
             <button
               onClick={() => onOpenChat(listing)}
@@ -327,7 +327,7 @@ export function ListingDetail({
                     <span className="font-bold text-xs text-charcoal dark:text-white">{r.reviewerName}</span>
                     <span className="text-xs font-bold text-airbnb">{"★".repeat(r.rating)}</span>
                   </div>
-                  <p className="text-xs text-charcoal-light dark:text-gray-400 leading-relaxed">{r.comment}</p>
+                  <p className="text-xs text-charcoal-light dark:text-gray-600 leading-relaxed">{r.comment}</p>
                 </div>
               ))}
             </div>

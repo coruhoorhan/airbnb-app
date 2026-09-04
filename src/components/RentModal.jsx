@@ -65,9 +65,7 @@ export function RentModal({ isOpen, onClose, onCreateListing, hostId }) {
             <h3 className="text-lg font-bold text-charcoal">Evinizi Airbnb ye Taşıyın</h3>
             <p className="text-xs text-charcoal-light font-medium">Adım {step} / 6</p>
           </div>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-charcoal-bg">
-            <X className="w-5 h-5 text-charcoal" />
-          </button>
+          <button aria-label="X" onClick={onClose} className="p-2 rounded-full hover:bg-charcoal-bg"> <X /> </button>
         </div>
 
         {/* Step 1: Category & Property Type */}

@@ -12,7 +12,7 @@ export function ExperienceCard({ experience, currency = "TRY", onSelect }) {
     <div
       onClick={() => onSelect?.(experience)}
       className="group bg-white dark:bg-white/5 border border-charcoal-border/70 dark:border-white/10 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer"
-    >
+     role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}>
       <div className="relative aspect-[4/3] overflow-hidden bg-charcoal-bg">
         <img
           src={experience.images?.[0]}
@@ -37,7 +37,7 @@ export function ExperienceCard({ experience, currency = "TRY", onSelect }) {
           {experience.title}
         </h3>
 
-        <div className="flex items-center gap-3 text-[11px] text-charcoal-light dark:text-gray-400 font-medium">
+        <div className="flex items-center gap-3 text-[11px] text-charcoal-light dark:text-gray-600 font-medium">
           <span className="flex items-center gap-1">
             <Clock className="w-3.5 h-3.5" />
             {durationLabel}
@@ -57,7 +57,7 @@ export function ExperienceCard({ experience, currency = "TRY", onSelect }) {
             <span className="text-base font-black font-mono text-charcoal dark:text-white">
               {formatCurrency(experience.pricePerPerson, currency)}
             </span>
-            <span className="text-[10px] text-charcoal-light dark:text-gray-400 font-medium"> / kişi</span>
+            <span className="text-[10px] text-charcoal-light dark:text-gray-600 font-medium"> / kişi</span>
           </div>
           <span className="flex items-center gap-1 text-airbnb text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">
             İncele <ArrowRight className="w-3.5 h-3.5" />

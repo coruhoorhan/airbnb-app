@@ -60,14 +60,12 @@ export function ExperienceDetailModal({ experience, currency = "TRY", currentUse
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}/> tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}>
       <div className="relative bg-white dark:bg-[#16191E] rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90dvh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
-        <button
+        <button aria-label="X"
           onClick={onClose}
           className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-charcoal-border/50 flex items-center justify-center shadow-md hover:scale-105 transition-transform cursor-pointer"
-        >
-          <X className="w-4 h-4 text-charcoal" />
-        </button>
+        > <X /> </button>
 
         {result ? (
           <div className="p-8 sm:p-12 text-center flex flex-col items-center gap-4">
@@ -75,7 +73,7 @@ export function ExperienceDetailModal({ experience, currency = "TRY", currentUse
               <Check className="w-8 h-8 text-emerald-600" />
             </div>
             <h2 className="text-2xl font-black font-display text-charcoal dark:text-white">Rezervasyonunuz Alındı!</h2>
-            <p className="text-sm text-charcoal-light dark:text-gray-400 max-w-sm font-medium">
+            <p className="text-sm text-charcoal-light dark:text-gray-600 max-w-sm font-medium">
               <span className="font-bold text-charcoal dark:text-white">{experience.title}</span> deneyimi için
               {participants} kişilik rezervasyonunuz oluşturuldu.
             </p>
@@ -118,7 +116,7 @@ export function ExperienceDetailModal({ experience, currency = "TRY", currentUse
 
             <div className="p-5 sm:p-7 flex flex-col gap-5">
               {/* Meta Row */}
-              <div className="flex flex-wrap items-center gap-2.5 text-[11px] font-semibold text-charcoal-light dark:text-gray-400">
+              <div className="flex flex-wrap items-center gap-2.5 text-[11px] font-semibold text-charcoal-light dark:text-gray-600">
                 <span className="flex items-center gap-1.5 bg-charcoal-bg dark:bg-white/5 rounded-full px-3 py-1.5">
                   <Clock className="w-3.5 h-3.5" /> {durationLabel}
                 </span>
@@ -131,7 +129,7 @@ export function ExperienceDetailModal({ experience, currency = "TRY", currentUse
               </div>
 
               {/* Description */}
-              <p className="text-sm text-charcoal dark:text-gray-300 leading-relaxed font-medium">{experience.description}</p>
+              <p className="text-sm text-charcoal dark:text-gray-500 leading-relaxed font-medium">{experience.description}</p>
 
               {/* Included */}
               <div>
@@ -164,7 +162,7 @@ export function ExperienceDetailModal({ experience, currency = "TRY", currentUse
                 )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-[11px] font-bold text-charcoal-light dark:text-gray-400 block mb-1.5">Tarih</label>
+                    <label className="text-[11px] font-bold text-charcoal-light dark:text-gray-600 block mb-1.5">Tarih</label>
                     <div className="flex flex-wrap gap-1.5">
                       {DATE_OPTIONS.map((opt) => (
                         <button
@@ -184,7 +182,7 @@ export function ExperienceDetailModal({ experience, currency = "TRY", currentUse
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-bold text-charcoal-light dark:text-gray-400 block mb-1.5">
+                    <label className="text-[11px] font-bold text-charcoal-light dark:text-gray-600 block mb-1.5">
                       Katılımcı Sayısı ({participants})
                     </label>
                     <div className="flex items-center gap-2">

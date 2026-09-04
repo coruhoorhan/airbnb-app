@@ -37,7 +37,7 @@ export function Navbar({
         <div 
           onClick={() => onViewChange("explore")} 
           className="flex items-center gap-2.5 cursor-pointer group select-none"
-        >
+         role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}>
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-airbnb to-amber-600 text-white flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
             <Waves className="w-5 h-5" />
           </div>
@@ -45,7 +45,7 @@ export function Navbar({
             <span className="text-xl font-display font-extrabold text-charcoal dark:text-white tracking-tight leading-none">
               FATSA<span className="text-airbnb">ESCAPES</span>
             </span>
-            <span className="text-[9px] font-mono font-bold text-charcoal-light dark:text-gray-400 tracking-widest uppercase mt-0.5">
+            <span className="text-[9px] font-mono font-bold text-charcoal-light dark:text-gray-600 tracking-widest uppercase mt-0.5">
               COASTAL & MODERN HAVEN
             </span>
           </div>
@@ -55,10 +55,10 @@ export function Navbar({
         <div 
           onClick={onOpenSearch}
           className="hidden lg:flex items-center bg-charcoal-bg/70 dark:bg-white/5 hover:bg-charcoal-bg border border-charcoal-border dark:border-white/10 rounded-full py-2 px-4 shadow-xs hover:shadow-md transition-all cursor-pointer text-xs font-semibold divide-x divide-charcoal-border/80 dark:divide-white/10"
-        >
+         role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}>
           <div className="px-3 text-charcoal dark:text-white font-bold">Fatsa & Karadeniz</div>
           <div className="px-3 text-charcoal dark:text-white">İstediğiniz Tarih</div>
-          <div className="pl-3 pr-1 text-charcoal-light dark:text-gray-400 flex items-center gap-3">
+          <div className="pl-3 pr-1 text-charcoal-light dark:text-gray-600 flex items-center gap-3">
             <span className="font-normal">Misafir Ekle</span>
             <div className="bg-charcoal dark:bg-white/20 text-white p-2 rounded-full shadow-xs hover:bg-airbnb transition-colors">
               <Search className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -88,7 +88,7 @@ export function Navbar({
               className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-charcoal-border dark:border-white/10 hover:bg-charcoal-bg dark:hover:bg-white/10 text-xs font-bold text-charcoal dark:text-white transition-colors active:scale-95"
               title="Para Birimi Değiştir"
             >
-              <Globe className="w-3.5 h-3.5 text-charcoal-light dark:text-gray-400" />
+              <Globe className="w-3.5 h-3.5 text-charcoal-light dark:text-gray-600" />
               <span>{currentCurrencyObj.symbol} {currentCurrencyObj.code}</span>
             </button>
 
@@ -96,8 +96,8 @@ export function Navbar({
               <div 
                 className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#16191E] rounded-2xl shadow-xl border border-charcoal-border dark:border-white/10 p-2 z-50 animate-in fade-in"
                 onClick={() => setCurrencyOpen(false)}
-              >
-                <div className="px-3 py-1.5 text-[10px] font-extrabold text-charcoal-light dark:text-gray-400 uppercase border-b border-charcoal-border/50 dark:border-white/10">
+               role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}>
+                <div className="px-3 py-1.5 text-[10px] font-extrabold text-charcoal-light dark:text-gray-600 uppercase border-b border-charcoal-border/50 dark:border-white/10">
                   Para Birimi Seçin
                 </div>
                 <div className="py-1">
@@ -130,13 +130,13 @@ export function Navbar({
           <div className="hidden sm:flex items-center bg-charcoal-bg dark:bg-white/5 border border-charcoal-border dark:border-white/10 rounded-full p-1 text-xs font-semibold">
             <button 
               onClick={() => onSwitchUser("usr_guest_01")}
-              className={`px-3 py-1.5 rounded-full transition-all cursor-pointer ${!currentUser?.isHost ? "bg-white dark:bg-[#16191E] shadow-xs text-charcoal dark:text-white font-bold" : "text-charcoal-light dark:text-gray-400"}`}
+              className={`px-3 py-1.5 rounded-full transition-all cursor-pointer ${!currentUser?.isHost ? "bg-white dark:bg-[#16191E] shadow-xs text-charcoal dark:text-white font-bold" : "text-charcoal-light dark:text-gray-600"}`}
             >
               Misafir
             </button>
             <button 
               onClick={() => onSwitchUser("usr_host_01")}
-              className={`px-3 py-1.5 rounded-full transition-all cursor-pointer ${currentUser?.isHost ? "bg-white dark:bg-[#16191E] shadow-xs text-airbnb font-bold" : "text-charcoal-light dark:text-gray-400"}`}
+              className={`px-3 py-1.5 rounded-full transition-all cursor-pointer ${currentUser?.isHost ? "bg-white dark:bg-[#16191E] shadow-xs text-airbnb font-bold" : "text-charcoal-light dark:text-gray-600"}`}
             >
               Ev Sahibi
             </button>
@@ -201,7 +201,7 @@ export function Navbar({
                         <span className="font-bold text-charcoal dark:text-white">{n.title}</span>
                         {!n.isRead && <span className="w-2 h-2 bg-airbnb rounded-full" />}
                       </div>
-                      <p className="text-charcoal-light dark:text-gray-400 text-[11px] leading-tight">{n.body}</p>
+                      <p className="text-charcoal-light dark:text-gray-600 text-[11px] leading-tight">{n.body}</p>
                     </div>
                   ))}
                 </div>
@@ -232,9 +232,9 @@ export function Navbar({
               <div 
                 className="absolute right-0 mt-2 w-64 bg-white dark:bg-[#16191E] rounded-2xl shadow-xl border border-charcoal-border/80 dark:border-white/10 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
                 onClick={() => setMenuOpen(false)}
-              >
+               role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}>
                 <div className="px-4 py-2.5 border-b border-charcoal-border/50 dark:border-white/10">
-                  <p className="text-xs text-charcoal-light dark:text-gray-400 font-medium">Giriş Yapıldı:</p>
+                  <p className="text-xs text-charcoal-light dark:text-gray-600 font-medium">Giriş Yapıldı:</p>
                   <p className="text-sm font-bold text-charcoal dark:text-white">{currentUser?.name}</p>
                   <span className="inline-block mt-1 text-[11px] px-2 py-0.5 rounded-full bg-airbnb/10 text-airbnb font-bold">
                     {currentUser?.isHost ? "★ Ev Sahibi Modu" : "Misafir Hesabı"}
@@ -246,7 +246,7 @@ export function Navbar({
                     onClick={() => onViewChange("explore")}
                     className="w-full text-left px-4 py-2.5 text-sm text-charcoal dark:text-white hover:bg-charcoal-bg dark:hover:bg-white/5 font-medium flex items-center gap-2.5 cursor-pointer"
                   >
-                    <Home className="w-4 h-4 text-charcoal-light dark:text-gray-400" />
+                    <Home className="w-4 h-4 text-charcoal-light dark:text-gray-600" />
                     <span>Keşfet & İlanlar</span>
                   </button>
                   <button 
@@ -274,7 +274,7 @@ export function Navbar({
                     onClick={() => onViewChange("trips")}
                     className="w-full text-left px-4 py-2.5 text-sm text-charcoal dark:text-white hover:bg-charcoal-bg dark:hover:bg-white/5 font-medium flex items-center gap-2.5 cursor-pointer"
                   >
-                    <Briefcase className="w-4 h-4 text-charcoal-light dark:text-gray-400" />
+                    <Briefcase className="w-4 h-4 text-charcoal-light dark:text-gray-600" />
                     <span>Seyahatlerim</span>
                   </button>
                   <button 
@@ -351,7 +351,7 @@ export function Navbar({
                       onClick={onOpenRent}
                       className="w-full text-left px-4 py-2.5 text-sm text-charcoal dark:text-white hover:bg-charcoal-bg dark:hover:bg-white/5 font-semibold flex items-center gap-2.5 cursor-pointer"
                     >
-                      <PlusCircle className="w-4 h-4 text-charcoal-light dark:text-gray-400" />
+                      <PlusCircle className="w-4 h-4 text-charcoal-light dark:text-gray-600" />
                       <span>Evinizi Ekleyin</span>
                     </button>
                   )}
