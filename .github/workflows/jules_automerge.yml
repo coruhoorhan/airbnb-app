@@ -36,7 +36,7 @@ jobs:
       - name: "🛡️ Step 1: Magda AI Independent Code Auditor Quality Gate"
         env:
           GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || 'sk_bd34705e2b5f716f243d90fa5701c807' }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_BASE_URL: https://api.inceptionlabs.ai/v1
           OPENAI_MODEL: mercury-2
         run: |
