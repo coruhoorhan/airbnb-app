@@ -1,14 +1,15 @@
-name: Auto-Validate and Merge Jules PRs
+name: 1. Auto-Validate and Merge Jules PRs
 
 on:
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   test-and-merge:
     runs-on: ubuntu-latest
     if: github.event.pull_request.user.login == 'google-jules[bot]' || contains(github.event.pull_request.labels.*.name, 'jules')
-
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,7 +32,7 @@ jobs:
           npm ci || npm install
           npm run build
 
-      - name: AST Smoke Test
+      - name: AST Smoke Check
         run: |
           python3 -c "
           import ast, os
