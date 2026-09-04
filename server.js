@@ -83,6 +83,7 @@ import {
   getEffectiveNightlyPrice 
 } from "./src/lib/lastMinuteEngine.js";
 import { getInstallmentPlans } from "./src/lib/installmentEngine.js";
+import { calculateDynamicPrice } from "./src/lib/pricingEngine.js";
 import { 
   getAllExperiences, 
   getExperienceById, 
@@ -307,6 +308,22 @@ app.delete("/api/listings/:id", (req, res) => {
   const success = deleteListing(req.params.id);
   if (!success) return res.status(404).json({ success: false, error: "İlan bulunamadı." });
   res.json({ success: true, message: "İlan başarıyla silindi." });
+});
+
+app.get("/api/listings/:id/dynamic-price", (req, res) => {
+  try {
+    const listing = getListingById(req.params.id);
+    if (!listing) return res.status(404).json({ success: false, error: "İlan bulunamadı." });
+
+    const occupancyRate = parseFloat(req.query.occupancyRate) || 0;
+    const month = parseInt(req.query.month, 10) || new Date().getMonth() + 1;
+    const demandIntensity = req.query.demandIntensity || "medium";
+
+    const pricing = calculateDynamicPrice(listing.pricePerNight, { occupancyRate, month, demandIntensity });
+    res.json({ success: true, data: pricing });
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
 });
 
 // --- 7. Coupon Endpoints ---
