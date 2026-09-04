@@ -29,7 +29,18 @@ import { Map, List, Globe, Shield, Sparkles, Waves, ArrowRight, Compass, Anchor,
 export function App() {
   const [isMagdaDashboardOpen, setIsMagdaDashboardOpen] = useState(false);
   const [users, setUsers] = useState(INITIAL_USERS);
-  const [currentUserId, setCurrentUserId] = useState("usr_guest_01");
+
+  const [currentUserId, setCurrentUserId] = useState(() => {
+    try {
+      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload && payload.id) return payload.id;
+      }
+    } catch (e) {}
+    return "usr_guest_01";
+  });
+
   const [listings, setListings] = useState(INITIAL_LISTINGS);
   const [isLoadingListings, setIsLoadingListings] = useState(true);
   const [bookings, setBookings] = useState([

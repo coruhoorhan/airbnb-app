@@ -1,5 +1,7 @@
+import "express-async-errors";
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import path from "path";
 import { fileURLToPath } from "url";
 import { execFile } from "child_process";
@@ -29,6 +31,8 @@ import {
   getAllPayments,
   getAllUsers,
   updateUserRole,
+  getUserByEmail,
+  insertUser,
   getAdminAnalytics,
   getAllGuardianIssues,
   dismissGuardianIssue,
@@ -93,15 +97,81 @@ import {
 } from "./src/lib/experienceEngine.js";
 import { createRateLimiter } from "./src/lib/rateLimiter.js";
 
+import cookieParser from "cookie-parser";
+import validator from "validator";
+import { authMiddleware, csrfMiddleware, generateToken, generateCsrfToken } from "./src/lib/auth.js";
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(cors());
+app.use(helmet());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+  exposedHeaders: ["x-csrf-token"]
+}));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const authRateLimiter = createRateLimiter({
+  windowMs: 60000,
+  maxRequests: 10,
+  message: "Çok fazla giriş denemesi. Lütfen 1 dakika bekleyin."
+});
+
+// --- Auth Endpoints ---
+
+// --- Simulated OAuth2 Endpoints ---
+app.get("/api/auth/oauth/github", (req, res) => {
+  // Simulate redirecting to GitHub
+  res.redirect("https://github.com/login/oauth/authorize?client_id=simulated_client_id");
+});
+
+app.post("/api/auth/oauth/callback", authRateLimiter, (req, res) => {
+  const { email } = req.body;
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json({ success: false, error: "Authentication failed." });
+  }
+
+  let user = getUserByEmail(email);
+  if (!user) {
+    user = { id: "u_" + Date.now(), email, name: email.split("@")[0], avatarUrl: "", isHost: 0, bio: "", phone: "" };
+    insertUser(user);
+  }
+
+  const token = generateToken(user);
+  res.cookie("token", token, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  res.json({ success: true, token, user });
+});
+
+app.post("/api/auth/login", authRateLimiter, async (req, res) => {
+  const { email } = req.body;
+  if (!email || !validator.isEmail(email)) {
+    return res.status(400).json({ success: false, error: "Geçerli bir email gerekli." });
+  }
+
+  const user = getUserByEmail(email);
+  if (!user) {
+    return res.status(401).json({ success: false, error: "Kullanıcı bulunamadı." });
+  }
+
+  const token = generateToken(user);
+  res.cookie("token", token, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  res.json({ success: true, token, user });
+});
+
+app.get("/api/auth/csrf", (req, res) => {
+  const token = generateCsrfToken();
+  res.cookie("_csrf_secret", token, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  res.setHeader("x-csrf-token", token);
+  res.json({ success: true, csrfToken: token });
+});
+
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 // Security Rate Limiters
@@ -169,7 +239,7 @@ app.get("/api/currencies", (req, res) => {
 });
 
 // --- 3. Favorites API ---
-app.post("/api/favorites/toggle", (req, res) => {
+app.post("/api/favorites/toggle", authMiddleware, csrfMiddleware, (req, res) => {
   const { userId, listingId } = req.body;
   if (!userId || !listingId) return res.status(400).json({ success: false, error: "Eksik parametre." });
   const result = toggleFavorite(userId, listingId);
@@ -270,7 +340,7 @@ app.get("/api/listings/:id", (req, res) => {
   });
 });
 
-app.post("/api/listings", listingsRateLimiter, (req, res) => {
+app.post("/api/listings", authMiddleware, csrfMiddleware, listingsRateLimiter, (req, res) => {
   const newId = `list_${Date.now()}`;
   const created = insertListing({
     ...req.body,
@@ -280,13 +350,13 @@ app.post("/api/listings", listingsRateLimiter, (req, res) => {
   res.status(201).json({ success: true, data: created });
 });
 
-app.put("/api/listings/:id/toggle-status", (req, res) => {
+app.put("/api/listings/:id/toggle-status", authMiddleware, csrfMiddleware, (req, res) => {
   const updated = toggleListingStatus(req.params.id);
   if (!updated) return res.status(404).json({ success: false, error: "İlan bulunamadı." });
   res.json({ success: true, data: updated });
 });
 
-app.put("/api/listings/:id/quick-update", (req, res) => {
+app.put("/api/listings/:id/quick-update", authMiddleware, csrfMiddleware, (req, res) => {
   const { pricePerNight, cleaningFee } = req.body;
   const listingBefore = getListingById(req.params.id);
   const updated = quickUpdateListingPrice(req.params.id, pricePerNight, cleaningFee);
@@ -304,7 +374,7 @@ app.put("/api/listings/:id/quick-update", (req, res) => {
   res.json({ success: true, data: updated });
 });
 
-app.delete("/api/listings/:id", (req, res) => {
+app.delete("/api/listings/:id", authMiddleware, csrfMiddleware, (req, res) => {
   const success = deleteListing(req.params.id);
   if (!success) return res.status(404).json({ success: false, error: "İlan bulunamadı." });
   res.json({ success: true, message: "İlan başarıyla silindi." });
@@ -634,7 +704,7 @@ app.get("/api/payments/:bookingId", (req, res) => {
 });
 
 // --- 10. Bookings API ---
-app.post("/api/bookings", (req, res) => {
+app.post("/api/bookings", authMiddleware, csrfMiddleware, (req, res) => {
   const { listingId, guestId, checkIn, checkOut, numGuests, couponCode, giftCardCode } = req.body;
 
   const listing = getListingById(listingId);
@@ -739,7 +809,7 @@ app.get("/api/bookings", (req, res) => {
   res.json({ success: true, count: bookings.length, data: bookings });
 });
 
-app.put("/api/bookings/:id/status", (req, res) => {
+app.put("/api/bookings/:id/status", authMiddleware, csrfMiddleware, (req, res) => {
   const { status, cancelReason } = req.body;
   const updated = updateBookingStatus(req.params.id, status, cancelReason);
   if (!updated) return res.status(404).json({ error: "Rezervasyon bulunamadı" });
@@ -760,7 +830,7 @@ app.put("/api/bookings/:id/status", (req, res) => {
 });
 
 // --- 11a. Rezervasyon İptal & İade API ---
-app.post("/api/bookings/:id/cancel", (req, res) => {
+app.post("/api/bookings/:id/cancel", authMiddleware, csrfMiddleware, (req, res) => {
   try {
     const { cancelReason, cancelledByHost = false } = req.body;
     const booking = getBookingById(req.params.id);
@@ -952,7 +1022,7 @@ app.get("/api/notifications", (req, res) => {
 });
 
 // --- 11. Reviews API ---
-app.post("/api/reviews", (req, res) => {
+app.post("/api/reviews", authMiddleware, csrfMiddleware, (req, res) => {
   const { listingId, bookingId, reviewerId, reviewerName, rating, comment } = req.body;
   if (!listingId || !reviewerId) {
     return res.status(400).json({ success: false, error: "Eksik yorum bilgisi." });
@@ -985,7 +1055,7 @@ app.get("/api/messages", (req, res) => {
   }
 });
 
-app.post("/api/messages", messageRateLimiter, (req, res) => {
+app.post("/api/messages", authMiddleware, csrfMiddleware, messageRateLimiter, (req, res) => {
   try {
     const { listingId, senderId, text } = req.body;
     if (!listingId || !senderId || !text) {
@@ -1088,7 +1158,7 @@ app.get("/api/experiences/:id", (req, res) => {
   }
 });
 
-app.post("/api/experiences/reserve", (req, res) => {
+app.post("/api/experiences/reserve", authMiddleware, csrfMiddleware, (req, res) => {
   try {
     const { experienceId, userId, participants, reservationDate } = req.body;
     if (!experienceId || !userId || !participants || !reservationDate) {
@@ -1111,7 +1181,7 @@ app.get("/api/experiences/reservations/:userId", (req, res) => {
   }
 });
 
-app.post("/api/experiences/reservations/:id/cancel", (req, res) => {
+app.post("/api/experiences/reservations/:id/cancel", authMiddleware, csrfMiddleware, (req, res) => {
   try {
     const { userId } = req.body;
     if (!userId) return res.status(400).json({ success: false, error: "userId gerekli." });

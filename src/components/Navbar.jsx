@@ -300,6 +300,43 @@ export function Navbar({
                   </button>
                 </div>
 
+
+                <div className="border-t border-charcoal-border/50 dark:border-white/10 py-1">
+                  <button
+                    onClick={() => {
+                      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                      window.location.reload();
+                    }}
+                    className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 font-bold flex items-center gap-2.5 cursor-pointer"
+                  >
+                    <span>Çıkış Yap</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      fetch("/api/auth/oauth/callback", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email: "guest@fatsa.bel.tr" })
+                      }).then(() => window.location.reload());
+                    }}
+                    className="w-full text-left px-4 py-2.5 text-sm text-blue-600 hover:bg-blue-50 font-bold flex items-center gap-2.5 cursor-pointer"
+                  >
+                    <span>OAuth2 Giriş (Misafir)</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      fetch("/api/auth/oauth/callback", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email: "host@fatsa.bel.tr" })
+                      }).then(() => window.location.reload());
+                    }}
+                    className="w-full text-left px-4 py-2.5 text-sm text-green-600 hover:bg-green-50 font-bold flex items-center gap-2.5 cursor-pointer"
+                  >
+                    <span>OAuth2 Giriş (Ev Sahibi)</span>
+                  </button>
+                </div>
+
                 <div className="border-t border-charcoal-border/50 dark:border-white/10 py-1">
                   {currentUser?.isHost ? (
                     <button 

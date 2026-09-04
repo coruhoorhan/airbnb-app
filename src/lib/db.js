@@ -992,3 +992,23 @@ export function getConversationsForUser(userId) {
 export function getBookingById(id) {
   return db.prepare("SELECT * FROM bookings WHERE id = ?").get(id);
 }
+
+export function getUserByEmail(email) {
+  return db.prepare("SELECT * FROM users WHERE email = ?").get(email);
+}
+
+
+export function insertUser(u) {
+  db.prepare(
+    "INSERT INTO users (id, name, email, avatarUrl, isHost, bio, phone, createdAt) VALUES (@id, @name, @email, @avatarUrl, @isHost, @bio, @phone, @createdAt)"
+  ).run({
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    avatarUrl: u.avatarUrl || null,
+    isHost: u.isHost ? 1 : 0,
+    bio: u.bio || null,
+    phone: u.phone || null,
+    createdAt: Date.now()
+  });
+}
