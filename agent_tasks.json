@@ -169,7 +169,7 @@
     },
     {
       "id": "security-rate-limit-input-sanitization",
-      "status": "todo",
+      "status": "done",
       "area": "security",
       "risk": "medium",
       "title": "Add rate limiting and input sanitization to API endpoints",

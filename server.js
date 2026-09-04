@@ -125,6 +125,13 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
+const globalRateLimiter = createRateLimiter({
+  windowMs: 60000,
+  maxRequests: 100,
+  message: "Çok fazla istek gönderildi. Lütfen biraz sonra tekrar deneyin."
+});
+app.use(globalRateLimiter);
+
 const authRateLimiter = createRateLimiter({
   windowMs: 60000,
   maxRequests: 10,
@@ -414,13 +421,17 @@ app.get("/api/listings/:id", (req, res) => {
 });
 
 app.post("/api/listings", authMiddleware, csrfMiddleware, listingsRateLimiter, (req, res) => {
-  const newId = `list_${Date.now()}`;
-  const created = insertListing({
-    ...req.body,
-    id: newId,
-    createdAt: Date.now()
-  });
-  res.status(201).json({ success: true, data: created });
+  try {
+    const newId = `list_${Date.now()}`;
+    const created = insertListing({
+      ...req.body,
+      id: newId,
+      createdAt: Date.now()
+    });
+    res.status(201).json({ success: true, data: created });
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
 });
 
 app.put("/api/listings/:id/toggle-status", authMiddleware, csrfMiddleware, (req, res) => {
@@ -778,6 +789,7 @@ app.get("/api/payments/:bookingId", (req, res) => {
 
 // --- 10. Bookings API ---
 app.post("/api/bookings", authMiddleware, csrfMiddleware, (req, res) => {
+  try {
   const { listingId, guestId, checkIn, checkOut, numGuests, couponCode, giftCardCode } = req.body;
 
   const listing = getListingById(listingId);
@@ -874,6 +886,9 @@ app.post("/api/bookings", authMiddleware, csrfMiddleware, (req, res) => {
   }
 
   res.status(201).json({ success: true, data: newBooking });
+  } catch (err) {
+    return res.status(400).json({ success: false, error: err.message });
+  }
 });
 
 app.get("/api/bookings", (req, res) => {
@@ -1402,7 +1417,11 @@ function startAutonomousGuardianLoop() {
   }, 900000);
 }
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`[AIRBNB SQLITE & IYZICO ENGINE] Running on http://0.0.0.0:${PORT}`);
-  startAutonomousGuardianLoop();
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`[AIRBNB SQLITE & IYZICO ENGINE] Running on http://0.0.0.0:${PORT}`);
+    startAutonomousGuardianLoop();
+  });
+}
+
+export { app };
