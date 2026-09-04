@@ -16,6 +16,7 @@ import { LoyaltyDashboard } from "./components/LoyaltyDashboard.jsx";
 import { GiftCardModal } from "./components/GiftCardModal.jsx";
 import { ExperienceCard } from "./components/ExperienceCard.jsx";
 import { ExperienceDetailModal } from "./components/ExperienceDetailModal.jsx";
+import { MagdaConciergeWidget } from "./components/MagdaConciergeWidget.jsx";
 import { INITIAL_USERS } from "./data/users.js";
 import { INITIAL_LISTINGS } from "./data/listings.js";
 import { recomputeAverageRating } from "./lib/bookingEngine.js";
@@ -863,6 +864,9 @@ export function App() {
           </div>
         </div>
       </footer>
+      {/* Magda-Agent AI Concierge Floating Widget */}
+      <MagdaConciergeWidget onSelectListing={(id) => setSelectedListing(id)} />
+
     </div>
   );
 }

@@ -19,6 +19,7 @@ export function Navbar({
   onToggleDarkMode,
   onOpenLoyalty,
   onOpenGiftCards,
+  onOpenMagdaDashboard,
   loyaltyTier = null
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -155,6 +156,16 @@ export function Navbar({
             )}
           </button>
 
+          {/* Magda AI Guardian Top Bar Button */}
+          <button
+            onClick={onOpenMagdaDashboard}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full text-xs font-bold hover:scale-105 active:scale-95 transition shadow-xs cursor-pointer border border-white/20"
+            title="Magda-Agent Bilişsel Kontrol Merkezi"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-200 animate-pulse" />
+            <span className="hidden sm:inline">AI Guardian</span>
+          </button>
+
           {/* Notification Bell Dropdown */}
           <div className="relative">
             <button 
@@ -279,6 +290,13 @@ export function Navbar({
                   >
                     <Gift className="w-4 h-4 text-emerald-600" />
                     <span>Hediye Kartlarım</span>
+                  </button>
+                  <button 
+                    onClick={onOpenMagdaDashboard}
+                    className="w-full text-left px-4 py-2.5 text-sm text-purple-600 hover:bg-purple-50 font-bold flex items-center gap-2.5 cursor-pointer"
+                  >
+                    <Sparkles className="w-4 h-4 text-purple-600" />
+                    <span>🤖 Magda AI Kontrol Merkezi</span>
                   </button>
                 </div>
 

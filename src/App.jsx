@@ -18,6 +18,8 @@ import { LoyaltyDashboard } from "./components/LoyaltyDashboard.jsx";
 import { GiftCardModal } from "./components/GiftCardModal.jsx";
 import { ExperienceCard } from "./components/ExperienceCard.jsx";
 import { ExperienceDetailModal } from "./components/ExperienceDetailModal.jsx";
+import { AdminMagdaDashboard } from "./components/AdminMagdaDashboard.jsx";
+import { MagdaConciergeWidget } from "./components/MagdaConciergeWidget.jsx";
 import { INITIAL_USERS } from "./data/users.js";
 import { INITIAL_LISTINGS } from "./data/listings.js";
 import { recomputeAverageRating } from "./lib/bookingEngine.js";
@@ -25,6 +27,7 @@ import { formatCurrency, SUPPORTED_CURRENCIES } from "./lib/currencyEngine.js";
 import { Map, List, Globe, Shield, Sparkles, Waves, ArrowRight, Compass, Anchor, ShieldCheck, Sun, Star, Cloud, CloudSun, CloudRain, Droplets, Clock, Bell, Gift } from "lucide-react";
 
 export function App() {
+  const [isMagdaDashboardOpen, setIsMagdaDashboardOpen] = useState(false);
   const [users, setUsers] = useState(INITIAL_USERS);
   const [currentUserId, setCurrentUserId] = useState("usr_guest_01");
   const [listings, setListings] = useState(INITIAL_LISTINGS);
@@ -486,6 +489,7 @@ export function App() {
         onOpenLoyalty={handleOpenLoyalty}
         onOpenGiftCards={handleOpenGiftCards}
         loyaltyTier={loyaltyTier}
+        onOpenMagdaDashboard={() => setIsMagdaDashboardOpen(true)}
       />
 
       {/* Main Content View */}
@@ -917,6 +921,14 @@ export function App() {
           </div>
         </div>
       </footer>
+      {/* Magda-Agent Admin & Bilişsel Kontrol Merkezi */}
+      {isMagdaDashboardOpen && (
+        <AdminMagdaDashboard onClose={() => setIsMagdaDashboardOpen(false)} />
+      )}
+
+      {/* Magda-Agent AI Concierge Floating Widget */}
+      <MagdaConciergeWidget onSelectListing={(id) => setSelectedListing(id)} />
+
     </div>
   );
 }

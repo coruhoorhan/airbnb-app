@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+import { execFile } from "child_process";
 import { 
   db, 
   getAllListings, 
@@ -1098,6 +1099,111 @@ app.post("/api/experiences/reservations/:id/cancel", (req, res) => {
     res.status(400).json({ success: false, error: err.message });
   }
 });
+
+// --- 12.5. Magda-Agent Cognitive AI Engine Integration ---
+app.post("/api/magda/concierge", (req, res) => {
+  const query = req.body?.query || req.body?.prompt || "Fatsa merkezde kiralık ev";
+  execFile("python3", ["/opt/airbnb-app/magda_airbnb_bridge.py", "chat", query], (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ success: false, error: error.message, details: stderr });
+    }
+    try {
+      const data = JSON.parse(stdout);
+      res.json(data);
+    } catch (parseErr) {
+      res.json({ status: "success", raw: stdout });
+    }
+  });
+});
+
+app.get("/api/magda/guardian/scan", (req, res) => {
+  execFile("python3", ["/opt/airbnb-app/magda_airbnb_bridge.py", "guardian_scan"], (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ success: false, error: error.message, details: stderr });
+    }
+    try {
+      const data = JSON.parse(stdout);
+      res.json(data);
+    } catch (parseErr) {
+      res.json({ status: "success", raw: stdout });
+    }
+  });
+});
+
+app.get("/api/magda/status", (req, res) => {
+  execFile("python3", ["/opt/airbnb-app/magda_airbnb_bridge.py", "analytics"], (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ success: false, error: error.message, details: stderr });
+    }
+    try {
+      const data = JSON.parse(stdout);
+      res.json({ status: "active", engine: "Magda-Agent Cognitive Core V2", analytics: data });
+    } catch (parseErr) {
+      res.json({ status: "active", raw: stdout });
+    }
+  });
+});
+
+app.get("/api/magda/tasks", (req, res) => {
+  execFile("python3", ["/opt/airbnb-app/magda_airbnb_daemon.py", "tasks"], (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ success: false, error: error.message, details: stderr });
+    }
+    try {
+      const data = JSON.parse(stdout);
+      res.json(data);
+    } catch (parseErr) {
+      res.json({ tasks: [] });
+    }
+  });
+});
+
+app.post("/api/magda/tasks/create", (req, res) => {
+  const { title, description, area, risk } = req.body || {};
+  if (!title) return res.status(400).json({ success: false, error: "Title is required" });
+  
+  const taskId = `task-auto-${Date.now().toString(36)}`;
+  const taskData = JSON.stringify({ id: taskId, title, description, area: area || "backend", risk: risk || "medium" });
+  
+  execFile("python3", ["-c", `
+import json, sys
+from magda_airbnb_daemon import AirbnbTasksManifestManager
+mgr = AirbnbTasksManifestManager()
+t = json.loads('''${taskData}''')
+mgr.add_task(task_id=t['id'], title=t['title'], description=t['description'], area=t['area'], risk=t['risk'])
+print(json.dumps({'success': True, 'task_id': t['id']}))
+`], (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ success: false, error: error.message, details: stderr });
+    }
+    try {
+      const data = JSON.parse(stdout);
+      res.json(data);
+    } catch (parseErr) {
+      res.json({ success: true, task_id: taskId });
+    }
+  });
+});
+app.get("/api/magda/codebase-knowledge", (req, res) => {
+  execFile("python3", ["/opt/airbnb-app/magda_airbnb_codebase_indexer.py"], (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({ success: false, error: error.message, details: stderr });
+    }
+    try {
+      execFile("python3", ["/opt/airbnb-app/magda_airbnb_bridge.py", "codebase"], (err2, out2) => {
+        try {
+          const fullData = JSON.parse(out2);
+          res.json(fullData);
+        } catch (e) {
+          res.json({ summary: JSON.parse(stdout) });
+        }
+      });
+    } catch (parseErr) {
+      res.json({ summary: {} });
+    }
+  });
+});
+
 // --- 13. Static Frontend Serving ---
 const distPath = path.join(__dirname, "dist");
 app.use(express.static(distPath));
