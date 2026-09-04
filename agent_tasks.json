@@ -166,6 +166,44 @@
       ],
       "created_at": 1788443436.1772346,
       "created_by": "Magda Autonomous Watchdog"
+    },
+    {
+      "id": "security-rate-limit-input-sanitization",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Add rate limiting and input sanitization to API endpoints",
+      "description": "Implement a request‑rate‑limiting middleware (e.g., express‑rate‑limit) in server.js to protect public endpoints from brute‑force and DoS attacks. Add a validation layer using a schema library (e.g., Joi) in src/lib/db.js and route handlers to sanitize and validate all incoming parameters (search queries, booking dates, user IDs). This prevents injection attacks and ensures only well‑formed data reaches the database.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js"
+      ],
+      "acceptance": [
+        "Requests exceeding 100 per minute from the same IP receive HTTP 429 responses.",
+        "All API payloads are validated against defined Joi schemas; malformed requests return HTTP 400 with a clear error message.",
+        "No SQL injection or XSS payload can be persisted in the database (verified with automated security tests)."
+      ],
+      "created_at": 1788510497.9315858,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-db-connection-pooling-caching",
+      "status": "todo",
+      "area": "backend",
+      "risk": "medium",
+      "title": "Introduce DB connection pooling and in‑memory caching for listings",
+      "description": "Refactor src/lib/db.js to use a connection pool (e.g., pg‑pool for PostgreSQL) instead of creating a new client per request, reducing latency and resource usage. Add a simple LRU cache (e.g., node‑cache) for the most‑requested listings (GET /listings) and search results, with a TTL of 5 minutes. Update server.js to serve cached data when available and fall back to the DB otherwise.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js"
+      ],
+      "acceptance": [
+        "Database connections are reused; the number of active connections never exceeds the pool size (e.g., 20).",
+        "Cache hit rate for listings is at least 60% in load tests.",
+        "Response time for GET /listings drops by ≥30% compared to baseline (measured with a simple load test)."
+      ],
+      "created_at": 1788510497.9629478,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ]
 }
