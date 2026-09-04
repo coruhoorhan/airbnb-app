@@ -68,7 +68,7 @@
     },
     {
       "id": "feat-01-dynamic-pricing",
-      "status": "todo",
+      "status": "done",
       "area": "backend",
       "risk": "medium",
       "title": "Ev Sahipleri İçin Yapay Zekâ Dinamik Fiyatlandırma Motoru",
