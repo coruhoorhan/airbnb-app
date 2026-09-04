@@ -7,14 +7,21 @@ on:
         description: "PR number to revise per auditor findings"
         required: true
         default: "10"
+  workflow_run:
+    workflows: ["1. Auto-Validate and Merge Jules PRs"]
+    types: [completed]
 
 permissions:
   contents: read
   pull-requests: read
+  issues: write
 
 jobs:
   revise:
     runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'failure'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,9 +32,19 @@ jobs:
           python-version: "3.12"
 
       - name: Open Jules revision session on PR branch
+        id: revise_step
         env:
-          PR_NUMBER: ${{ inputs.pr_number }}
+          PR_NUMBER: ${{ inputs.pr_number || github.event.workflow_run.pull_requests[0].number }}
           TARGET_REPO: ${{ github.repository }}
           GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
           JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+          MAX_AUTO_REVISIONS: "3"
         run: python3 scripts/jules_revise.py
+
+      - name: Label PR for human review (circuit breaker)
+        if: failure() && steps.revise_step.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ inputs.pr_number || github.event.workflow_run.pull_requests[0].number }}
+        run: |
+          gh pr edit "$PR_NUMBER" --repo "${{ github.repository }}" --add-label "needs-human-review" || true

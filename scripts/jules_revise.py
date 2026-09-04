@@ -42,18 +42,26 @@ def main():
         print("Missing PR_NUMBER, GH_PAT or JULES_API_KEY."); sys.exit(1)
 
     pr = gh(f"/repos/{repo}/pulls/{pr_number}", gh_token)
+    if pr.get("state") == "closed":
+        print(f"PR #{pr_number} is already closed; nothing to revise."); sys.exit(0)
     head_ref = (pr.get("head") or {}).get("ref", "")
     if not head_ref:
         print("Could not resolve PR head branch."); sys.exit(1)
     print(f"PR #{pr_number} head branch: {head_ref}")
 
-    reviews = gh(f"/repos/{repo}/pulls/{pr_number}/reviews?per_page=10", gh_token)
+    reviews = gh(f"/repos/{repo}/pulls/{pr_number}/reviews?per_page=30", gh_token)
+    matches = [r for r in reviews
+               if "Magda AI Independent Code Auditor" in (r.get("body") or "")
+               and "CHANGES REQUESTED" in (r.get("body") or "")]
+    max_rev = int(os.getenv("MAX_AUTO_REVISIONS", "3"))
+    print(f"Auditor rejections so far: {len(matches)} (max auto-revisions: {max_rev})")
+    if len(matches) >= max_rev:
+        print(f"CIRCUIT BREAKER: PR #{pr_number} rejected {len(matches)} times. "
+              "Needs human review; will not open another session.")
+        sys.exit(2)
     findings = ""
-    for r in reviews:
-        body = r.get("body") or ""
-        if "Magda AI Independent Code Auditor" in body and "CHANGES REQUESTED" in body:
-            findings = body
-            break
+    for r in matches:
+        findings = r.get("body") or ""  # latest match wins
     if not findings:
         print("No CHANGES REQUESTED auditor review found; nothing to revise."); sys.exit(0)
     findings = findings[:MAX_FINDINGS_CHARS]
