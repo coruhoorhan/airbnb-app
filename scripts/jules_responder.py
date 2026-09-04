@@ -202,6 +202,17 @@ def parse_age_hours(ts):
 def main():
     dry_run = "--dry-run" in sys.argv
     api_key = os.getenv("JULES_API_KEY", "")
+    steer_sid = os.getenv("STEER_SESSION", "").strip()
+    steer_msg = os.getenv("STEER_MESSAGE", "").strip()
+    if steer_sid and steer_msg:
+        payload = {"prompt": f"{MARKER}\n{steer_msg}"}
+        print(f"steer -> session {steer_sid}: {steer_msg[:300]}")
+        if dry_run:
+            print("[dry-run] would send steer message.")
+            return
+        jules_request("POST", f"/sessions/{steer_sid}:sendMessage", api_key, payload)
+        print("steer message sent.")
+        return
     openai_key = os.getenv("OPENAI_API_KEY", "")
     base = os.getenv("OPENAI_BASE_URL", "https://api.inceptionlabs.ai/v1")
     model = os.getenv("OPENAI_MODEL", "mercury-2")

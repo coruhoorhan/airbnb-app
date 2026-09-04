@@ -131,6 +131,8 @@ def main():
         "RULES: implement all security fixes (httpOnly, sameSite, rate limiting, "
         "validation, helmet, CORS, JWT expiry, minimal claims). Keep tests green. "
         "Update agent_tasks.json only if the task is not yet marked done.\n"
+        "NEVER create patch_*.py, fix_*.py, or scratch scripts in the repo. "
+        "Edit source files directly. Keep the diff minimal.\n"
         "FULLY AUTONOMOUS: never ask questions, never wait. Push when done.\n\n"
         f"AUDITOR FINDINGS:\n{findings}"
     )

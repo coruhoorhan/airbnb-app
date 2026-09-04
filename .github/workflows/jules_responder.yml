@@ -9,6 +9,14 @@ on:
         description: "Dry run (list only, send nothing)"
         required: false
         default: "true"
+      steer_session:
+        description: "Session ID to steer directly (skips polling)"
+        required: false
+        default: ""
+      steer_message:
+        description: "Directive to send to the steered session"
+        required: false
+        default: ""
   workflow_run:
     workflows: ["1. Auto-Validate and Merge Jules PRs", "2. Trigger Next Autonomous Task via Jules API", "4. Jules Revision Trigger (auditor feedback loop)"]
     types: [completed]
@@ -38,6 +46,8 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
           TARGET_REPO: ${{ github.repository }}
           TARGET_TITLE: Autonomous Airbnb,Revise airbnb-app PR,Revise PR #
+          STEER_SESSION: ${{ inputs.steer_session }}
+          STEER_MESSAGE: ${{ inputs.steer_message }}
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry_run }}" = "true" ]; then
             python3 scripts/jules_responder.py --dry-run

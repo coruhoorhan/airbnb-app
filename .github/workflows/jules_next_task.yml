@@ -77,6 +77,8 @@ jobs:
           - Do not touch files outside allowed_paths unless explicitly required by the task.
           - Follow existing code style in server.js, src/lib/db.js, and src/components/.
           - Do NOT modify .github/workflows/** or secrets unless the task explicitly permits it.
+          - NEVER create patch_*.py, fix_*.py, or scratch helper scripts inside the repo. Edit source files directly. Scratch work belongs in /tmp and must never be committed.
+          - Every PR must include focused tests for the new behavior; keep the diff minimal (task files + tests only).
           - If the task has risk "high" or "critical", create the PR for review.
           EOF
           )
