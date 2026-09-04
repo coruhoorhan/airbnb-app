@@ -283,6 +283,27 @@
         "Repo test suite green",
         "No new BLOCKING findings"
       ]
+    },
+    {
+      "id": "pr18-hardening-followups",
+      "status": "todo",
+      "area": "security",
+      "risk": "low",
+      "title": "PR #18 auditor polish follow-ups",
+      "description": "Address the non-blocking (MEDIUM/LOW) polish findings from the Magda AI auditor review on https://github.com/coruhoorhan/airbnb-app/pull/18. Read the latest auditor review on that PR and implement every MEDIUM/LOW item. Do NOT re-litigate BLOCKING items; those gate the original PR.",
+      "allowed_paths": [
+        "agent_tasks.json",
+        "package-lock.json",
+        "package.json",
+        "server.js",
+        "src",
+        "tests"
+      ],
+      "acceptance": [
+        "All MEDIUM/LOW auditor findings on PR #18 addressed",
+        "Repo test suite green",
+        "No new BLOCKING findings"
+      ]
     }
   ]
 }
