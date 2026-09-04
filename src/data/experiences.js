@@ -1,0 +1,122 @@
+export const INITIAL_EXPERIENCES = [
+  {
+    id: "exp_01",
+    hostId: "usr_host_01",
+    title: "Fatsa Sahilinde Gün Batımı Yat Turu",
+    description: "Fatsa kıyılarında özel yatımızla 3 saatlik büyüleyici bir gün batımı yolculuğu. Karadeniz'in eşsiz manzarası eşliğinde taze mevsim meyveleri, soğuk içecekler ve fotoğrafçılık ipuçlarıyla unutulmaz bir akşam. Deniz kaplumbağalarını ve yunusları gözlemleme şansı.",
+    category: "Deniz & Su Sporları",
+    duration: 180,
+    pricePerPerson: 1250,
+    maxParticipants: 12,
+    location: "Fatsa Sahil Yolu, Yat Limanı",
+    city: "Fatsa",
+    lat: 41.0356,
+    lng: 37.4652,
+    images: JSON.stringify([
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1564419320413-3b0f1e0a8e5a?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1551244072-5d12893278ab?auto=format&fit=crop&w=800&q=80"
+    ]),
+    includes: JSON.stringify(["Tekne turu", "Soğuk içecekler", "Taze meyve", "Can yeleği", "Fotoğraf durakları", "Rehberlik hizmeti"]),
+    avgRating: 4.9,
+    reviewCount: 36,
+    isActive: 1,
+    createdAt: Date.now() - 90 * 86400000
+  },
+  {
+    id: "exp_02",
+    hostId: "usr_host_01",
+    title: "Karadeniz Mutfağı Atölyesi: Hamsi & Kuymak",
+    description: "Fatsalı usta şefler eşliğinde geleneksel Karadeniz mutfağının sırlarını keşfedin. Hamsi tava, kuymak, mısır ekmeği ve laz böreği yapımını öğrenin. Ardından birlikte hazırladığınız yemeklerin tadını çıkarın. Tüm malzemeler ve tarif kartları dahildir.",
+    category: "Yemek & Kültür",
+    duration: 240,
+    pricePerPerson: 1800,
+    maxParticipants: 8,
+    location: "Fatsa Merkez, Cumhuriyet Meydanı No:15",
+    city: "Fatsa",
+    lat: 41.0312,
+    lng: 37.4640,
+    images: JSON.stringify([
+      "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1466637574441-749b8f19452f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=800&q=80"
+    ]),
+    includes: JSON.stringify(["Tüm malzemeler", "Şef rehberliği", "Tarif kartı", "Yemek sonrası çay/kahve", "Önlük ve ekipman"]),
+    avgRating: 4.85,
+    reviewCount: 24,
+    isActive: 1,
+    createdAt: Date.now() - 75 * 86400000
+  },
+  {
+    id: "exp_03",
+    hostId: "usr_host_01",
+    title: "Fatsa Yaylalarında Doğa Yürüyüşü & Kamp",
+    description: "Fatsa'nın yemyeşil yaylalarında rehberli 6 saatlik doğa yürüyüşü. Çağlayanlar, yabani çiçekler ve sisle kaplı vadiler arasında. Mola noktalarında termal çay ve yöresel peynir ikramı. Orta zorluk seviyesinde, başlangıç seviyesine uygun parkurlar.",
+    category: "Doğa & Macera",
+    duration: 360,
+    pricePerPerson: 900,
+    maxParticipants: 15,
+    location: "Fatsa Yaylaları, Bolaman Vadisi Girişi",
+    city: "Fatsa",
+    lat: 40.9562,
+    lng: 37.4982,
+    images: JSON.stringify([
+      "https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80"
+    ]),
+    includes: JSON.stringify(["Rehberlik", "İkramlar", "İlk yardım çantası", "Harita ve rota bilgisi"]),
+    avgRating: 4.7,
+    reviewCount: 19,
+    isActive: 1,
+    createdAt: Date.now() - 60 * 86400000
+  },
+  {
+    id: "exp_04",
+    hostId: "usr_host_01",
+    title: "Fındık Bahçelerinde Fotoğraf Yürüyüşü",
+    description: "Profesyonel bir fotoğrafçı eşliğinde Fatsa'nın meşhur fındık bahçelerinde, tarihi taş evler arasında ve kıyı boyunca fotoğraf yürüyüşü. Kompozisyon, ışık kullanımı ve manzara fotoğrafçılığı üzerine ipuçları. DSLR veya cep telefonu ile katılım mümkün.",
+    category: "Sanat & Fotoğraf",
+    duration: 150,
+    pricePerPerson: 750,
+    maxParticipants: 10,
+    location: "Fatsa, Evkaf Mahallesi",
+    city: "Fatsa",
+    lat: 41.0289,
+    lng: 37.4712,
+    images: JSON.stringify([
+      "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=800&q=80"
+    ]),
+    includes: JSON.stringify(["Profesyonel fotoğrafçı rehberliği", "Çay/kahve ikramı", "Dijital fotoğraf albümü"]),
+    avgRating: 4.95,
+    reviewCount: 14,
+    isActive: 1,
+    createdAt: Date.now() - 45 * 86400000
+  },
+  {
+    id: "exp_05",
+    hostId: "usr_host_01",
+    title: "Bolaman Vadisi'nde ATV Safari",
+    description: "Fatsa'nın en heyecanlı macerası! Bolaman Vadisi boyunca 2 saatlik ATV safari. Derelerden geçin, yaylalara tırmanın ve muhteşem manzaraların tadını çıkarın. Güvenlik ekipmanları ve kısa eğitim dahildir. Minimum 16 yaş.",
+    category: "Doğa & Macera",
+    duration: 120,
+    pricePerPerson: 2200,
+    maxParticipants: 6,
+    location: "Bolaman Vadisi, Fatsa-Ünye Yolu",
+    city: "Fatsa",
+    lat: 40.9842,
+    lng: 37.4522,
+    images: JSON.stringify([
+      "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1517400508447-f8dd1b3e476e?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1547447134-e1e1e2c7e3b0?auto=format&fit=crop&w=800&q=80"
+    ]),
+    includes: JSON.stringify(["ATV kirası", "Kask ve güvenlik ekipmanı", "Kısa eğitim", "Rehber", "Su ve enerji bisküvisi"]),
+    avgRating: 4.6,
+    reviewCount: 8,
+    isActive: 1,
+    createdAt: Date.now() - 30 * 86400000
+  }
+];
