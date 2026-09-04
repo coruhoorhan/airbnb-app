@@ -1,5 +1,7 @@
 
 
+let globalCsrfToken = "";
+
 const originalFetch = window.fetch;
 window.fetch = async (...args) => {
   let [resource, config] = args;
@@ -12,11 +14,10 @@ window.fetch = async (...args) => {
 
     const method = config.method ? config.method.toUpperCase() : 'GET';
     if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
-      const csrfToken = document.cookie.split('; ').find(row => row.startsWith('csrfToken='))?.split('=')[1];
-      if (csrfToken) {
+      if (globalCsrfToken) {
         config.headers = {
           ...config.headers,
-          'x-csrf-token': csrfToken
+          'x-csrf-token': globalCsrfToken
         };
       }
     }
@@ -27,12 +28,27 @@ window.fetch = async (...args) => {
       args[0] = new Request(resource, config);
     }
   }
-  return originalFetch(...args);
+
+  const response = await originalFetch(...args);
+
+  // If the server rotates the token and sends it back in a header or we just called /api/auth/csrf
+  const newCsrf = response.headers.get('x-csrf-token');
+  if (newCsrf) {
+    globalCsrfToken = newCsrf;
+  }
+
+  return response;
 };
 
-
 // Fetch initial CSRF token
-originalFetch('/api/auth/csrf', {credentials: 'include'}).catch(console.error);
+originalFetch('/api/auth/csrf', {credentials: 'include'})
+  .then(res => res.json())
+  .then(data => {
+    if (data.success && data.csrfToken) {
+      globalCsrfToken = data.csrfToken;
+    }
+  })
+  .catch(console.error);
 
 import React from "react";
 import ReactDOM from "react-dom/client";
