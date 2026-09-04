@@ -1,0 +1,33 @@
+name: 4. Jules Revision Trigger (auditor feedback loop)
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to revise per auditor findings"
+        required: true
+        default: "10"
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  revise:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Open Jules revision session on PR branch
+        env:
+          PR_NUMBER: ${{ inputs.pr_number }}
+          TARGET_REPO: ${{ github.repository }}
+          GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+        run: python3 scripts/jules_revise.py
