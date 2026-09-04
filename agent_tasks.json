@@ -87,7 +87,7 @@
     },
     {
       "id": "feat-02-secure-auth",
-      "status": "todo",
+      "status": "done",
       "area": "backend",
       "risk": "high",
       "title": "OAuth2 ve JWT Tabanlı Güvenli Kimlik Doğrulama",
