@@ -1,0 +1,46 @@
+name: 5. Queue Keeper (reconcile + ideate)
+
+on:
+  schedule:
+    - cron: "0 6 * * 0"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "reconcile or ideate"
+        required: false
+        default: "reconcile"
+      dry_run:
+        description: "Dry run (decide only, write nothing)"
+        required: false
+        default: "true"
+
+permissions:
+  contents: write
+
+jobs:
+  keep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run queue keeper
+        env:
+          MODE: ${{ inputs.mode || 'reconcile' }}
+          TARGET_REPO: ${{ github.repository }}
+          GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_BASE_URL: https://api.inceptionlabs.ai/v1
+          OPENAI_MODEL: mercury-2
+          MAX_IDEAS: "2"
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry_run }}" = "true" ]; then
+            python3 scripts/jules_queue_keeper.py --dry-run
+          else
+            python3 scripts/jules_queue_keeper.py
+          fi
