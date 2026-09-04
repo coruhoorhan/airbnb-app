@@ -33,6 +33,12 @@ def gh(path, token, method="GET", payload=None):
         return json.loads(raw) if raw.strip() else {}
 
 
+def post_pr_comment(repo, token, pr_number, body):
+    gh(f"/repos/{repo}/issues/{pr_number}/comments", token,
+       method="POST", payload={"body": body})
+    print("Acknowledgment comment posted to PR.")
+
+
 def main():
     pr_number = os.getenv("PR_NUMBER") or (sys.argv[1] if len(sys.argv) > 1 else "")
     repo = os.getenv("TARGET_REPO", "coruhoorhan/airbnb-app")
@@ -58,6 +64,9 @@ def main():
     if len(matches) >= max_rev:
         print(f"CIRCUIT BREAKER: PR #{pr_number} rejected {len(matches)} times. "
               "Needs human review; will not open another session.")
+        post_pr_comment(repo, gh_token, pr_number,
+                        f"🤖 Magda: PR #{pr_number} {len(matches)} kez reddedildi, "
+                        "otomatik revizyon durdu. `needs-human-review` — bir insanın bakması gerekiyor.")
         sys.exit(2)
     findings = ""
     for r in matches:
@@ -96,6 +105,12 @@ def main():
         print(f"Jules session creation failed: HTTP {e.code} {e.read().decode()[:300]}")
         sys.exit(1)
     print(f"Revision session created: {data.get('name')} url={data.get('url')}")
+    post_pr_comment(
+        repo, gh_token, pr_number,
+        f"🤖 Magda: denetçi raporu görüldü, revizyon başlatıldı.\n\n"
+        f"- Red sayısı: {len(matches)}\n"
+        f"- Revizyon oturumu: {data.get('url') or data.get('name')}\n"
+        f"- Dal: `{head_ref}` (aynı dala düzeltme pushlanacak, yeni PR açılmayacak)")
 
 
 if __name__ == "__main__":
