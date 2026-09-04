@@ -11,7 +11,7 @@ export const SORT_OPTIONS = [
 export function SortBar({ sortOrder = "recommended", onSortChange }) {
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      <span className="flex items-center gap-1.5 text-xs font-bold text-charcoal-light dark:text-gray-400 mr-1 shrink-0">
+      <span className="flex items-center gap-1.5 text-xs font-bold text-charcoal-light dark:text-gray-600 mr-1 shrink-0">
         <ArrowUpDown className="w-4 h-4 text-airbnb" />
         Sırala:
       </span>

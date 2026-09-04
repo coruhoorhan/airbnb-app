@@ -40,9 +40,7 @@ export function SearchModal({ isOpen, onClose, onSearch }) {
       <div className="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl flex flex-col gap-6 relative animate-in zoom-in-95 duration-150">
         <div className="flex items-center justify-between border-b border-charcoal-border/50 pb-4">
           <h3 className="text-lg font-bold text-charcoal">Filtreler ve Arama</h3>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-charcoal-bg">
-            <X className="w-5 h-5 text-charcoal" />
-          </button>
+          <button aria-label="X" onClick={onClose} className="p-2 rounded-full hover:bg-charcoal-bg"> <X /> </button>
         </div>
 
         <div className="flex flex-col gap-4">

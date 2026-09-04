@@ -412,13 +412,11 @@ export function BookingWidget({ listing, bookings = [], availability = [], onBoo
                 </div>
               </div>
             </div>
-            <button
+            <button aria-label="X"
               onClick={handleRemoveCoupon}
               className="p-1 text-emerald-700 hover:text-rose-600 hover:bg-emerald-100 rounded-lg transition-colors cursor-pointer"
               title="Kuponu Kaldır"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            > <X /> </button>
           </div>
         )}
       </div>

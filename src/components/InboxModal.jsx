@@ -25,9 +25,7 @@ export function InboxModal({ isOpen, onClose, conversations = [], onOpenConversa
               <p className="text-[11px] text-charcoal-light font-medium">{conversations.length} sohbet</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-white transition-colors">
-            <X className="w-5 h-5 text-charcoal" />
-          </button>
+          <button aria-label="X" onClick={onClose} className="p-2 rounded-full hover:bg-white transition-colors"> <X /> </button>
         </div>
 
         {/* Conversation List */}

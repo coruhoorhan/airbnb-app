@@ -149,7 +149,7 @@
     },
     {
       "id": "feat-05-accessibility-audit",
-      "status": "todo",
+      "status": "done",
       "area": "frontend",
       "risk": "low",
       "title": "WCAG 2.1 AA Uyumlu Erişilebilirlik Kontrolleri",

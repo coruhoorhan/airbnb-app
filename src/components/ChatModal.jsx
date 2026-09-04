@@ -44,9 +44,7 @@ export function ChatModal({ isOpen, onClose, listing, currentUser, messages = []
               <p className="text-[11px] text-charcoal-light truncate max-w-[200px] sm:max-w-[240px] font-medium">{listing.title}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-white transition-colors">
-            <X className="w-5 h-5 text-charcoal" />
-          </button>
+          <button aria-label="X" onClick={onClose} className="p-2 rounded-full hover:bg-white transition-colors"> <X /> </button>
         </div>
 
         {/* Message Bubble Feed */}
@@ -95,13 +93,11 @@ export function ChatModal({ isOpen, onClose, listing, currentUser, messages = []
             onChange={(e) => setInputText(e.target.value)}
             className="flex-1 bg-charcoal-bg rounded-xl px-4 py-2.5 text-xs font-medium text-charcoal outline-none focus:ring-1 focus:ring-charcoal"
           />
-          <button 
+          <button aria-label="Send"
             type="submit"
             disabled={!inputText.trim()}
             className="p-2.5 bg-airbnb text-white rounded-xl hover:bg-airbnb-dark disabled:opacity-40 transition-all"
-          >
-            <Send className="w-4 h-4" />
-          </button>
+          > <Send /> </button>
         </form>
         {sendError && (
           <p className="px-4 pb-2 text-[11px] font-semibold text-rose-600">{sendError}</p>

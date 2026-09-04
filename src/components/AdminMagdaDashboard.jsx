@@ -110,7 +110,7 @@ export function AdminMagdaDashboard({ onClose }) {
                   7/24 Watchdog Canlı
                 </span>
               </div>
-              <p className="text-xs text-gray-400 mt-0.5">Autonomous Self-Healing Architecture & Task Engine</p>
+              <p className="text-xs text-gray-600 mt-0.5">Autonomous Self-Healing Architecture & Task Engine</p>
             </div>
           </div>
 
@@ -123,12 +123,10 @@ export function AdminMagdaDashboard({ onClose }) {
               <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
               <span>Otonom Tara</span>
             </button>
-            <button
+            <button aria-label="X"
               onClick={onClose}
-              className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-full transition"
-            >
-              <X className="w-5 h-5" />
-            </button>
+              className="p-1.5 text-gray-600 hover:text-white hover:bg-gray-800 rounded-full transition"
+            > <X /> </button>
           </div>
         </div>
 
@@ -338,7 +336,7 @@ export function AdminMagdaDashboard({ onClose }) {
                         </div>
                         <p className="text-xs text-gray-600 leading-relaxed">{t.description}</p>
                         {t.allowed_paths && (
-                          <div className="text-[10px] text-gray-400 font-mono">
+                          <div className="text-[10px] text-gray-600 font-mono">
                             <span className="text-gray-600 font-sans font-semibold">İzinli Dosyalar:</span> {t.allowed_paths.join(", ")}
                           </div>
                         )}
@@ -356,7 +354,7 @@ export function AdminMagdaDashboard({ onClose }) {
                     </div>
                   ))
                 ) : (
-                  <div className="p-8 text-center bg-white rounded-xl border border-gray-200 text-gray-400 text-xs">
+                  <div className="p-8 text-center bg-white rounded-xl border border-gray-200 text-gray-600 text-xs">
                     Henüz görev bulunmuyor. Yeni bir görev ekleyebilir veya otonom taramayı başlatabilirsiniz.
                   </div>
                 )}
@@ -497,7 +495,7 @@ export function AdminMagdaDashboard({ onClose }) {
 
               {/* Search Box */}
               <div className="bg-white p-3 rounded-xl border border-gray-200 flex items-center gap-2">
-                <Code className="w-4 h-4 text-gray-400" />
+                <Code className="w-4 h-4 text-gray-600" />
                 <input
                   type="text"
                   placeholder="Rota, fonksiyon veya bileşen ara (Örn: /api/bookings, insertPayment, ListingCard)..."
@@ -506,7 +504,7 @@ export function AdminMagdaDashboard({ onClose }) {
                   className="flex-1 text-xs outline-none bg-transparent"
                 />
                 {codeSearch && (
-                  <button onClick={() => setCodeSearch("")} className="text-gray-400 hover:text-gray-600 text-xs">Temizle</button>
+                  <button onClick={() => setCodeSearch("")} className="text-gray-600 hover:text-gray-600 text-xs">Temizle</button>
                 )}
               </div>
 
@@ -571,7 +569,7 @@ export function AdminMagdaDashboard({ onClose }) {
                         {r.has_rate_limiting ? (
                           <span className="text-emerald-600 text-[9px] font-bold">RateLimited</span>
                         ) : (
-                          <span className="text-gray-400 text-[9px]">Unprotected</span>
+                          <span className="text-gray-600 text-[9px]">Unprotected</span>
                         )}
                       </div>
                     ))}
@@ -587,7 +585,7 @@ export function AdminMagdaDashboard({ onClose }) {
                     .map((fn, i) => (
                       <div key={i} className="p-1.5 bg-gray-50 rounded border border-gray-100">
                         <span className="text-purple-700 font-bold">{fn.name}</span>
-                        <span className="text-gray-400 text-[9px]">({fn.parameters.join(', ')})</span>
+                        <span className="text-gray-600 text-[9px]">({fn.parameters.join(', ')})</span>
                       </div>
                     ))}
                 </div>
@@ -602,7 +600,7 @@ export function AdminMagdaDashboard({ onClose }) {
                     .map((comp, i) => (
                       <div key={i} className="p-1.5 bg-gray-50 rounded border border-gray-100">
                         <div className="text-gray-900 font-bold">{comp.component_name}</div>
-                        <div className="text-gray-400 text-[9px] truncate">{comp.file} ({comp.lines_of_code} satır)</div>
+                        <div className="text-gray-600 text-[9px] truncate">{comp.file} ({comp.lines_of_code} satır)</div>
                       </div>
                     ))}
                 </div>

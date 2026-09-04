@@ -31,12 +31,10 @@ export function PhotoLightbox({ images = [], startIndex = 0, onClose }) {
   return (
     <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex flex-col animate-in fade-in duration-200">
       {/* Close button */}
-      <button
+      <button aria-label="X"
         onClick={onClose}
         className="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-      >
-        <X className="w-6 h-6" />
-      </button>
+      > <X /> </button>
 
       {/* Index indicator */}
       <div className="absolute top-4 left-4 z-10 text-white/80 text-xs font-mono font-bold bg-black/30 px-3 py-1.5 rounded-full">
@@ -47,12 +45,10 @@ export function PhotoLightbox({ images = [], startIndex = 0, onClose }) {
       <div className="flex-1 flex items-center justify-center relative">
         {/* Prev button */}
         {images.length > 1 && (
-          <button
+          <button aria-label="ChevronLeft"
             onClick={goPrev}
             className="absolute left-4 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
+          > <ChevronLeft /> </button>
         )}
 
         <img
@@ -63,12 +59,10 @@ export function PhotoLightbox({ images = [], startIndex = 0, onClose }) {
 
         {/* Next button */}
         {images.length > 1 && (
-          <button
+          <button aria-label="ChevronRight"
             onClick={goNext}
             className="absolute right-4 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
+          > <ChevronRight /> </button>
         )}
       </div>
 

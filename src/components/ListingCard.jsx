@@ -68,7 +68,7 @@ export function ListingCard({ listing, onSelect, isFavorite, onToggleFavorite, c
       className={`flex flex-col gap-3 group cursor-pointer select-none animate-in fade-in duration-300 ${
         featured ? "sm:col-span-2 lg:col-span-2 lg:row-span-2" : ""
       }`}
-    >
+     role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}>
       {/* Cinematic Image Container with 3D Hover Depth */}
       <div className={`relative w-full overflow-hidden rounded-3xl bg-charcoal-bg shadow-border group-hover:shadow-xl transition-shadow duration-500 ${
         featured ? "aspect-[16/10] lg:aspect-[16/9]" : "aspect-[4/3] sm:aspect-square"
@@ -100,19 +100,11 @@ export function ListingCard({ listing, onSelect, isFavorite, onToggleFavorite, c
         </div>
 
         {/* Favorite Heart Button */}
-        <button
+        <button aria-label="Heart"
           onClick={handleFavoriteClick}
           className="absolute top-3.5 right-3.5 p-2.5 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-md active:scale-90 transition-[background-color,transform] focus:outline-none"
           title={isFavorite ? "Favorilerden Çıkar" : "Favorilere Ekle"}
-        >
-          <Heart
-            className={`w-5 h-5 transition-colors drop-shadow-md ${
-              isFavorite
-                ? "fill-airbnb text-airbnb"
-                : "fill-white/20 text-white stroke-[2]"
-            }`}
-          />
-        </button>
+        > <Heart /> </button>
         {/* Price Watch Button */}
         <button
           onClick={handlePriceWatch}
@@ -129,18 +121,14 @@ export function ListingCard({ listing, onSelect, isFavorite, onToggleFavorite, c
         {/* Carousel Arrows */}
         {images.length > 1 && (
           <>
-            <button
+            <button aria-label="ChevronLeft"
               onClick={handlePrevImage}
               className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 shadow-md flex items-center justify-center text-charcoal opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white hover:scale-105 active:scale-95"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
+            > <ChevronLeft /> </button>
+            <button aria-label="ChevronRight"
               onClick={handleNextImage}
               className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 shadow-md flex items-center justify-center text-charcoal opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white hover:scale-105 active:scale-95"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
+            > <ChevronRight /> </button>
 
             {/* Pagination Indicators */}
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/30 backdrop-blur-xs px-2 py-1 rounded-full">
@@ -170,11 +158,11 @@ export function ListingCard({ listing, onSelect, isFavorite, onToggleFavorite, c
           <span>{listing.avgRating > 0 ? listing.avgRating.toFixed(2) : "5.0"}</span>
         </div>
       </div>
-      <p className={`text-charcoal-light dark:text-gray-400 font-medium line-clamp-1 ${featured ? "text-sm lg:text-base" : "text-xs"}`}>
+      <p className={`text-charcoal-light dark:text-gray-600 font-medium line-clamp-1 ${featured ? "text-sm lg:text-base" : "text-xs"}`}>
         {listing.title}
       </p>
       <div className="flex items-baseline justify-between pt-1 border-t border-charcoal-border/40 mt-1">
-        <span className="text-[11px] font-mono text-charcoal-light dark:text-gray-400">
+        <span className="text-[11px] font-mono text-charcoal-light dark:text-gray-600">
           Gecelik Fiyat:
         </span>
         <div className="flex items-baseline gap-1.5 font-mono">
@@ -193,7 +181,7 @@ export function ListingCard({ listing, onSelect, isFavorite, onToggleFavorite, c
               {formatCurrency(effectivePrice, currency)}
             </span>
           )}
-          <span className="text-charcoal-light dark:text-gray-400 text-[11px] font-normal">/gece</span>
+          <span className="text-charcoal-light dark:text-gray-600 text-[11px] font-normal">/gece</span>
         </div>
       </div>
     </div>
