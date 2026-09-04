@@ -1,6 +1,9 @@
 import "express-async-errors";
 import { createHandler } from "graphql-http/lib/use/express";
-import { schema, rootValue } from "./src/lib/graphqlSchema.js";
+import DataLoader from "dataloader";
+import { schema } from "./src/lib/graphqlSchema.js";
+import { rootValue } from "./src/lib/graphqlResolvers.js";
+import { getUsersByIds, getReviewsForListings } from "./src/lib/db.js";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -119,7 +122,6 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
-app.use("/graphql", createHandler({ schema, rootValue }));
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -128,6 +130,72 @@ const authRateLimiter = createRateLimiter({
   maxRequests: 10,
   message: "Çok fazla giriş denemesi. Lütfen 1 dakika bekleyin."
 });
+
+app.use("/graphql", authRateLimiter, authMiddleware, createHandler({
+  schema,
+  rootValue,
+  context: (req) => {
+    return {
+      user: req.raw.user,
+      userLoader: new DataLoader(async (ids) => {
+        const users = getUsersByIds(ids);
+        const userMap = users.reduce((acc, user) => { acc[user.id] = user; return acc; }, {});
+        return ids.map(id => userMap[id] || null);
+      }),
+      reviewsLoader: new DataLoader(async (listingIds) => {
+        const reviews = getReviewsForListings(listingIds);
+        const reviewsMap = reviews.reduce((acc, review) => {
+          if (!acc[review.listingId]) acc[review.listingId] = [];
+          acc[review.listingId].push(review);
+          return acc;
+        }, {});
+        return listingIds.map(id => reviewsMap[id] || []);
+      })
+    };
+  },
+  formatError: (err) => ({
+    message: err.message,
+    ...(process.env.NODE_ENV !== "production" && { stack: err.stack })
+  }),
+  errorFormatter: (err) => ({
+    message: err.message,
+    ...(process.env.NODE_ENV !== "production" && { stack: err.stack })
+  })
+}));
+
+
+app.use("/graphql", authRateLimiter, authMiddleware, createHandler({
+  schema,
+  rootValue,
+  context: (req) => {
+    return {
+      user: req.raw.user,
+      userLoader: new DataLoader(async (ids) => {
+        const users = getUsersByIds(ids);
+        const userMap = users.reduce((acc, user) => { acc[user.id] = user; return acc; }, {});
+        return ids.map(id => userMap[id] || null);
+      }),
+      reviewsLoader: new DataLoader(async (listingIds) => {
+        const reviews = getReviewsForListings(listingIds);
+        const reviewsMap = reviews.reduce((acc, review) => {
+          if (!acc[review.listingId]) acc[review.listingId] = [];
+          acc[review.listingId].push(review);
+          return acc;
+        }, {});
+        return listingIds.map(id => reviewsMap[id] || []);
+      })
+    };
+  },
+  formatError: (err) => ({
+    message: err.message,
+    ...(process.env.NODE_ENV !== "production" && { stack: err.stack })
+  }),
+  errorFormatter: (err) => ({
+    message: err.message,
+    ...(process.env.NODE_ENV !== "production" && { stack: err.stack })
+  })
+}));
+
 
 // --- Auth Endpoints ---
 

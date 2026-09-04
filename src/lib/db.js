@@ -1016,3 +1016,15 @@ export function insertUser(u) {
     createdAt: Date.now()
   });
 }
+
+export function getUsersByIds(ids) {
+  if (!ids || ids.length === 0) return [];
+  const placeholders = ids.map(() => '?').join(',');
+  return db.prepare(`SELECT * FROM users WHERE id IN (${placeholders})`).all(...ids);
+}
+
+export function getReviewsForListings(listingIds) {
+  if (!listingIds || listingIds.length === 0) return [];
+  const placeholders = listingIds.map(() => '?').join(',');
+  return db.prepare(`SELECT * FROM reviews WHERE listingId IN (${placeholders})`).all(...listingIds);
+}
