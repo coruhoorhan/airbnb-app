@@ -5,10 +5,19 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   test-and-merge:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.user.login == 'google-jules[bot]' || contains(github.event.pull_request.labels.*.name, 'jules')
+    if: >
+      github.event.pull_request.user.login == 'google-jules[bot]' ||
+      github.event.pull_request.user.login == 'coruhoorhan' ||
+      contains(github.event.pull_request.labels.*.name, 'jules') ||
+      startsWith(github.event.pull_request.head.ref, 'fix-') ||
+      startsWith(github.event.pull_request.head.ref, 'feat-')
     
     steps:
       - name: Checkout repository
