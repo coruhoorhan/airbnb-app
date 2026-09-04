@@ -41,7 +41,7 @@ export function ChatModal({ isOpen, onClose, listing, currentUser, messages = []
                   {hostRole}
                 </span>
               </h3>
-              <p className="text-[11px] text-charcoal-light truncate max-w-[240px] font-medium">{listing.title}</p>
+              <p className="text-[11px] text-charcoal-light truncate max-w-[200px] sm:max-w-[240px] font-medium">{listing.title}</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-white transition-colors">

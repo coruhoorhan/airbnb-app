@@ -129,7 +129,7 @@
     },
     {
       "id": "feat-04-responsive-ui",
-      "status": "todo",
+      "status": "done",
       "area": "frontend",
       "risk": "low",
       "title": "Mobil ve Tablet İçin Tamamen Duyarlı Tasarım",
