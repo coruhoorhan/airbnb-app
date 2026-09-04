@@ -1,0 +1,27 @@
+name: 7. Loop Self-Test (automation QA)
+
+on:
+  push:
+    branches: [main]
+    paths: ["scripts/*.py", ".github/workflows/*.yml"]
+  pull_request:
+    branches: [main]
+    paths: ["scripts/*.py", ".github/workflows/*.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Compile all automation scripts
+        run: python3 -m py_compile scripts/*.py && echo "py_compile OK"
+
+      - name: Parse all workflow files
+        run: |
+          python3 -c "import yaml,glob; [yaml.safe_load(open(f)) for f in glob.glob('.github/workflows/*.yml')]; print('YAML OK')"

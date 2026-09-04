@@ -1,0 +1,44 @@
+name: 6. Loop Sentinel (proactive health)
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Probe loop health
+        id: probe_step
+        env:
+          TARGET_REPO: ${{ github.repository }}
+          GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+        run: python3 scripts/loop_sentinel.py
+
+      - name: File health issue on red
+        if: failure() && steps.probe_step.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="[magda] Loop health RED"
+          EXISTING=$(gh issue list --repo "${{ github.repository }}" --state open --search "$TITLE in:title" --json number --jq '.[0].number')
+          BODY="Sentinel probe failed on $(date -u +%FT%TZ). See run ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} for details."
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --repo "${{ github.repository }}" --body "$BODY"
+          else
+            gh issue create --repo "${{ github.repository }}" --title "$TITLE" --body "$BODY" --label "needs-human-review" || true
+          fi
