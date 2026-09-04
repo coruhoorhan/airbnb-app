@@ -37,7 +37,7 @@ jobs:
           OPENAI_MODEL: mercury-2
           GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
           TARGET_REPO: ${{ github.repository }}
-          TARGET_TITLE: Autonomous Airbnb,Revise PR #
+          TARGET_TITLE: Autonomous Airbnb,Revise airbnb-app PR,Revise PR #
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry_run }}" = "true" ]; then
             python3 scripts/jules_responder.py --dry-run

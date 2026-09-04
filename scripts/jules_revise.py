@@ -118,7 +118,7 @@ def main():
     findings = findings[:MAX_FINDINGS_CHARS]
     print(f"Auditor findings: {len(findings)} chars.")
 
-    rev_title = f"Revise PR #{pr_number} per auditor findings"
+    rev_title = f"Revise {repo.split('/')[-1]} PR #{pr_number} per auditor findings"
     if os.getenv("TRIGGER", "manual") == "auto" and active_sibling_exists(jules_key, rev_title):
         print("A sibling revision session is already active; skipping duplicate.")
         sys.exit(0)
