@@ -207,7 +207,8 @@ def main():
     model = os.getenv("OPENAI_MODEL", "mercury-2")
     repo = os.getenv("TARGET_REPO", "coruhoorhan/airbnb-app")
     gh_token = os.getenv("GH_PAT") or os.getenv("GITHUB_TOKEN", "")
-    target_title = os.getenv("TARGET_TITLE", "Autonomous Airbnb")
+    target_titles = [t.strip().lower()
+                   for t in os.getenv("TARGET_TITLE", "Autonomous Airbnb").split(",")]
     max_age = float(os.getenv("MAX_AGE_HOURS", "2"))
     max_answers = int(os.getenv("MAX_ANSWERS", "3"))
 
@@ -228,7 +229,7 @@ def main():
         age_h = parse_age_hours(update_time)
         print(f"- {sid} | {title[:60]} | state={state} | age={age_h:.1f}h")
 
-        if target_title.lower() not in (title or "").lower():
+        if not any(tt in (title or "").lower() for tt in target_titles):
             continue
         if age_h > max_age:
             print("  skip: stale session."); continue

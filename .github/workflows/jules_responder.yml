@@ -9,6 +9,9 @@ on:
         description: "Dry run (list only, send nothing)"
         required: false
         default: "true"
+  workflow_run:
+    workflows: ["1. Auto-Validate and Merge Jules PRs", "2. Trigger Next Autonomous Task via Jules API", "4. Jules Revision Trigger (auditor feedback loop)"]
+    types: [completed]
 
 permissions:
   contents: read
@@ -34,6 +37,7 @@ jobs:
           OPENAI_MODEL: mercury-2
           GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
           TARGET_REPO: ${{ github.repository }}
+          TARGET_TITLE: Autonomous Airbnb,Revise PR #
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry_run }}" = "true" ]; then
             python3 scripts/jules_responder.py --dry-run
