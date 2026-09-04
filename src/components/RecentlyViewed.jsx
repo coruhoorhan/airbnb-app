@@ -18,7 +18,7 @@ export function RecentlyViewed({ listings = [], onSelect, favorites = [], onTogg
       </div>
       <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 snap-x">
         {listings.map((l) => (
-          <div key={l.id} className="min-w-[270px] max-w-[270px] snap-start">
+          <div key={l.id} className="min-w-[240px] sm:min-w-[270px] max-w-[240px] sm:max-w-[270px] snap-start">
             <ListingCard
               listing={l}
               onSelect={onSelect}

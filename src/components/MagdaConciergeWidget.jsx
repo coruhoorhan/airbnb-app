@@ -92,7 +92,7 @@ export function MagdaConciergeWidget({ onSelectListing }) {
 
       {/* Clean Guest Chat Window */}
       {isOpen && (
-        <div className="w-[380px] sm:w-[420px] h-[560px] bg-white rounded-3xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div className="w-[calc(100vw-2rem)] sm:w-[380px] md:w-[420px] h-[calc(100vh-8rem)] max-h-[560px] bg-white rounded-3xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
           
           {/* Header */}
           <div className="px-5 py-4 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 text-white flex items-center justify-between shadow-md">
