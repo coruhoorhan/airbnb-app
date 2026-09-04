@@ -1,7 +1,35 @@
 {
+  "schema_version": 1,
   "project": "airbnb-fatsa-clone",
-  "version": "1.0.0",
-  "updated_at": 1788443436.1772363,
+  "task_source_priority": [
+    "agent_tasks.json",
+    "AGENTS.md",
+    "MASTER_ROADMAP.md"
+  ],
+  "risk_levels": [
+    "low",
+    "medium",
+    "high",
+    "critical"
+  ],
+  "merge_policy": {
+    "low": "auto_merge_after_tests",
+    "medium": "auto_merge_after_tests",
+    "high": "human_review_required",
+    "critical": "manual_only"
+  },
+  "replenishment_policy": {
+    "minimum_todo_tasks": 3,
+    "batch_size": 3,
+    "always_add_tasks": false,
+    "tasks_per_run": 1,
+    "allowed_risks_for_generated_tasks": [
+      "low",
+      "medium"
+    ],
+    "instruction": "Add new todo tasks ONLY when the pool falls below minimum_todo_tasks.",
+    "max_todo_tasks": 50
+  },
   "tasks": [
     {
       "id": "task-01-database-schema",
@@ -16,7 +44,8 @@
       ],
       "acceptance": [
         "All tables created with foreign key references."
-      ]
+      ],
+      "risk": "low"
     },
     {
       "id": "auto-fix-missing_rate_limiter",
