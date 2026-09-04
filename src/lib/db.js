@@ -997,6 +997,10 @@ export function getUserByEmail(email) {
   return db.prepare("SELECT * FROM users WHERE email = ?").get(email);
 }
 
+export function getUserById(id) {
+  return db.prepare("SELECT * FROM users WHERE id = ?").get(id);
+}
+
 
 export function insertUser(u) {
   db.prepare(

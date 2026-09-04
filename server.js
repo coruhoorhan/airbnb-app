@@ -1,4 +1,6 @@
 import "express-async-errors";
+import { createHandler } from "graphql-http/lib/use/express";
+import { schema, rootValue } from "./src/lib/graphqlSchema.js";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -116,6 +118,9 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(express.json());
+
+app.use("/graphql", createHandler({ schema, rootValue }));
+
 app.use(express.urlencoded({ extended: true }));
 
 const authRateLimiter = createRateLimiter({
