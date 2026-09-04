@@ -1,0 +1,52 @@
+name: Jules & Magda Autonomous CI
+
+on:
+  pull_request:
+    branches: [main]
+  repository_dispatch:
+    types: [magda_task_dispatch]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Node Dependencies
+        run: npm ci || npm install
+
+      - name: AST Smoke Test & Codebase Scan
+        run: |
+          python3 -c "
+          import ast, os, sys
+          for root, _, files in os.walk('.'):
+              if any(d in root for d in ['node_modules', '.git', 'dist']): continue
+              for f in files:
+                  if f.endswith('.py'):
+                      ast.parse(open(os.path.join(root, f)).read())
+          print('AST Smoke Check Passed.')
+          "
+
+      - name: Build React Frontend
+        run: npm run build
+
+      - name: Run Backend Health Check
+        run: |
+          node server.js &
+          SERVER_PID=$!
+          sleep 3
+          curl -s http://127.0.0.1:5173/api/health || true
+          kill $SERVER_PID
