@@ -122,6 +122,12 @@ const messageRateLimiter = createRateLimiter({
   message: "Mesaj gönderme isteği sınırına ulaşıldı."
 });
 
+const listingsRateLimiter = createRateLimiter({
+  windowMs: 60000,
+  maxRequests: 30,
+  message: "İlan oluşturma isteği sınırına ulaşıldı. Lütfen biraz sonra tekrar deneyin."
+});
+
 const sseClients = new Map(); // listingId → Set<res>
 
 function broadcastToListing(listingId, message) {
@@ -263,7 +269,7 @@ app.get("/api/listings/:id", (req, res) => {
   });
 });
 
-app.post("/api/listings", (req, res) => {
+app.post("/api/listings", listingsRateLimiter, (req, res) => {
   const newId = `list_${Date.now()}`;
   const created = insertListing({
     ...req.body,

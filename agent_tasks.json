@@ -51,7 +51,7 @@
   "tasks": [
     {
       "id": "auto-fix-missing_rate_limiter",
-      "status": "todo",
+      "status": "done",
       "area": "security",
       "risk": "medium",
       "title": "Missing Rate Limiter on POST /api/listings",
