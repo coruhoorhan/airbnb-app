@@ -30,7 +30,7 @@
     "instruction": "Add new todo tasks ONLY when the pool falls below minimum_todo_tasks.",
     "max_todo_tasks": 50
   },
-  "tasks": [
+  "archived_tasks": [
     {
       "id": "task-01-database-schema",
       "status": "done",
@@ -40,13 +40,15 @@
       "allowed_paths": [
         "src/lib/db.js",
         "server.js",
-        "airbnb_tasks.json"
+        "agent_tasks.json"
       ],
       "acceptance": [
         "All tables created with foreign key references."
       ],
       "risk": "low"
-    },
+    }
+  ],
+  "tasks": [
     {
       "id": "auto-fix-missing_rate_limiter",
       "status": "todo",
@@ -56,7 +58,7 @@
       "description": "Endpoint POST /api/listings performs mutations without rate limiting middleware.",
       "allowed_paths": [
         "server.js",
-        "airbnb_tasks.json"
+        "agent_tasks.json"
       ],
       "acceptance": [
         "Add rate limiter middleware to POST /api/listings"
@@ -73,7 +75,8 @@
       "description": "Doluluk oranı, mevsimsellik ve talep yoğunluğuna göre optimal gecelik fiyat hesaplayan akıllı motor.",
       "allowed_paths": [
         "server.js",
-        "src/lib/pricingEngine.js"
+        "src/lib/pricingEngine.js",
+        "agent_tasks.json"
       ],
       "acceptance": [
         "Fiyat öneri API'si doğru oranları döner.",
@@ -92,7 +95,8 @@
       "allowed_paths": [
         "server.js",
         "src/lib/auth.js",
-        "src/lib/db.js"
+        "src/lib/db.js",
+        "agent_tasks.json"
       ],
       "acceptance": [
         "OAuth2 akışı sorunsuz çalışır.",
@@ -112,7 +116,8 @@
       "allowed_paths": [
         "server.js",
         "src/lib/graphqlSchema.js",
-        "src/lib/db.js"
+        "src/lib/db.js",
+        "agent_tasks.json"
       ],
       "acceptance": [
         "/graphql endpoint aktif ve schema döner.",
@@ -131,7 +136,8 @@
       "description": "Tailwind CSS ve media query'lerle tüm bileşenlerin mobil, tablet ve desktop ekranlarda optimal görünüm ve etkileşim sağlaması.",
       "allowed_paths": [
         "src/components/",
-        "src/styles/tailwind.config.js"
+        "src/styles/tailwind.config.js",
+        "agent_tasks.json"
       ],
       "acceptance": [
         "Tüm sayfalar 320px-2560px aralığında kırılma hatası yok.",
@@ -150,7 +156,8 @@
       "description": "React bileşenlerine ARIA etiketleri, klavye navigasyonu ve renk kontrastı ekleyerek platformun erişilebilirlik standartlarını karşılaması.",
       "allowed_paths": [
         "src/components/",
-        "src/lib/accessibility.js"
+        "src/lib/accessibility.js",
+        "agent_tasks.json"
       ],
       "acceptance": [
         "axe-core raporu 0 hataya düşer.",
