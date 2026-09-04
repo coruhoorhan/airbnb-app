@@ -108,7 +108,7 @@
     },
     {
       "id": "feat-03-graphql-api",
-      "status": "todo",
+      "status": "done",
       "area": "backend",
       "risk": "medium",
       "title": "GraphQL Endpoint ile Tek Sorgu Çok Veri Çekimi",

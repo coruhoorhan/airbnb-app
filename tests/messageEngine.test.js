@@ -15,8 +15,9 @@ describe("Message Engine", () => {
 
   beforeEach(() => {
     const listings = getAllListings({ publishedOnly: false });
-    if (listings.length > 0) {
-      targetListingId = listings[0].id;
+    const hostListing = listings.find(l => l.hostId === testHostId);
+    if (hostListing) {
+      targetListingId = hostListing.id;
     }
   });
 
