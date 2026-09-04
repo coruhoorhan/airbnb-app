@@ -106,6 +106,7 @@ Line 1 must be:
 VERDICT: [APPROVED | CHANGES REQUESTED]
 Line 2 must be:
 BLOCKING: [YES | NO]
+Emit these two lines EXACTLY as shown (plain text, no markdown bold, no quotes).
 Every findings table MUST have a Severity column with exactly one of
 CRITICAL, HIGH, MEDIUM, LOW per row.
 
@@ -141,7 +142,10 @@ Then follow with:
         review_content = llm_resp["choices"][0]["message"]["content"]
     
     # 5. Extract verdict + blocking flag (fail-closed: unparseable => block).
-    upper = review_content.upper()
+    # NOTE: models often emit markdown-bold labels ("**VERDICT:** ..."), so
+    # strip bold markers before parsing, or both parses silently miss.
+    clean = review_content.replace("**", "")
+    upper = clean.upper()
     verdict = "CHANGES_REQUESTED"
     if "VERDICT: APPROVED" in upper:
         verdict = "APPROVED"
@@ -149,7 +153,7 @@ Then follow with:
         verdict = "CHANGES_REQUESTED"
 
     blocking = True
-    m = re.search(r"^BLOCKING:\s*(YES|NO)\s*$", review_content,
+    m = re.search(r"^BLOCKING:\s*(YES|NO)", clean,
                   re.MULTILINE | re.IGNORECASE)
     if m:
         blocking = (m.group(1).upper() == "YES")
