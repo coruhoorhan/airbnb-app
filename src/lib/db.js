@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { randomUUID } from "node:crypto";
+import Joi from "joi";
 import { INITIAL_USERS } from "../data/users.js";
 import { INITIAL_LISTINGS } from "../data/listings.js";
 import { INITIAL_EXPERIENCES } from "../data/experiences.js";
@@ -20,6 +21,23 @@ export const db = new Database(dbPath);
 
 // Enable WAL mode for high performance concurrency
 db.pragma("journal_mode = WAL");
+
+// HTML Strip Regex for sanitization
+const htmlRegex = /<[^>]*>?/gm;
+
+const listingSchema = Joi.object({
+  hostId: Joi.string().required(),
+  title: Joi.string().trim().replace(htmlRegex, '').required(),
+  description: Joi.string().trim().replace(htmlRegex, '').optional(),
+  pricePerNight: Joi.number().min(0).required()
+});
+
+const bookingSchema = Joi.object({
+  listingId: Joi.string().required(),
+  guestId: Joi.string().required(),
+  checkIn: Joi.string().trim().replace(htmlRegex, '').required(),
+  checkOut: Joi.string().trim().replace(htmlRegex, '').required()
+});
 
 // --- Schema Initialization with Real SQL Tables & Indexes ---
 db.exec(`
@@ -503,6 +521,9 @@ export function getListingById(id) {
 }
 
 export function insertListing(item) {
+  const { error } = listingSchema.validate(item, { allowUnknown: true });
+  if (error) throw new Error(error.details[0].message);
+
   db.prepare(`
     INSERT INTO listings (
       id, hostId, title, description, category, propertyType,
@@ -558,6 +579,9 @@ export function getActiveBookingsForListing(listingId) {
 }
 
 export function insertBooking(b) {
+  const { error } = bookingSchema.validate(b, { allowUnknown: true });
+  if (error) throw new Error(error.details[0].message);
+
   db.prepare(`
     INSERT INTO bookings (
       id, listingId, guestId, hostId, checkIn, checkOut, numGuests,

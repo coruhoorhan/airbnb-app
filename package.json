@@ -24,6 +24,7 @@
     "graphql-http": "^1.23.0",
     "helmet": "^8.3.0",
     "iyzipay": "^2.0.69",
+    "joi": "^18.2.8",
     "jsonwebtoken": "^9.0.3",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.436.0",
@@ -44,6 +45,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "jest-axe": "^11.0.0",
     "postcss": "^8.4.45",
+    "supertest": "^7.2.2",
     "tailwindcss": "^3.4.10",
     "vite": "^5.4.2",
     "vitest": "^2.0.5"
