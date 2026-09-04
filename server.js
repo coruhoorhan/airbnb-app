@@ -10,6 +10,7 @@ import helmet from "helmet";
 import path from "path";
 import { fileURLToPath } from "url";
 import { execFile } from "child_process";
+import NodeCache from "node-cache";
 import { 
   db, 
   getAllListings, 
@@ -398,9 +399,23 @@ app.get("/api/admin/guardian/export-github/:id", (req, res) => {
 });
 
 // --- 6. Listings Endpoints ---
+
+// Cache setup for listings
+const listingsCache = new NodeCache({ stdTTL: 300 }); // 5 minutes TTL
+
 app.get("/api/listings", (req, res) => {
+  const cacheKey = JSON.stringify(req.query);
+  const cachedData = listingsCache.get(cacheKey);
+
+  if (cachedData) {
+    return res.json(cachedData);
+  }
+
   const listings = getAllListings(req.query);
-  res.json({ success: true, count: listings.length, data: listings });
+  const responseData = { success: true, count: listings.length, data: listings };
+
+  listingsCache.set(cacheKey, responseData);
+  res.json(responseData);
 });
 
 app.get("/api/listings/:id", (req, res) => {

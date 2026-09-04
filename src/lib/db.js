@@ -22,6 +22,20 @@ export const db = new Database(dbPath);
 // Enable WAL mode for high performance concurrency
 db.pragma("journal_mode = WAL");
 
+// Connection pool for read-heavy operations (e.g., getAllListings)
+const POOL_SIZE = 20;
+const readPool = Array.from({ length: POOL_SIZE }, () => {
+  const conn = new Database(dbPath, { readonly: true });
+  conn.pragma("journal_mode = WAL");
+  return conn;
+});
+
+let poolIndex = 0;
+export const getDbConnection = () => {
+  poolIndex = (poolIndex + 1) % POOL_SIZE;
+  return readPool[poolIndex];
+};
+
 // HTML Strip Regex for sanitization
 const htmlRegex = /<[^>]*>?/gm;
 
@@ -498,7 +512,8 @@ export function getAllListings(filters = {}) {
 
 
   query += " ORDER BY createdAt DESC";
-  const rows = db.prepare(query).all(...params);
+  const conn = getDbConnection();
+  const rows = conn.prepare(query).all(...params);
   return rows.map((r) => ({
     ...r,
     amenities: JSON.parse(r.amenities || "[]"),

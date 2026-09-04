@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeAll } from 'vitest';
+import request from 'supertest';
 import * as db from '../src/lib/db.js';
 import { generateToken } from '../src/lib/auth.js';
+import { app } from '../server.js';
 
 describe('GraphQL API', () => {
   let testUserToken;
@@ -53,11 +55,9 @@ describe('GraphQL API', () => {
         }
       }
     `;
-    const res = await fetch('http://localhost:4000/graphql', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query })
-    });
+    const res = await request(app)
+      .post('/graphql')
+      .send({ query });
 
     expect(res.status).toBe(401);
   });
@@ -74,17 +74,13 @@ describe('GraphQL API', () => {
         }
       }
     `;
-    const res = await fetch('http://localhost:4000/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${testUserToken}`
-      },
-      body: JSON.stringify({ query })
-    });
+    const res = await request(app)
+      .post('/graphql')
+      .set('Authorization', `Bearer ${testUserToken}`)
+      .send({ query });
 
     expect(res.status).toBe(200);
-    const result = await res.json();
+    const result = res.body;
     expect(result.data).toBeDefined();
     expect(result.data.listings).toBeDefined();
     expect(result.data.listings.length).toBeGreaterThan(0);
@@ -104,17 +100,13 @@ describe('GraphQL API', () => {
         }
       }
     `;
-    const res = await fetch('http://localhost:4000/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${testUserToken}`
-      },
-      body: JSON.stringify({ query })
-    });
+    const res = await request(app)
+      .post('/graphql')
+      .set('Authorization', `Bearer ${testUserToken}`)
+      .send({ query });
 
     expect(res.status).toBe(200);
-    const result = await res.json();
+    const result = res.body;
 
     expect(result.data.user).toBeDefined();
     expect(result.data.user.name).toBe('GraphQL User');
@@ -127,16 +119,12 @@ describe('GraphQL API', () => {
         }
       }
     `;
-    const badRes = await fetch('http://localhost:4000/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${testUserToken}`
-      },
-      body: JSON.stringify({ query: badQuery })
-    });
+    const badRes = await request(app)
+      .post('/graphql')
+      .set('Authorization', `Bearer ${testUserToken}`)
+      .send({ query: badQuery });
 
-    const badResult = await badRes.json();
+    const badResult = badRes.body;
 
     expect(badResult.errors).toBeDefined();
 
