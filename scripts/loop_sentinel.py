@@ -36,6 +36,9 @@ EXPECTED_WORKFLOWS = [
 REQUIRED_SECRETS = {"JULES_API_KEY", "GH_PAT", "OPENAI_API_KEY"}
 MARKER = "[Magda Auto-Responder]"
 AWAIT_MINUTES = int(os.getenv("AWAIT_MINUTES", "30"))
+TARGET_TITLES = [t.strip().lower()
+                 for t in os.getenv("TARGET_TITLE",
+                                    "Autonomous Airbnb,Revise airbnb-app PR,Revise PR #").split(",")]
 
 red, info = [], []
 
@@ -124,6 +127,9 @@ def check_sessions(key):
         sessions = data.get("sessions", []) if isinstance(data, dict) else []
         for s in sessions:
             state = s.get("state", "")
+            title = s.get("title", "") or ""
+            if not any(tt in title.lower() for tt in TARGET_TITLES):
+                continue  # not our loop's session; out of scope
             if state not in ("AWAITING_USER_FEEDBACK", "AWAITING_PLAN_APPROVAL"):
                 continue
             sid = s.get("id") or s.get("name", "").split("/")[-1]
