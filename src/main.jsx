@@ -1,64 +1,61 @@
-import L from "leaflet";
-if (typeof window !== "undefined") { window.L = L; }
-
-
-let globalCsrfToken = "";
-
-const originalFetch = window.fetch;
-window.fetch = async (...args) => {
-  let [resource, config] = args;
-
-  let urlStr = typeof resource === 'string' ? resource : (resource instanceof Request ? resource.url : "");
-
-  if (urlStr.includes('/api/')) {
-    config = config || {};
-    config.credentials = 'include';
-
-    const method = config.method ? config.method.toUpperCase() : 'GET';
-    if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
-      if (globalCsrfToken) {
-        config.headers = {
-          ...config.headers,
-          'x-csrf-token': globalCsrfToken
-        };
-      }
-    }
-
-    if (typeof resource === 'string') {
-      args[1] = config;
-    } else if (resource instanceof Request) {
-      args[0] = new Request(resource, config);
-    }
-  }
-
-  const response = await originalFetch(...args);
-
-  // If the server rotates the token and sends it back in a header or we just called /api/auth/csrf
-  const newCsrf = response.headers.get('x-csrf-token');
-  if (newCsrf) {
-    globalCsrfToken = newCsrf;
-  }
-
-  return response;
-};
-
-// Fetch initial CSRF token
-originalFetch('/api/auth/csrf', {credentials: 'include'})
-  .then(res => res.json())
-  .then(data => {
-    if (data.success && data.csrfToken) {
-      globalCsrfToken = data.csrfToken;
-    }
-  })
-  .catch(console.error);
-
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "./App.jsx";
 import "./index.css";
+import L from "leaflet";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+if (typeof window !== "undefined") {
+  window.L = L;
+}
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("React ErrorBoundary caught error:", error, errorInfo);
+    this.setState({ error, errorInfo });
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 30, fontFamily: "sans-serif", background: "#fff", color: "#111" }}>
+          <h2 style={{ color: "#e11d48" }}>Uygulama Yüklenirken Bir Hata Oluştu</h2>
+          <pre style={{ background: "#f1f5f9", padding: 15, borderRadius: 8, overflowX: "auto" }}>
+            {this.state.error?.toString()}
+          </pre>
+          <pre style={{ background: "#f8fafc", padding: 15, borderRadius: 8, overflowX: "auto", fontSize: 12 }}>
+            {this.state.errorInfo?.componentStack || this.state.error?.stack}
+          </pre>
+          <button 
+            onClick={() => { localStorage.clear(); window.location.reload(); }}
+            style={{ padding: "10px 20px", background: "#FF5A36", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", marginTop: 10 }}
+          >
+            Önbelleği Temizle ve Yeniden Başlat
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+const rootEl = document.getElementById("root");
+if (rootEl) {
+  ReactDOM.createRoot(rootEl).render(
+    <React.StrictMode>
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    </React.StrictMode>
+  );
+} else {
+  console.error("Root element #root not found!");
+}
