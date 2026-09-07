@@ -106,6 +106,7 @@ import { createRateLimiter } from "./src/lib/rateLimiter.js";
 import cookieParser from "cookie-parser";
 import validator from "validator";
 import { authMiddleware, csrfMiddleware, generateToken, generateCsrfToken } from "./src/lib/auth.js";
+import { authSchema } from "./src/lib/validation.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -118,6 +119,7 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
+      objectSrc: ["'none'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://unpkg.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
@@ -129,7 +131,14 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
 app.use(cors({
-  origin: true,
+  origin: function (origin, callback) {
+    const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173").split(',').map(o => o.trim());
+    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   exposedHeaders: ["x-csrf-token"]
 }));
@@ -196,10 +205,11 @@ app.get("/api/auth/oauth/github", (req, res) => {
 });
 
 app.post("/api/auth/oauth/callback", authRateLimiter, (req, res) => {
-  const { email } = req.body;
-  if (!email || !validator.isEmail(email)) {
+  const { error, value } = authSchema.validate(req.body, { abortEarly: false });
+  if (error) {
     return res.status(400).json({ success: false, error: "Authentication failed." });
   }
+  const { email } = value;
 
   let user = getUserByEmail(email);
   if (!user) {
@@ -209,14 +219,15 @@ app.post("/api/auth/oauth/callback", authRateLimiter, (req, res) => {
 
   const token = generateToken(user);
   res.cookie("token", token, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
-  res.json({ success: true, token, user });
+  res.json({ success: true, user });
 });
 
 app.post("/api/auth/login", authRateLimiter, async (req, res) => {
-  const { email } = req.body;
-  if (!email || !validator.isEmail(email)) {
-    return res.status(400).json({ success: false, error: "Geçerli bir email gerekli." });
+  const { error, value } = authSchema.validate(req.body, { abortEarly: false });
+  if (error) {
+    return res.status(400).json({ success: false, error: error.details.map(d => d.message).join(', ') });
   }
+  const { email } = value;
 
   const user = getUserByEmail(email);
   if (!user) {
@@ -225,7 +236,7 @@ app.post("/api/auth/login", authRateLimiter, async (req, res) => {
 
   const token = generateToken(user);
   res.cookie("token", token, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
-  res.json({ success: true, token, user });
+  res.json({ success: true, user });
 });
 
 app.get("/api/auth/csrf", (req, res) => {
@@ -1413,6 +1424,11 @@ function startAutonomousGuardianLoop() {
     }
   }, 900000);
 }
+
+app.use((err, req, res, next) => {
+  console.error("[Global Error Handler]:", err);
+  res.status(err.status || 500).json({ success: false, error: "Internal Server Error" });
+});
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, "0.0.0.0", () => {
