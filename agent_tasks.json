@@ -3060,7 +3060,121 @@
       ],
       "created_at": 1788792998.4939036,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788793000625",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788793000625",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788793000625 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788793065.49362,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788793000649",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788793000649",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788793000649 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788793065.4975042,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788793000625_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788793000625_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788793000625_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788793065.5015557,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788793000658",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788793000658",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788793000658 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788793065.5050628,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788793001626",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788793001626",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788793001626 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788793065.5087051,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-23-internationalization",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Internationalization and Localization Support",
+      "description": "Introduce i18n using i18next. Add a new i18n config file (src/lib/i18n.js) that loads JSON translation resources for EN, TR, and DE. Wrap all user‑facing strings in components with the t() function. Add a language selector dropdown in the Navbar component that persists the chosen locale in a cookie and updates i18next language. Extend server.js to serve the translation JSON files via a static route (/locales). Ensure fallback to English for missing keys. Update build scripts if needed.",
+      "allowed_paths": [
+        "server.js",
+        "src/App.jsx",
+        "src/components/Navbar.jsx",
+        "src/components/...",
+        "src/lib/i18n.js",
+        "src/lib/..."
+      ],
+      "acceptance": [
+        "A language selector appears in the navbar and persists across page reloads.",
+        "Switching language updates all UI text instantly without a full page reload.",
+        "Missing translation keys fall back to English.",
+        "The /locales endpoint returns the correct JSON files for each language."
+      ],
+      "created_at": 1788793068.7180674,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788792998.4939053
+  "updated_at": 1788793068.71807
 }
