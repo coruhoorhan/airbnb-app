@@ -379,7 +379,7 @@
     },
     {
       "id": "feat-06-push-notification-engine",
-      "status": "todo",
+      "status": "done",
       "area": "fullstack",
       "risk": "medium",
       "title": "Web Push Notification Engine for Real‑time Guest/Host Alerts",

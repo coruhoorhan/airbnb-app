@@ -12,6 +12,7 @@ import { WishlistView } from "./components/WishlistView.jsx";
 import { MapView } from "./components/MapView.jsx";
 import { ChatModal } from "./components/ChatModal.jsx";
 import { InboxModal } from "./components/InboxModal.jsx";
+import { PushNotificationProvider, usePushNotifications } from "./components/PushNotificationProvider.jsx";
 import { LoyaltyDashboard } from "./components/LoyaltyDashboard.jsx";
 import { GiftCardModal } from "./components/GiftCardModal.jsx";
 import { ExperienceCard } from "./components/ExperienceCard.jsx";
@@ -420,6 +421,96 @@ export function App() {
   };
 
   return (
+    <PushNotificationProvider currentUserId={currentUserId}>
+      <AppContent
+        {...{
+          users, setUsers, currentUserId, setCurrentUserId, listings, setListings,
+          isLoadingListings, setIsLoadingListings, bookings, setBookings,
+          favorites, setFavorites, notifications, setNotifications,
+          experiences, setExperiences, weather, setWeather, isSearchOpen,
+          setIsSearchOpen, isRentOpen, setIsRentOpen, isInboxOpen, setIsInboxOpen,
+          isLoyaltyOpen, setIsLoyaltyOpen, isGiftCardOpen, setIsGiftCardOpen,
+          isMagdaDashboardOpen, setIsMagdaDashboardOpen, currentView, setCurrentView,
+          selectedListing, setSelectedListing, selectedCategory, setSelectedCategory,
+          currency, setCurrency, isChatOpen, setIsChatOpen, chatListing, setChatListing,
+          conversations, setConversations
+        }}
+      />
+    </PushNotificationProvider>
+  );
+}
+
+function AppContent({
+  users, setUsers, currentUserId, setCurrentUserId, listings, setListings,
+  isLoadingListings, setIsLoadingListings, bookings, setBookings,
+  favorites, setFavorites, notifications, setNotifications,
+  experiences, setExperiences, weather, setWeather, isSearchOpen,
+  setIsSearchOpen, isRentOpen, setIsRentOpen, isInboxOpen, setIsInboxOpen,
+  isLoyaltyOpen, setIsLoyaltyOpen, isGiftCardOpen, setIsGiftCardOpen,
+  isMagdaDashboardOpen, setIsMagdaDashboardOpen, currentView, setCurrentView,
+  selectedListing, setSelectedListing, selectedCategory, setSelectedCategory,
+  currency, setCurrency, isChatOpen, setIsChatOpen, chatListing, setChatListing,
+  conversations, setConversations
+}) {
+  const currentUser = users.find((u) => u.id === currentUserId) || users[0];
+  const { isSupported, isSubscribed, subscribe, unsubscribe } = usePushNotifications();
+
+  const handleTogglePush = () => {
+    if (isSubscribed) {
+      unsubscribe();
+    } else {
+      subscribe();
+    }
+  };
+
+  const handleSwitchUser = (userId) => {
+    setCurrentUserId(userId);
+    const targetUser = users.find((u) => u.id === userId);
+    if (targetUser?.isHost) {
+      setCurrentView("host_dashboard");
+    } else {
+      setCurrentView("explore");
+    }
+  };
+
+  const handleMarkAllRead = () => {
+    fetch(`/api/notifications/read-all`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: currentUserId })
+    });
+    setNotifications(notifications.map(n => n.userId === currentUserId ? { ...n, isRead: true } : n));
+  };
+
+  const handleToggleDarkMode = () => {
+    const isDark = document.documentElement.classList.contains("dark");
+    if (isDark) {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    } else {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    }
+  };
+
+  const isDarkMode = typeof document !== 'undefined' && document.documentElement.classList.contains("dark");
+
+  const filteredListings = listings.filter((l) => {
+    if (selectedCategory && l.category !== selectedCategory) return false;
+    return true;
+  });
+
+  const featuredVilla = listings[0] || INITIAL_LISTINGS[0];
+
+  const renderWeatherIcon = (code) => {
+    if (code === 0) return <Sun className="w-5 h-5" />;
+    if (code <= 3) return <CloudSun className="w-5 h-5" />;
+    if (code >= 45 && code < 51) return <Cloud className="w-5 h-5" />;
+    if (code >= 51) return <CloudRain className="w-5 h-5" />;
+    return <Sun className="w-5 h-5" />;
+  };
+
+  return (
     <div className="min-h-[100dvh] flex flex-col bg-white dark:bg-charcoal-dark">
       {/* Coastal Navbar */}
       <Navbar
@@ -444,6 +535,20 @@ export function App() {
         onOpenGiftCards={handleOpenGiftCards}
         loyaltyTier={loyaltyTier}
       />
+
+      {isSupported && (
+        <div className="bg-airbnb/10 text-center py-2 px-4 flex justify-between items-center text-sm border-b border-airbnb/20">
+          <span className="text-charcoal dark:text-gray-200">
+            {isSubscribed ? "Anlık bildirimler açık." : "Önemli güncellemeler için bildirimlere izin verin."}
+          </span>
+          <button
+            onClick={handleTogglePush}
+            className="text-airbnb font-bold hover:underline cursor-pointer"
+          >
+            {isSubscribed ? "Bildirimleri Kapat" : "Bildirimleri Aç"}
+          </button>
+        </div>
+      )}
 
       {/* Main Content View */}
       <main className="flex-1">

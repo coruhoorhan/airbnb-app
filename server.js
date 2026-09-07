@@ -1,6 +1,7 @@
 import fs from "fs";
 import { generateIcsFeed, syncExternalIcal } from "./src/lib/calendarSync.js";
-import { saveSubscription, removeSubscription, getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
+import { getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
+import { saveSubscription, removeSubscription, sendNotification, getVapidPublicKey } from "./src/lib/pushNotificationEngine.js";
 import http from "http";
 import { setupChatWebSocketServer, chatEngine } from "./src/lib/chatEngine.js";
 import "express-async-errors";
@@ -945,6 +946,17 @@ app.put("/api/bookings/:id/status", authMiddleware, csrfMiddleware, (req, res) =
     }
   }
 
+  // Send push notification about booking status change
+  try {
+    if (updated && updated.guestId) {
+      sendNotification(updated.guestId, {
+        title: `Rezervasyon Durumu Güncellendi`,
+        body: `Rezervasyonunuzun durumu '${status}' olarak güncellendi.`,
+        url: `/`
+      });
+    }
+  } catch(e) {}
+
   res.json({ success: true, data: updated });
 });
 
@@ -1129,6 +1141,10 @@ app.put("/api/listings/:id/last-minute", (req, res) => {
 
 
 // --- Push Notification Endpoints ---
+app.get('/api/notifications/vapid-public-key', (req, res) => {
+  res.send(getVapidPublicKey());
+});
+
 app.post('/api/notifications/subscribe', (req, res) => {
   const { userId, subscription } = req.body;
   if (!userId || !subscription) {
@@ -1234,6 +1250,27 @@ app.post("/api/messages", authMiddleware, csrfMiddleware, messageRateLimiter, (r
     }
     const msg = insertMessage({ listingId, senderId, senderName: user.name, text });
     broadcastToListing(listingId, msg);
+
+    // Send push notification to the other party
+    try {
+      const listing = getListingById(listingId);
+      if (listing) {
+        // If sender is guest (not the host), notify host. Else notify guest.
+        // We might not know who the guest is without finding a booking,
+        // but let's notify the listing host if sender isn't host.
+        const receiverId = (senderId === listing.hostId) ? null : listing.hostId;
+        // If we want to notify guests, we'd need to find their bookings or active conversations.
+        // For simplicity, if sender is guest, notify host.
+        if (receiverId) {
+          sendNotification(receiverId, {
+            title: `Yeni Mesaj: ${user.name}`,
+            body: text,
+            url: `/`
+          });
+        }
+      }
+    } catch (e) {}
+
     res.status(201).json({ success: true, data: msg });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });

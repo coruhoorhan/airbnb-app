@@ -227,6 +227,15 @@ db.exec(`
     isActive INTEGER DEFAULT 1
   );
 
+  CREATE TABLE IF NOT EXISTS push_subscriptions (
+    id TEXT PRIMARY KEY,
+    userId TEXT NOT NULL,
+    endpoint TEXT NOT NULL,
+    keysP TEXT,
+    keysAuth TEXT,
+    createdAt INTEGER NOT NULL
+  );
+
   CREATE TABLE IF NOT EXISTS guardian_issues (
     id TEXT PRIMARY KEY,
     type TEXT NOT NULL,         -- 'performance' | 'security' | 'reliability' | 'quality'
