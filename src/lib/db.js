@@ -102,6 +102,14 @@ db.exec(`
     createdAt INTEGER NOT NULL
   );
 
+  CREATE TABLE IF NOT EXISTS push_subscriptions (
+    id TEXT PRIMARY KEY,
+    userId TEXT NOT NULL,
+    endpoint TEXT NOT NULL,
+    keysP TEXT NOT NULL,
+    keysAuth TEXT NOT NULL
+  );
+
   CREATE TABLE IF NOT EXISTS listings (
     id TEXT PRIMARY KEY,
     hostId TEXT NOT NULL,

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Search, Menu, Heart, Briefcase, PlusCircle, Home, Bell, Check, Sparkles, Globe, Compass, Waves, MessageCircle, Sun, Moon, Gift, Star } from "lucide-react";
 import { getAvailableCurrencies } from "../lib/currencyEngine.js";
+import { PushNotificationToggle } from "./PushNotificationProvider.jsx";
 
 export function Navbar({ 
   currentUser, 
@@ -313,6 +314,8 @@ export function Navbar({
                     <Sparkles className="w-4 h-4 text-purple-600" />
                     <span>🤖 Magda AI Kontrol Merkezi</span>
                   </button>
+
+                  <PushNotificationToggle />
                 </div>
 
 

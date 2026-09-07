@@ -69,16 +69,16 @@
       "status": "done",
       "area": "backend",
       "risk": "medium",
-      "title": "Ev Sahipleri \u0130\u00e7in Yapay Zek\u00e2 Dinamik Fiyatland\u0131rma Motoru",
-      "description": "Doluluk oran\u0131, mevsimsellik ve talep yo\u011funlu\u011funa g\u00f6re optimal gecelik fiyat hesaplayan ak\u0131ll\u0131 motor.",
+      "title": "Ev Sahipleri İçin Yapay Zekâ Dinamik Fiyatlandırma Motoru",
+      "description": "Doluluk oranı, mevsimsellik ve talep yoğunluğuna göre optimal gecelik fiyat hesaplayan akıllı motor.",
       "allowed_paths": [
         "server.js",
         "src/lib/pricingEngine.js",
         "agent_tasks.json"
       ],
       "acceptance": [
-        "Fiyat \u00f6neri API'si do\u011fru oranlar\u0131 d\u00f6ner.",
-        "Birim testleri ge\u00e7er."
+        "Fiyat öneri API'si doğru oranları döner.",
+        "Birim testleri geçer."
       ],
       "created_at": 1788443436.1748044,
       "created_by": "Magda Autonomous Watchdog"
@@ -88,8 +88,8 @@
       "status": "done",
       "area": "backend",
       "risk": "high",
-      "title": "OAuth2 ve JWT Tabanl\u0131 G\u00fcvenli Kimlik Do\u011frulama",
-      "description": "Kullan\u0131c\u0131 giri\u015fini OAuth2 sa\u011flay\u0131c\u0131lar\u0131 ile entegre edip, JWT ile oturum y\u00f6netimi sa\u011flayarak XSS/CSRF risklerini azaltmak.",
+      "title": "OAuth2 ve JWT Tabanlı Güvenli Kimlik Doğrulama",
+      "description": "Kullanıcı girişini OAuth2 sağlayıcıları ile entegre edip, JWT ile oturum yönetimi sağlayarak XSS/CSRF risklerini azaltmak.",
       "allowed_paths": [
         "server.js",
         "src/lib/auth.js",
@@ -97,9 +97,9 @@
         "agent_tasks.json"
       ],
       "acceptance": [
-        "OAuth2 ak\u0131\u015f\u0131 sorunsuz \u00e7al\u0131\u015f\u0131r.",
-        "JWT tokenlar\u0131 do\u011fru \u015fekilde imzalan\u0131r ve do\u011frulan\u0131r.",
-        "CSRF token\u0131 uygulan\u0131r."
+        "OAuth2 akışı sorunsuz çalışır.",
+        "JWT tokenları doğru şekilde imzalanır ve doğrulanır.",
+        "CSRF tokenı uygulanır."
       ],
       "created_at": 1788443436.1755283,
       "created_by": "Magda Autonomous Watchdog"
@@ -109,8 +109,8 @@
       "status": "done",
       "area": "backend",
       "risk": "medium",
-      "title": "GraphQL Endpoint ile Tek Sorgu \u00c7ok Veri \u00c7ekimi",
-      "description": "Mevcut REST API'yi GraphQL ile geni\u015fleterek, istemcilerin tek bir sorgu ile gerekli t\u00fcm verileri almas\u0131n\u0131 sa\u011flamak.",
+      "title": "GraphQL Endpoint ile Tek Sorgu Çok Veri Çekimi",
+      "description": "Mevcut REST API'yi GraphQL ile genişleterek, istemcilerin tek bir sorgu ile gerekli tüm verileri almasını sağlamak.",
       "allowed_paths": [
         "server.js",
         "src/lib/graphqlSchema.js",
@@ -118,9 +118,9 @@
         "agent_tasks.json"
       ],
       "acceptance": [
-        "/graphql endpoint aktif ve schema d\u00f6ner.",
-        "\u0130lk sorgular (listings, bookings) ba\u015far\u0131l\u0131d\u0131r.",
-        "Performans testleri %30 daha h\u0131zl\u0131 yan\u0131t verir."
+        "/graphql endpoint aktif ve schema döner.",
+        "İlk sorgular (listings, bookings) başarılıdır.",
+        "Performans testleri %30 daha hızlı yanıt verir."
       ],
       "created_at": 1788443436.1762996,
       "created_by": "Magda Autonomous Watchdog"
@@ -130,17 +130,17 @@
       "status": "done",
       "area": "frontend",
       "risk": "low",
-      "title": "Mobil ve Tablet \u0130\u00e7in Tamamen Duyarl\u0131 Tasar\u0131m",
-      "description": "Tailwind CSS ve media query'lerle t\u00fcm bile\u015fenlerin mobil, tablet ve desktop ekranlarda optimal g\u00f6r\u00fcn\u00fcm ve etkile\u015fim sa\u011flamas\u0131.",
+      "title": "Mobil ve Tablet İçin Tamamen Duyarlı Tasarım",
+      "description": "Tailwind CSS ve media query'lerle tüm bileşenlerin mobil, tablet ve desktop ekranlarda optimal görünüm ve etkileşim sağlaması.",
       "allowed_paths": [
         "src/components/",
         "src/styles/tailwind.config.js",
         "agent_tasks.json"
       ],
       "acceptance": [
-        "T\u00fcm sayfalar 320px-2560px aral\u0131\u011f\u0131nda k\u0131r\u0131lma hatas\u0131 yok.",
-        "Kullan\u0131c\u0131 testi cihazlarda tutarl\u0131 deneyim.",
-        "E2E testleri responsive layout'u do\u011frular."
+        "Tüm sayfalar 320px-2560px aralığında kırılma hatası yok.",
+        "Kullanıcı testi cihazlarda tutarlı deneyim.",
+        "E2E testleri responsive layout'u doğrular."
       ],
       "created_at": 1788443436.1768615,
       "created_by": "Magda Autonomous Watchdog"
@@ -150,17 +150,17 @@
       "status": "done",
       "area": "frontend",
       "risk": "low",
-      "title": "WCAG 2.1 AA Uyumlu Eri\u015filebilirlik Kontrolleri",
-      "description": "React bile\u015fenlerine ARIA etiketleri, klavye navigasyonu ve renk kontrast\u0131 ekleyerek platformun eri\u015filebilirlik standartlar\u0131n\u0131 kar\u015f\u0131lamas\u0131.",
+      "title": "WCAG 2.1 AA Uyumlu Erişilebilirlik Kontrolleri",
+      "description": "React bileşenlerine ARIA etiketleri, klavye navigasyonu ve renk kontrastı ekleyerek platformun erişilebilirlik standartlarını karşılaması.",
       "allowed_paths": [
         "src/components/",
         "src/lib/accessibility.js",
         "agent_tasks.json"
       ],
       "acceptance": [
-        "axe-core raporu 0 hataya d\u00fc\u015fer.",
-        "Klavyeyle t\u00fcm interaktif \u00f6\u011felere ula\u015f\u0131labilir.",
-        "Renk kontrast\u0131 minimum 4.5:1 oran\u0131n\u0131 ge\u00e7er."
+        "axe-core raporu 0 hataya düşer.",
+        "Klavyeyle tüm interaktif öğelere ulaşılabilir.",
+        "Renk kontrastı minimum 4.5:1 oranını geçer."
       ],
       "created_at": 1788443436.1772346,
       "created_by": "Magda Autonomous Watchdog"
@@ -171,7 +171,7 @@
       "area": "security",
       "risk": "medium",
       "title": "Add rate limiting and input sanitization to API endpoints",
-      "description": "Implement a request\u2011rate\u2011limiting middleware (e.g., express\u2011rate\u2011limit) in server.js to protect public endpoints from brute\u2011force and DoS attacks. Add a validation layer using a schema library (e.g., Joi) in src/lib/db.js and route handlers to sanitize and validate all incoming parameters (search queries, booking dates, user IDs). This prevents injection attacks and ensures only well\u2011formed data reaches the database.",
+      "description": "Implement a request‑rate‑limiting middleware (e.g., express‑rate‑limit) in server.js to protect public endpoints from brute‑force and DoS attacks. Add a validation layer using a schema library (e.g., Joi) in src/lib/db.js and route handlers to sanitize and validate all incoming parameters (search queries, booking dates, user IDs). This prevents injection attacks and ensures only well‑formed data reaches the database.",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js"
@@ -189,8 +189,8 @@
       "status": "done",
       "area": "backend",
       "risk": "medium",
-      "title": "Introduce DB connection pooling and in\u2011memory caching for listings",
-      "description": "Refactor src/lib/db.js to use a connection pool (e.g., pg\u2011pool for PostgreSQL) instead of creating a new client per request, reducing latency and resource usage. Add a simple LRU cache (e.g., node\u2011cache) for the most\u2011requested listings (GET /listings) and search results, with a TTL of 5 minutes. Update server.js to serve cached data when available and fall back to the DB otherwise.",
+      "title": "Introduce DB connection pooling and in‑memory caching for listings",
+      "description": "Refactor src/lib/db.js to use a connection pool (e.g., pg‑pool for PostgreSQL) instead of creating a new client per request, reducing latency and resource usage. Add a simple LRU cache (e.g., node‑cache) for the most‑requested listings (GET /listings) and search results, with a TTL of 5 minutes. Update server.js to serve cached data when available and fall back to the DB otherwise.",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js"
@@ -198,7 +198,7 @@
       "acceptance": [
         "Database connections are reused; the number of active connections never exceeds the pool size (e.g., 20).",
         "Cache hit rate for listings is at least 60% in load tests.",
-        "Response time for GET /listings drops by \u226530% compared to baseline (measured with a simple load test)."
+        "Response time for GET /listings drops by ≥30% compared to baseline (measured with a simple load test)."
       ],
       "created_at": 1788510497.9629478,
       "created_by": "Magda Fullstack LLM Watchdog"
@@ -345,7 +345,7 @@
       "id": "batch-01-frontend-design-suite",
       "area": "frontend",
       "risk": "medium",
-      "title": "5'li Aray\u00fcz ve Tasar\u0131m S\u00fcper Paketi (Map Clustering, Lightbox, Dark Mode, AI Recommendations, Lazy Loading)",
+      "title": "5'li Arayüz ve Tasarım Süper Paketi (Map Clustering, Lightbox, Dark Mode, AI Recommendations, Lazy Loading)",
       "description": "Implement the complete 5-feature Frontend & Design suite in a single integrated PR:\n1. Leaflet Map Clustering: Cluster listing markers into number bubbles when zoomed out (< 13); smooth zoom on click; individual price badges when zoomed in.\n2. 5-Photo Grid & Lightbox: Airbnb standard 1 large + 4 small photo grid on ListingDetail.jsx; click opens full-screen accessible Lightbox modal with keyboard navigation (ESC, arrow keys).\n3. Dark / Light Mode Toggle: Smooth animated sun/moon theme switch button on Navbar.jsx; persist in localStorage; apply Tailwind dark: styles across all cards and modals.\n4. AI-Powered Recommendations Carousel: RecommendationCarousel.jsx on home page showing smart matching listings based on category & viewed listings.\n5. Responsive & Lazy-Load Images: Add loading=\"lazy\" and responsive srcset across ListingCard.jsx, ListingDetail.jsx, and ExperienceCard.jsx.",
       "allowed_paths": [
         "src/components/MapView.jsx",
@@ -379,11 +379,11 @@
     },
     {
       "id": "feat-06-push-notification-engine",
-      "status": "todo",
+      "status": "done",
       "area": "fullstack",
       "risk": "medium",
-      "title": "Web Push Notification Engine for Real\u2011time Guest/Host Alerts",
-      "description": "Implement a fullstack push notification system. Add a new SQLite table `push_subscriptions` with columns `id`, `userId`, `endpoint`, `keysP`, `keysAuth`. Create `src/lib/pushNotificationEngine.js` exposing `saveSubscription(userId, subscription)`, `removeSubscription(userId)`, and `sendNotification(userId, payload)` using the `web-push` library with VAPID keys. Extend `server.js` with two REST endpoints: POST /api/notifications/subscribe (auth\u2011protected, stores subscription) and POST /api/notifications/unsubscribe (removes subscription). Update booking and chat logic (e.g., after `insertMessage` and after `insertBooking` status change) to call `sendNotification` with appropriate payloads. On the frontend, add `src/components/PushNotificationProvider.jsx` that registers a service worker (`src/service-worker.js`), requests Notification permission, and posts the subscription to the backend. The service worker listens for `push` events and displays a notification with title/body from the payload. Update `App.jsx` to wrap the app with `<PushNotificationProvider>` and display a UI toggle in the user settings menu.",
+      "title": "Web Push Notification Engine for Real‑time Guest/Host Alerts",
+      "description": "Implement a fullstack push notification system. Add a new SQLite table `push_subscriptions` with columns `id`, `userId`, `endpoint`, `keysP`, `keysAuth`. Create `src/lib/pushNotificationEngine.js` exposing `saveSubscription(userId, subscription)`, `removeSubscription(userId)`, and `sendNotification(userId, payload)` using the `web-push` library with VAPID keys. Extend `server.js` with two REST endpoints: POST /api/notifications/subscribe (auth‑protected, stores subscription) and POST /api/notifications/unsubscribe (removes subscription). Update booking and chat logic (e.g., after `insertMessage` and after `insertBooking` status change) to call `sendNotification` with appropriate payloads. On the frontend, add `src/components/PushNotificationProvider.jsx` that registers a service worker (`src/service-worker.js`), requests Notification permission, and posts the subscription to the backend. The service worker listens for `push` events and displays a notification with title/body from the payload. Update `App.jsx` to wrap the app with `<PushNotificationProvider>` and display a UI toggle in the user settings menu.",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -392,11 +392,13 @@
         "src/service-worker.js"
       ],
       "acceptance": [
-        "A logged\u2011in user can enable notifications in the UI, the browser shows the permission prompt, and the subscription is persisted in the SQLite `push_subscriptions` table.",
+        "A logged‑in user can enable notifications in the UI, the browser shows the permission prompt, and the subscription is persisted in the SQLite `push_subscriptions` table.",
         "When a new chat message is inserted for that user, a push notification appears on the device even if the browser tab is closed."
       ],
       "created_at": 1788785549.5191903,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "claimed_by": "jules",
+      "claimed_at": "2026-09-07T14:12:20.032Z"
     },
     {
       "id": "feat-07-map-clustering",
@@ -427,7 +429,7 @@
       "area": "fullstack",
       "risk": "medium",
       "title": "Instant Booking Approval Flow",
-      "description": "Add a host\u2011side approval workflow for instant\u2011booking requests. Extend the GraphQL schema with a new mutation `approveBooking(id: ID!, approved: Boolean!): Booking` and a subscription `bookingStatusChanged(hostId: ID!): Booking`. Implement the resolver in `src/lib/graphqlResolvers.js` and the business logic in `src/lib/bookingEngine.js` to update booking status, send a push notification, and log the action. Create a new UI component `src/components/BookingApprovalModal.jsx` that lists pending instant\u2011booking requests for the logged\u2011in host, shows listing details, and lets the host approve or reject with an optional message. Wire the component into `HostDashboard` and ensure the GraphQL client updates the UI via the subscription. Add necessary DB fields (`approvedAt`, `approvalStatus`) to the `bookings` table in `src/lib/db.js` and migrate existing data. Ensure proper authorization checks using `authMiddleware`.",
+      "description": "Add a host‑side approval workflow for instant‑booking requests. Extend the GraphQL schema with a new mutation `approveBooking(id: ID!, approved: Boolean!): Booking` and a subscription `bookingStatusChanged(hostId: ID!): Booking`. Implement the resolver in `src/lib/graphqlResolvers.js` and the business logic in `src/lib/bookingEngine.js` to update booking status, send a push notification, and log the action. Create a new UI component `src/components/BookingApprovalModal.jsx` that lists pending instant‑booking requests for the logged‑in host, shows listing details, and lets the host approve or reject with an optional message. Wire the component into `HostDashboard` and ensure the GraphQL client updates the UI via the subscription. Add necessary DB fields (`approvedAt`, `approvalStatus`) to the `bookings` table in `src/lib/db.js` and migrate existing data. Ensure proper authorization checks using `authMiddleware`.",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -438,7 +440,7 @@
         "src/components/BookingApprovalModal.jsx"
       ],
       "acceptance": [
-        "Host dashboard shows a badge with the count of pending instant\u2011booking requests.",
+        "Host dashboard shows a badge with the count of pending instant‑booking requests.",
         "Clicking a request opens BookingApprovalModal with correct listing info and approve/reject buttons.",
         "Approving a request updates the booking status to `approved`, sets `approvedAt`, and triggers a GraphQL subscription that updates the guest UI in real time.",
         "Rejecting a request updates the status to `rejected`, stores the host's optional message, and notifies the guest via push notification.",
@@ -477,7 +479,7 @@
       "status": "todo",
       "area": "fullstack",
       "risk": "medium",
-      "title": "Web Push Notification Engine for Real\u2011time Guest/Host Alerts",
+      "title": "Web Push Notification Engine for Real‑time Guest/Host Alerts",
       "description": "Add a complete Web Push workflow: generate VAPID keys, create src/lib/pushEngine.js that uses the web-push library to send notifications, store subscriptions in a new SQLite table via db.js, expose POST /api/push/subscribe in server.js to receive the browser subscription, and add a React context component (src/components/PushNotificationProvider.jsx) that registers the service worker, requests permission, and subscribes the user. Also add a NotificationBell UI component (src/components/NotificationBell.jsx) that shows an unread badge and opens a toast when a push payload arrives. Hook the push trigger into existing booking and chat events (e.g., after insertMessage and after booking confirmation) so hosts and guests receive instant alerts.",
       "allowed_paths": [
         "server.js",
@@ -519,7 +521,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788786676468",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788786676468 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788786676468 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -537,7 +539,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788786682646",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788786682646 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788786682646 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -555,7 +557,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788786758999",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788786758999 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788786758999 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -573,7 +575,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788786817961",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788786817961 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788786817961 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -591,7 +593,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788786821663",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788786821663 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788786821663 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -609,7 +611,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788786821680",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788786821680 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788786821680 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -627,7 +629,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788786883229",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788786883229 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788786883229 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -645,7 +647,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788786883229_2026-11-10_2026-11-15",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #ical_sync_list_ical_1788786883229_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788786883229_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -663,7 +665,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788786888543",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788786888543 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788786888543 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -681,7 +683,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788786888547",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788786888547 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788786888547 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -699,7 +701,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788786896133",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788786896133 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788786896133 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -717,7 +719,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788786896134",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788786896134 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788786896134 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -735,7 +737,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788786896140",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788786896140 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788786896140 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -753,7 +755,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788786896133_2026-11-10_2026-11-15",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #ical_sync_list_ical_1788786896133_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788786896133_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -771,7 +773,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788786975589",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788786975589 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788786975589 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -789,7 +791,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788786975593",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788786975593 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788786975593 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -807,7 +809,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788786975593_2026-11-10_2026-11-15",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #ical_sync_list_ical_1788786975593_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788786975593_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -825,7 +827,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788786975627",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788786975627 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788786975627 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -843,7 +845,7 @@
       "area": "fullstack",
       "risk": "medium",
       "title": "Host Payout & Revenue Analytics Dashboard",
-      "description": "Add a full\u2011stack host payout and revenue analytics capability. Extend the SQLite schema with a `payouts` table (id, hostId, amount, currency, periodStart, periodEnd, status, createdAt). Implement a payoutEngine library that aggregates confirmed bookings per host, calculates commissions, taxes and net payout, and writes payout records. Expose GraphQL queries `hostPayouts(hostId, from, to)` and `hostRevenueSummary(hostId, year)` and mutations `triggerPayout(hostId, month)`. Update server.js to register the new resolvers and add a DataLoader for efficient host\u2011by\u2011id fetching. Create a React component `HostPayoutDashboard` that fetches the data via the GraphQL endpoint, displays a table of monthly payouts, a summary chart of gross vs net revenue, and a button to trigger a new payout. Integrate the component into `App.jsx` under a new route/view `host_payouts`. Ensure all inputs are validated and sanitized, and that the API is protected by the existing authMiddleware.",
+      "description": "Add a full‑stack host payout and revenue analytics capability. Extend the SQLite schema with a `payouts` table (id, hostId, amount, currency, periodStart, periodEnd, status, createdAt). Implement a payoutEngine library that aggregates confirmed bookings per host, calculates commissions, taxes and net payout, and writes payout records. Expose GraphQL queries `hostPayouts(hostId, from, to)` and `hostRevenueSummary(hostId, year)` and mutations `triggerPayout(hostId, month)`. Update server.js to register the new resolvers and add a DataLoader for efficient host‑by‑id fetching. Create a React component `HostPayoutDashboard` that fetches the data via the GraphQL endpoint, displays a table of monthly payouts, a summary chart of gross vs net revenue, and a button to trigger a new payout. Integrate the component into `App.jsx` under a new route/view `host_payouts`. Ensure all inputs are validated and sanitized, and that the API is protected by the existing authMiddleware.",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -857,7 +859,7 @@
         "Database contains a `payouts` table with the correct columns and indexes.",
         "GraphQL schema includes `hostPayouts`, `hostRevenueSummary`, and `triggerPayout` fields with proper type definitions.",
         "Calling `triggerPayout` for a host creates a new payout record with accurate gross, commission, tax, and net amounts.",
-        "The `HostPayoutDashboard` component renders a paginated list of payouts and a revenue summary chart for the logged\u2011in host.",
+        "The `HostPayoutDashboard` component renders a paginated list of payouts and a revenue summary chart for the logged‑in host.",
         "Only authenticated hosts can access the payout dashboard; unauthenticated requests receive an authorization error.",
         "All new code passes linting and existing unit tests without regression."
       ],
@@ -870,7 +872,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788787027054",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788787027054 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788787027054 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -888,7 +890,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788787027054_2026-11-10_2026-11-15",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #ical_sync_list_ical_1788787027054_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788787027054_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -906,7 +908,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788787027101",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788787027101 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788787027101 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -924,7 +926,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788787027107",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788787027107 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788787027107 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -942,7 +944,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788787120044",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788787120044 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788787120044 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -960,7 +962,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788787120046",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788787120046 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788787120046 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -978,7 +980,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788787120046_2026-11-10_2026-11-15",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #ical_sync_list_ical_1788787120046_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788787120046_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -996,7 +998,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788787120072",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788787120072 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788787120072 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1035,7 +1037,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788787140721",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788787140721 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788787140721 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1053,7 +1055,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788787140740",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788787140740 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788787140740 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1071,7 +1073,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788787140753",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788787140753 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788787140753 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1089,7 +1091,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788787140740_2026-11-10_2026-11-15",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #ical_sync_list_ical_1788787140740_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788787140740_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1107,7 +1109,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788787185559",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788787185559 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788787185559 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1125,7 +1127,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788787185569",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788787185569 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788787185569 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1143,7 +1145,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788787213855",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788787213855 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788787213855 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1161,7 +1163,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788787213858",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788787213858 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788787213858 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1179,7 +1181,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788787224013",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788787224013 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788787224013 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1197,7 +1199,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788787224013",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788787224013 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788787224013 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1215,7 +1217,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788787224011",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788787224011 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788787224011 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1233,7 +1235,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788787224011_2026-11-10_2026-11-15",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #ical_sync_list_ical_1788787224011_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788787224011_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1266,7 +1268,7 @@
         "Clicking Reject updates the review status to 'rejected', stores the entered moderationReason, removes it from the pending list, and sends a notification to the reviewer.",
         "GraphQL query `pendingReviews` returns only reviews with status 'pending'.",
         "GraphQL mutations `approveReview(id)` and `rejectReview(id, reason)` correctly modify the DB and return the updated review object.",
-        "All actions are blocked for non\u2011admin users (401 Unauthorized).",
+        "All actions are blocked for non‑admin users (401 Unauthorized).",
         "Rate limiting is enforced on the moderation mutations (no more than 10 requests per minute per admin)."
       ],
       "created_at": 1788787320.4790003,
@@ -1278,7 +1280,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788787359649",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788787359649 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788787359649 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1296,7 +1298,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788787359662",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788787359662 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788787359662 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1314,7 +1316,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788787359707",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788787359707 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788787359707 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1332,7 +1334,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788787359707_2026-11-10_2026-11-15",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #ical_sync_list_ical_1788787359707_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788787359707_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1350,7 +1352,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788787400554",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788787400554 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788787400554 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1368,7 +1370,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788787400560",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788787400560 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788787400560 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1386,7 +1388,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788787400560_2026-11-10_2026-11-15",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #ical_sync_list_ical_1788787400560_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788787400560_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1404,7 +1406,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788787400589",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788787400589 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788787400589 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1421,8 +1423,8 @@
       "status": "todo",
       "area": "fullstack",
       "risk": "medium",
-      "title": "AI\u2011Powered Concierge Chat Integration",
-      "description": "Add a real\u2011time AI concierge service that answers guest and host questions. Implement a new GraphQL mutation `requestAiResponse(message: String!): AiMessage!` in `server.js` that forwards the prompt to the diffusion\u2011LLM endpoint (via a new helper `src/lib/aiConcierge.js`). Store each exchange in the existing chat engine tables (`messages` table) using `insertMessage` and retrieve history with `getMessagesForListing`. Extend `src/lib/chatEngine.js` to expose `requestAiResponse` and a DataLoader for chat history. Update the UI component `src/components/MagdaConciergeWidget.jsx` to call the mutation, display a loading spinner, and render the AI response in the chat window. Ensure the widget shows the full conversation on open and persists across page reloads. Add basic input sanitization and rate\u2011limit the mutation using the existing rate\u2011limiter.",
+      "title": "AI‑Powered Concierge Chat Integration",
+      "description": "Add a real‑time AI concierge service that answers guest and host questions. Implement a new GraphQL mutation `requestAiResponse(message: String!): AiMessage!` in `server.js` that forwards the prompt to the diffusion‑LLM endpoint (via a new helper `src/lib/aiConcierge.js`). Store each exchange in the existing chat engine tables (`messages` table) using `insertMessage` and retrieve history with `getMessagesForListing`. Extend `src/lib/chatEngine.js` to expose `requestAiResponse` and a DataLoader for chat history. Update the UI component `src/components/MagdaConciergeWidget.jsx` to call the mutation, display a loading spinner, and render the AI response in the chat window. Ensure the widget shows the full conversation on open and persists across page reloads. Add basic input sanitization and rate‑limit the mutation using the existing rate‑limiter.",
       "allowed_paths": [
         "server.js",
         "src/lib/chatEngine.js",
@@ -1430,9 +1432,9 @@
         "src/components/MagdaConciergeWidget.jsx"
       ],
       "acceptance": [
-        "When a user types a query in the Magda Concierge widget and presses send, the UI shows a loading indicator and then displays an AI\u2011generated answer within 2\u202fseconds.",
-        "All sent and received messages appear in the chat window and are persisted; re\u2011opening the widget after a page reload shows the full conversation history.",
-        "The GraphQL mutation `requestAiResponse` returns a non\u2011empty `AiMessage` object and respects the global rate\u2011limit (max 10 requests per minute per user)."
+        "When a user types a query in the Magda Concierge widget and presses send, the UI shows a loading indicator and then displays an AI‑generated answer within 2 seconds.",
+        "All sent and received messages appear in the chat window and are persisted; re‑opening the widget after a page reload shows the full conversation history.",
+        "The GraphQL mutation `requestAiResponse` returns a non‑empty `AiMessage` object and respects the global rate‑limit (max 10 requests per minute per user)."
       ],
       "created_at": 1788787637.4706907,
       "created_by": "Magda Fullstack LLM Watchdog"
@@ -1443,7 +1445,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788787928325",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788787928325 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788787928325 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1461,7 +1463,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788787928333",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788787928333 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788787928333 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1479,7 +1481,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788787928341",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788787928341 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788787928341 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1497,7 +1499,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788787928333_2026-11-10_2026-11-15",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #ical_sync_list_ical_1788787928333_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788787928333_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1514,8 +1516,8 @@
       "status": "todo",
       "area": "fullstack",
       "risk": "medium",
-      "title": "Add GraphQL Subscriptions for Real\u2011time Booking & Notification Updates",
-      "description": "Extend the GraphQL API to support WebSocket\u2011based subscriptions so that clients receive immediate updates when a booking status changes or a new notification is created. Implement a new Subscription type in src/lib/graphqlSchema.js, resolver logic in src/lib/graphqlResolvers.js, and a WebSocket server in server.js using the graphql\u2011ws library. Hook the subscription publish calls into existing booking status updates (updateBookingStatus) and notification creation (saveNotification) in src/lib/notifications.js. Ensure the server upgrades HTTP requests to WS on the same endpoint and that authentication middleware validates the JWT on the WS connection.",
+      "title": "Add GraphQL Subscriptions for Real‑time Booking & Notification Updates",
+      "description": "Extend the GraphQL API to support WebSocket‑based subscriptions so that clients receive immediate updates when a booking status changes or a new notification is created. Implement a new Subscription type in src/lib/graphqlSchema.js, resolver logic in src/lib/graphqlResolvers.js, and a WebSocket server in server.js using the graphql‑ws library. Hook the subscription publish calls into existing booking status updates (updateBookingStatus) and notification creation (saveNotification) in src/lib/notifications.js. Ensure the server upgrades HTTP requests to WS on the same endpoint and that authentication middleware validates the JWT on the WS connection.",
       "allowed_paths": [
         "server.js",
         "src/lib/graphqlSchema.js",
@@ -1534,8 +1536,8 @@
       "status": "todo",
       "area": "fullstack",
       "risk": "medium",
-      "title": "Multi\u2011Currency Checkout Support",
-      "description": "Implement end\u2011to\u2011end multi\u2011currency handling for booking payments. Extend the payment engine to accept a currency code, convert prices using a live FX service, and store amounts in both the booking currency and the host's preferred currency. Update GraphQL mutations for createBooking and processPayment to accept a `currency` argument. Add a UI selector in the CheckoutModal component, persist the chosen currency in user settings, and display formatted amounts throughout the UI. Modify src/lib/currencyEngine.js to expose `convertAmount(amount, from, to)` using an external rates API (e.g., exchangerate.host). Ensure all new fields (priceCurrency, convertedPrice, exchangeRate) are persisted in the SQLite bookings table via a migration in src/lib/db.js.",
+      "title": "Multi‑Currency Checkout Support",
+      "description": "Implement end‑to‑end multi‑currency handling for booking payments. Extend the payment engine to accept a currency code, convert prices using a live FX service, and store amounts in both the booking currency and the host's preferred currency. Update GraphQL mutations for createBooking and processPayment to accept a `currency` argument. Add a UI selector in the CheckoutModal component, persist the chosen currency in user settings, and display formatted amounts throughout the UI. Modify src/lib/currencyEngine.js to expose `convertAmount(amount, from, to)` using an external rates API (e.g., exchangerate.host). Ensure all new fields (priceCurrency, convertedPrice, exchangeRate) are persisted in the SQLite bookings table via a migration in src/lib/db.js.",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1550,7 +1552,7 @@
         "The CheckoutModal shows a dropdown of supported currencies (USD, EUR, TRY, GBP) and updates the displayed total price instantly after selection.",
         "GraphQL mutation `createBooking(input: BookingInput!, currency: Currency!): Booking!` returns the booking with both original and converted amounts.",
         "Payments processed through iyzico are sent in the selected currency and the transaction record stores the exchange rate used.",
-        "End\u2011to\u2011end test: create a booking in EUR, verify the SQLite row contains `priceCurrency='EUR'`, `convertedPrice` matches the host's currency after conversion, and the UI shows the correct formatted amount."
+        "End‑to‑end test: create a booking in EUR, verify the SQLite row contains `priceCurrency='EUR'`, `convertedPrice` matches the host's currency after conversion, and the UI shows the correct formatted amount."
       ],
       "created_at": 1788788265.2340007,
       "created_by": "Magda Fullstack LLM Watchdog"
@@ -1561,7 +1563,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788788494061",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788788494061 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788788494061 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1579,7 +1581,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788788494084",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788788494084 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788788494084 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1597,7 +1599,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788788494085",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788788494085 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788788494085 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1615,7 +1617,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788788494061_2026-11-10_2026-11-15",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #ical_sync_list_ical_1788788494061_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788788494061_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1633,7 +1635,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788788511348",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788788511348 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788788511348 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1651,7 +1653,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788788511351",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788788511351 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788788511351 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1669,7 +1671,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788788511365",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788788511365 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788788511365 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1687,7 +1689,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788788511351_2026-11-10_2026-11-15",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #ical_sync_list_ical_1788788511351_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788788511351_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1705,7 +1707,7 @@
       "area": "fullstack",
       "risk": "medium",
       "title": "Guest Identity Verification via Document Upload and OCR",
-      "description": "Add a secure document upload endpoint (POST /api/verify-id) that accepts image/PDF files, stores them in a protected folder, and invokes an OCR service (e.g., Tesseract via a child process) to extract the guest's name and document number. Extend the users table with columns `idVerificationStatus` (enum: pending, approved, rejected) and `idDocumentPath`. Create a new GraphQL mutation `requestIdVerification(file: Upload!): VerificationResult` and a query `userVerificationStatus(userId: ID!): VerificationStatus`. Implement a React component `IdentityVerificationModal` that allows guests to upload their ID, shows upload progress, and displays the verification result badge on the profile page. Update the auth middleware to block certain actions (e.g., booking) for users with `idVerificationStatus !== 'approved'`. Add server\u2011side rate limiting on the upload endpoint and sanitize file names. Store OCR results in a new table `id_verifications` with fields `userId`, `extractedName`, `extractedNumber`, `createdAt`. Ensure the upload directory is not served publicly.",
+      "description": "Add a secure document upload endpoint (POST /api/verify-id) that accepts image/PDF files, stores them in a protected folder, and invokes an OCR service (e.g., Tesseract via a child process) to extract the guest's name and document number. Extend the users table with columns `idVerificationStatus` (enum: pending, approved, rejected) and `idDocumentPath`. Create a new GraphQL mutation `requestIdVerification(file: Upload!): VerificationResult` and a query `userVerificationStatus(userId: ID!): VerificationStatus`. Implement a React component `IdentityVerificationModal` that allows guests to upload their ID, shows upload progress, and displays the verification result badge on the profile page. Update the auth middleware to block certain actions (e.g., booking) for users with `idVerificationStatus !== 'approved'`. Add server‑side rate limiting on the upload endpoint and sanitize file names. Store OCR results in a new table `id_verifications` with fields `userId`, `extractedName`, `extractedNumber`, `createdAt`. Ensure the upload directory is not served publicly.",
       "allowed_paths": [
         "server.js",
         "src/lib/auth.js",
@@ -1730,7 +1732,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #bkg_1788788662600",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #bkg_1788788662600 (Tutar: 4800.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #bkg_1788788662600 (Tutar: 4800.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1748,7 +1750,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788788682096",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788788682096 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788788682096 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1766,7 +1768,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788788682097",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788788682097 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788788682097 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1784,7 +1786,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788788682096_2026-11-10_2026-11-15",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #ical_sync_list_ical_1788788682096_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788788682096_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1802,7 +1804,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788788682127",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788788682127 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788788682127 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1820,7 +1822,7 @@
       "area": "fullstack",
       "risk": "medium",
       "title": "Progressive Web App (PWA) Enablement for Airbnb Clone",
-      "description": "Add PWA capabilities to the Vite\u2011React frontend: create a web\u2011app manifest (public/manifest.json) with icons and display options, implement a service worker (src/service-worker.js) that caches static assets and API responses using Workbox, update vite.config.js to register the service worker and copy the manifest, add an InstallPrompt component (src/components/InstallPrompt.jsx) that shows the Chrome install banner and hook it into App.jsx, and adjust the HTML template to include the manifest link and meta tags. The build should produce a service\u2011worker\u2011enabled bundle that can be installed on mobile browsers and works offline for previously visited listings.",
+      "description": "Add PWA capabilities to the Vite‑React frontend: create a web‑app manifest (public/manifest.json) with icons and display options, implement a service worker (src/service-worker.js) that caches static assets and API responses using Workbox, update vite.config.js to register the service worker and copy the manifest, add an InstallPrompt component (src/components/InstallPrompt.jsx) that shows the Chrome install banner and hook it into App.jsx, and adjust the HTML template to include the manifest link and meta tags. The build should produce a service‑worker‑enabled bundle that can be installed on mobile browsers and works offline for previously visited listings.",
       "allowed_paths": [
         "src/service-worker.js",
         "public/manifest.json",
@@ -1832,7 +1834,7 @@
         "Running `npm run build` generates a `service-worker.js` file and the `manifest.json` is linked in the generated `index.html`.",
         "When the app is opened in Chrome, the InstallPrompt component appears and clicking it triggers the native PWA install flow.",
         "After visiting a listing page, the page can be reloaded while offline and still displays the cached listing details and assets.",
-        "The service worker registers without errors in the browser devtools and shows a successful cache\u2011first strategy for static assets."
+        "The service worker registers without errors in the browser devtools and shows a successful cache‑first strategy for static assets."
       ],
       "created_at": 1788789251.6610007,
       "created_by": "Magda Fullstack LLM Watchdog"
@@ -1843,7 +1845,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rev_2_1788789268302",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rev_2_1788789268302 (Tutar: 1700.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788789268302 (Tutar: 1700.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1861,7 +1863,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_appr_1788789268304",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_appr_1788789268304 (Tutar: 2075.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788789268304 (Tutar: 2075.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1879,7 +1881,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_ical_1788789268324",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_ical_1788789268324 (Tutar: 3900.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788789268324 (Tutar: 3900.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1897,7 +1899,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788789268324_2026-11-10_2026-11-15",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #ical_sync_list_ical_1788789268324_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788789268324_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",
@@ -1915,7 +1917,7 @@
       "area": "backend",
       "risk": "high",
       "title": "Reconcile Payment for Booking #book_rec_1788789269276",
-      "description": "\u00d6demesi ba\u015far\u0131s\u0131z veya eksik olan onayl\u0131 rezervasyon: #book_rec_1788789269276 (Tutar: 15750.0 TL)",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788789269276 (Tutar: 15750.0 TL)",
       "allowed_paths": [
         "server.js",
         "src/lib/db.js",

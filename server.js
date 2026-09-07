@@ -100,6 +100,7 @@ import {
 } from "./src/lib/lastMinuteEngine.js";
 import { getInstallmentPlans } from "./src/lib/installmentEngine.js";
 import { calculateDynamicPrice } from "./src/lib/pricingEngine.js";
+import { getVapidPublicKey, saveSubscription as pushSaveSubscription, removeSubscription as pushRemoveSubscription, sendNotification } from "./src/lib/pushNotificationEngine.js";
 import { 
   getAllExperiences, 
   getExperienceById, 
@@ -933,6 +934,14 @@ app.put("/api/bookings/:id/status", authMiddleware, csrfMiddleware, (req, res) =
   const updated = updateBookingStatus(req.params.id, status, cancelReason);
   if (!updated) return res.status(404).json({ error: "Rezervasyon bulunamadı" });
 
+  // Send push notification for status change
+  if (updated.guestId) {
+    sendNotification(updated.guestId, {
+      title: `Rezervasyon Durumu Güncellendi: ${status}`,
+      body: `Rezervasyonunuzun yeni durumu: ${status}.`
+    }).catch(err => console.error("Push send error (booking status):", err));
+  }
+
   // Loyalty: award points when a pending booking is confirmed by the host
   if (status === "confirmed" && updated && updated.guestId) {
     try {
@@ -1129,22 +1138,26 @@ app.put("/api/listings/:id/last-minute", (req, res) => {
 
 
 // --- Push Notification Endpoints ---
-app.post('/api/notifications/subscribe', (req, res) => {
+app.post('/api/notifications/subscribe', authMiddleware, (req, res) => {
   const { userId, subscription } = req.body;
   if (!userId || !subscription) {
     return res.status(400).json({ success: false, error: "userId ve subscription alanları zorunludur." });
   }
-  const result = saveSubscription(userId, subscription);
+  const result = pushSaveSubscription(userId, subscription);
   res.json({ success: true, data: result });
 });
 
-app.post('/api/notifications/unsubscribe', (req, res) => {
+app.post('/api/notifications/unsubscribe', authMiddleware, (req, res) => {
   const { userId, endpoint } = req.body;
   if (!userId) {
     return res.status(400).json({ success: false, error: "userId zorunludur." });
   }
-  const result = removeSubscription(userId, endpoint);
+  const result = pushRemoveSubscription(userId, endpoint);
   res.json({ success: true, data: result });
+});
+
+app.get('/api/notifications/vapidPublicKey', (req, res) => {
+  res.send(getVapidPublicKey());
 });
 
 
@@ -1234,6 +1247,29 @@ app.post("/api/messages", authMiddleware, csrfMiddleware, messageRateLimiter, (r
     }
     const msg = insertMessage({ listingId, senderId, senderName: user.name, text });
     broadcastToListing(listingId, msg);
+
+    // Find counterpart for push notification
+    const listing = getListingById(listingId);
+    if (listing) {
+      const recipientId = senderId === listing.hostId ? (msg.guestId || null) : listing.hostId;
+      // We don't have msg.guestId stored in messages currently, so we might need to get it differently.
+      // Wait, let's just query the counterpart of this chat
+      const counterpart = db.prepare(`
+        SELECT DISTINCT senderId FROM messages
+        WHERE listingId = ? AND senderId != ?
+        LIMIT 1
+      `).get(listingId, senderId);
+
+      const notifyUserId = counterpart ? counterpart.senderId : listing.hostId;
+
+      if (notifyUserId) {
+        sendNotification(notifyUserId, {
+          title: `Yeni mesaj: ${user.name}`,
+          body: text.substring(0, 50) + (text.length > 50 ? "..." : "")
+        }).catch(err => console.error("Push send error:", err));
+      }
+    }
+
     res.status(201).json({ success: true, data: msg });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
