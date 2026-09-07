@@ -847,7 +847,28 @@
       ],
       "created_at": 1788781655.6439717,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-host-google-calendar-sync",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Google Calendar Sync for Host Listings",
+      "description": "Add a Google Calendar integration that lets hosts link their Google account and automatically push confirmed bookings to their personal calendar. Implement OAuth2 flow, store encrypted refresh tokens, extend the users table with a google_calendar_id column, create a new googleCalendarEngine module with functions to generate auth URLs, exchange tokens, and create events. Add REST endpoints /api/google/auth-url, /api/google/callback, and /api/google/sync-booking in server.js. Update HostDashboard UI to show a \"Connect Google Calendar\" button and a sync status indicator. On booking confirmation, trigger a background job that calls googleCalendarEngine.createEvent(listingId, bookingId).",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/googleCalendarEngine.js",
+        "src/lib/db.js",
+        "src/components/HostDashboard.jsx",
+        "src/lib/auth.js"
+      ],
+      "acceptance": [
+        "Host can click \"Connect Google Calendar\" and is redirected to Google OAuth consent screen; after granting access, the callback stores a refresh token and updates the user record with google_calendar_id.",
+        "When a booking is confirmed for a host with a linked Google Calendar, a calendar event appears in the host's Google Calendar (verified via Google Calendar API mock or real API call)."
+      ],
+      "created_at": 1788781965.5760226,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788781655.643974
+  "updated_at": 1788781965.5760248
 }
