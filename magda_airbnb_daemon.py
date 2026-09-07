@@ -1,3 +1,4 @@
+import shutil
 from magda_agent.guardian.guardian_runner import MagdaGuardianEngine
 #!/usr/bin/env python3
 """
@@ -473,9 +474,26 @@ class MagdaAutonomousWatchdog:
             return False
 
     def _git_pull(self) -> bool:
-        """Pulls latest changes from origin/main."""
+        """Pulls latest changes from origin/main with automatic backup and stash resilience."""
         try:
-            logger.info("Executing periodic git pull origin main...")
+            # 1. Automated DB Backup before pulling new migrations
+            if self.db_path and os.path.exists(self.db_path):
+                backup_dir = os.path.join(self.app_root, "data", "backups")
+                os.makedirs(backup_dir, exist_ok=True)
+                backup_file = os.path.join(backup_dir, f"airbnb_backup_{int(time.time())}.db")
+                shutil.copy2(self.db_path, backup_file)
+                # Keep only last 5 backups
+                backups = sorted([os.path.join(backup_dir, f) for f in os.listdir(backup_dir) if f.endswith(".db")])
+                for old_b in backups[:-5]:
+                    try:
+                        os.remove(old_b)
+                    except Exception:
+                        pass
+
+            # 2. Stash local changes to prevent pull conflicts
+            subprocess.run(["git", "stash"], cwd=self.app_root, capture_output=True, text=True, timeout=15)
+
+            logger.info("Executing robust git pull origin main...")
             res = subprocess.run(
                 ["git", "pull", "origin", "main"],
                 cwd=self.app_root,
@@ -485,6 +503,12 @@ class MagdaAutonomousWatchdog:
                 timeout=30,
             )
             logger.info(f"Git pull result: {res.stdout.strip()}")
+
+            # 3. If pull brought updates, rebuild frontend
+            if "Already up to date." not in res.stdout:
+                logger.info("New updates pulled from main. Triggering npm run build...")
+                subprocess.run(["npm", "run", "build"], cwd=self.app_root, capture_output=True, text=True, timeout=60)
+
             return True
         except subprocess.CalledProcessError as e:
             logger.warning(f"Git pull failed (exit {e.returncode}): {e.stderr or e.stdout}")
