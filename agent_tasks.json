@@ -737,7 +737,31 @@
       ],
       "created_at": 1788773969.5041046,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-ai-powered-listing-recommendations",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "AI‑Powered Personalized Listing Recommendations",
+      "description": "Implement a recommendation engine that suggests listings to a guest based on their past bookings, search history, and similar user behavior. Add a new GraphQL query `recommendedListings(userId: ID!, limit: Int = 10): [Listing]` that returns a ranked list of listings. Create a server‑side module `src/lib/recommendationEngine.js` that uses SQLite queries and a simple collaborative‑filtering algorithm (e.g., user‑based similarity on booking categories). Extend `server.js` to register the resolver. Build a frontend carousel component `src/components/RecommendationCarousel.jsx` that fetches the data via the GraphQL query and displays cards with lazy‑loaded images. Insert the carousel into the home page (`src/App.jsx`) under the “Explore” section. Ensure the new endpoint is protected by existing auth middleware and respects rate limiting.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/recommendationEngine.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/graphqlSchema.js",
+        "src/components/RecommendationCarousel.jsx",
+        "src/App.jsx"
+      ],
+      "acceptance": [
+        "GraphQL query `recommendedListings` returns at most `limit` listings and includes fields `id`, `title`, `pricePerNight`, `images`.",
+        "When a logged‑in user opens the home page, the recommendation carousel appears with at least one listing card and scrolls horizontally.",
+        "Recommendations differ between two users with distinct booking histories, demonstrating personalization.",
+        "No new security warnings appear in the audit report; rate limiting headers are present on the GraphQL endpoint."
+      ],
+      "created_at": 1788776733.6427617,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788773969.504107
+  "updated_at": 1788776733.6427643
 }
