@@ -4,6 +4,7 @@ import { CategoryBar } from "./components/CategoryBar.jsx";
 import { ListingCard } from "./components/ListingCard.jsx";
 import { SortBar, SORT_OPTIONS } from "./components/SortBar.jsx";
 import { RecentlyViewed } from "./components/RecentlyViewed.jsx";
+import { RecommendationCarousel } from "./components/RecommendationCarousel.jsx";
 import { ListingDetail } from "./components/ListingDetail.jsx";
 import { ListingGridSkeleton } from "./components/ListingSkeleton.jsx";
 import { SearchModal } from "./components/SearchModal.jsx";

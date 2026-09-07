@@ -75,3 +75,19 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+.dark body {
+  @apply bg-[#0D0F12] text-[#F7F4EE];
+}
+.dark .bg-white {
+  @apply bg-[#16191E];
+}
+.dark .text-charcoal {
+  @apply text-white;
+}
+.dark .border-charcoal-border {
+  @apply border-white/10;
+}
+.dark .bg-charcoal-bg {
+  @apply bg-[#1C2026];
+}

@@ -1,5 +1,10 @@
 import React, { useEffect, useRef } from "react";
+
 import L from "leaflet";
+import "leaflet.markercluster";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+
 
 export function MapView({ listings = [], onSelectListing }) {
   const mapContainerRef = useRef(null);
@@ -22,12 +27,24 @@ export function MapView({ listings = [], onSelectListing }) {
 
     const map = mapInstanceRef.current;
 
-    // Clear previous markers
-    map.eachLayer((layer) => {
-      if (layer instanceof L.Marker) {
-        map.removeLayer(layer);
-      }
-    });
+    // Add MarkerCluster Group
+    if (!map.clusterGroup) {
+      map.clusterGroup = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        maxClusterRadius: 50,
+        iconCreateFunction: function(cluster) {
+          return L.divIcon({
+            html: '<div class="bg-airbnb text-white font-bold rounded-full w-10 h-10 flex items-center justify-center shadow-md border-2 border-white">' + cluster.getChildCount() + '</div>',
+            className: 'custom-cluster-icon',
+            iconSize: L.point(40, 40)
+          });
+        }
+      });
+      map.addLayer(map.clusterGroup);
+    } else {
+      map.clusterGroup.clearLayers();
+    }
 
     // Add custom HTML price pill markers (Taste Skill Pill Markers)
     listings.forEach((l) => {
@@ -40,7 +57,8 @@ export function MapView({ listings = [], onSelectListing }) {
         iconAnchor: [40, 15]
       });
 
-      const marker = L.marker([l.lat, l.lng], { icon: customIcon }).addTo(map);
+      const marker = L.marker([l.lat, l.lng], { icon: customIcon });
+      map.clusterGroup.addLayer(marker);
 
       // Popup card content
       const popupContent = document.createElement("div");

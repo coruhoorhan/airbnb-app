@@ -15,7 +15,7 @@ export function Navbar({
   onCurrencyChange,
   unreadMessages = 0,
   onOpenInbox,
-  isDarkMode = false,
+  /* isDarkMode prop removed */
   onToggleDarkMode,
   onOpenLoyalty,
   onOpenGiftCards,
@@ -23,6 +23,21 @@ export function Navbar({
   loyaltyTier = null
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem("theme") === "dark" ||
+           (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDarkMode]);
+
   const [notifOpen, setNotifOpen] = useState(false);
   const [currencyOpen, setCurrencyOpen] = useState(false);
 
