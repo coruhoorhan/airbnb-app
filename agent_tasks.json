@@ -2739,7 +2739,230 @@
       ],
       "created_at": 1788788511.717607,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787115431-book_rec_1788788512310",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787115431 vs #book_rec_1788788512310",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787115431 ve #book_rec_1788788512310 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788575.6009035,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787120831-book_rec_1788788512310",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787120831 vs #book_rec_1788788512310",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787120831 ve #book_rec_1788788512310 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788575.6142085,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787141639-book_rec_1788788512310",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787141639 vs #book_rec_1788788512310",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787141639 ve #book_rec_1788788512310 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788575.625713,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787186335-book_rec_1788788512310",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787186335 vs #book_rec_1788788512310",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787186335 ve #book_rec_1788788512310 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788575.6348948,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787214722-book_rec_1788788512310",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787214722 vs #book_rec_1788788512310",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787214722 ve #book_rec_1788788512310 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788575.6436703,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787224849-book_rec_1788788512310",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787224849 vs #book_rec_1788788512310",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787224849 ve #book_rec_1788788512310 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788575.653012,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787360438-book_rec_1788788512310",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787360438 vs #book_rec_1788788512310",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787360438 ve #book_rec_1788788512310 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788575.6608024,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787401334-book_rec_1788788512310",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787401334 vs #book_rec_1788788512310",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787401334 ve #book_rec_1788788512310 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788575.6672184,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787929177-book_rec_1788788512310",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787929177 vs #book_rec_1788788512310",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787929177 ve #book_rec_1788788512310 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788575.6726065,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788788494866-book_rec_1788788512310",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788788494866 vs #book_rec_1788788512310",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788788494866 ve #book_rec_1788788512310 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788575.677964,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788788512310",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788788512310",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788788512310 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788788575.7544365,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-17-identity-verification",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Guest Identity Verification via Document Upload and OCR",
+      "description": "Add a secure document upload endpoint (POST /api/verify-id) that accepts image/PDF files, stores them in a protected folder, and invokes an OCR service (e.g., Tesseract via a child process) to extract the guest's name and document number. Extend the users table with columns `idVerificationStatus` (enum: pending, approved, rejected) and `idDocumentPath`. Create a new GraphQL mutation `requestIdVerification(file: Upload!): VerificationResult` and a query `userVerificationStatus(userId: ID!): VerificationStatus`. Implement a React component `IdentityVerificationModal` that allows guests to upload their ID, shows upload progress, and displays the verification result badge on the profile page. Update the auth middleware to block certain actions (e.g., booking) for users with `idVerificationStatus !== 'approved'`. Add server‑side rate limiting on the upload endpoint and sanitize file names. Store OCR results in a new table `id_verifications` with fields `userId`, `extractedName`, `extractedNumber`, `createdAt`. Ensure the upload directory is not served publicly.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/auth.js",
+        "src/lib/verification.js",
+        "src/components/IdentityVerificationModal.jsx",
+        "src/components/UserProfile.jsx",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js"
+      ],
+      "acceptance": [
+        "Uploading a valid ID image returns a pending status and creates a file in the secure uploads folder.",
+        "OCR extraction stores the extracted name and number in the `id_verifications` table and updates `users.idVerificationStatus` to 'approved' when the extracted name matches the user's profile name.",
+        "The profile page shows a green verification badge only after status is 'approved'.",
+        "Attempts to create a booking while status is not 'approved' are rejected with a clear error message."
+      ],
+      "created_at": 1788788583.4784863,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788788511.7176085
+  "updated_at": 1788788583.4784882
 }
