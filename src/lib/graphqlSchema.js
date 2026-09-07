@@ -9,6 +9,15 @@ export const schema = buildSchema(`
     isHost: Boolean
     bio: String
     createdAt: Float
+    status: String
+    moderationReason: String
+  }
+
+  
+  type CalendarSyncInfo {
+    status: String
+    externalUrl: String
+    lastSyncedAt: Float
   }
 
   type Listing {
@@ -34,6 +43,7 @@ export const schema = buildSchema(`
     isPublished: Boolean
     instantBook: Boolean
     reviews: [Review]
+    calendarSync: CalendarSyncInfo
   }
 
   type Booking {
@@ -52,6 +62,8 @@ export const schema = buildSchema(`
     cleaningFee: Float
     serviceFee: Float
     discountAmount: Float
+    currency: String
+    approvalStatus: String
   }
 
   type Review {
@@ -63,6 +75,47 @@ export const schema = buildSchema(`
     rating: Float!
     comment: String
     createdAt: Float
+    status: String
+    moderationReason: String
+  }
+
+  type MonthlyEarnings {
+    month: String!
+    earnings: Float!
+    bookingsCount: Int!
+  }
+
+  type ListingRevenueBreakdown {
+    listingId: String!
+    title: String!
+    totalEarnings: Float!
+    bookingsCount: Int!
+  }
+
+  type PendingPayout {
+    bookingId: String!
+    amount: Float!
+    payoutDate: String
+    guestName: String
+  }
+
+  type RevenueAnalytics {
+    hostId: ID!
+    totalEarnings: Float!
+    pendingPayoutsTotal: Float!
+    averageOccupancyRate: Float!
+    earningsByMonth: [MonthlyEarnings]
+    listingBreakdown: [ListingRevenueBreakdown]
+    pendingPayouts: [PendingPayout]
+  }
+
+  
+  type Mutation {
+    approveBooking(id: ID!, approve: Boolean!): Booking
+    setCalendarSyncUrl(listingId: ID!, url: String!): Listing
+    removeCalendarSync(listingId: ID!): Listing
+    flagReview(id: ID!, reason: String!): Review
+    moderateReview(id: ID!, action: String!, reason: String): Review
   }
 
   type Query {
@@ -73,6 +126,8 @@ export const schema = buildSchema(`
     booking(id: ID!): Booking
     bookings(guestId: String, hostId: String): [Booking]
     reviews(listingId: ID!): [Review]
+    recommendedListings(userId: ID, limit: Int): [Listing!]!
+    hostRevenueAnalytics(hostId: ID!): RevenueAnalytics!
+    convertCurrency(amount: Float!, from: String!, to: String!): Float!
   }
 `);
-

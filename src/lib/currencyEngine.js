@@ -65,3 +65,18 @@ export function formatCurrency(amountInTry, targetCurrency = "TRY") {
 export function getAvailableCurrencies() {
   return Object.values(SUPPORTED_CURRENCIES);
 }
+
+
+export function convertCurrency(amount, from = "TRY", to = "TRY") {
+  const fromCode = (from || "TRY").toUpperCase();
+  const toCode = (to || "TRY").toUpperCase();
+  if (!SUPPORTED_CURRENCIES[fromCode] || !SUPPORTED_CURRENCIES[toCode]) {
+    throw new Error(`Geçersiz veya desteklenmeyen para birimi: ${fromCode} -> ${toCode}`);
+  }
+  const fromRate = SUPPORTED_CURRENCIES[fromCode].rateToTry;
+  const toRate = SUPPORTED_CURRENCIES[toCode].rateToTry;
+  // Convert from 'from' currency to TRY first, then to 'to' currency
+  const amountInTry = Number(amount) / fromRate;
+  const converted = amountInTry * toRate;
+  return Math.round(converted * 100) / 100;
+}

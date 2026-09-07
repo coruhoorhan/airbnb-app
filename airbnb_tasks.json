@@ -1,0 +1,39 @@
+{
+  "project": "airbnb-fatsa-clone",
+  "version": "1.0.0",
+  "updated_at": 1788768101.735344,
+  "tasks": [
+    {
+      "id": "task-01-database-schema",
+      "status": "done",
+      "area": "backend",
+      "title": "SQLite WAL Database Schema & iyzico Payments",
+      "description": "Initialize relational schema for users, listings, bookings, reviews, and payments.",
+      "allowed_paths": [
+        "src/lib/db.js",
+        "server.js",
+        "airbnb_tasks.json"
+      ],
+      "acceptance": [
+        "All tables created with foreign key references."
+      ]
+    },
+    {
+      "id": "auto-fix-missing_rate_limiter",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Missing Rate Limiter on POST /api/listings",
+      "description": "Endpoint POST /api/listings performs mutations without rate limiting middleware.",
+      "allowed_paths": [
+        "server.js",
+        "airbnb_tasks.json"
+      ],
+      "acceptance": [
+        "Add rate limiter middleware to POST /api/listings"
+      ],
+      "created_at": 1788768101.7353408,
+      "created_by": "Magda Autonomous Watchdog"
+    }
+  ]
+}

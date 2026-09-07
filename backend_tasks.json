@@ -27,7 +27,7 @@
     },
     {
       "id": "feat-push-notification-engine",
-      "status": "todo",
+      "status": "done",
       "area": "fullstack",
       "risk": "medium",
       "title": "Push Notification Engine for Real‑time Guest & Host Alerts",
@@ -47,11 +47,13 @@
         "If the user revokes permission, the subscription endpoint returns a 403 and the stored subscription is removed."
       ],
       "created_at": 1788769969.1371365,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "completed_at": 1788787126.4427557,
+      "completed_by": "Veyyon & Codex Backend Subagent"
     },
     {
       "id": "feat-host-payout-revenue-analytics",
-      "status": "todo",
+      "status": "done",
       "area": "fullstack",
       "risk": "medium",
       "title": "Host Payout & Revenue Analytics Dashboard",
@@ -70,11 +72,13 @@
         "Rate limiting middleware rejects requests exceeding 10 queries per minute per host IP."
       ],
       "created_at": 1788770889.6911442,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "completed_at": 1788787126.4427557,
+      "completed_by": "Veyyon & Codex Backend Subagent"
     },
     {
       "id": "feat-instant-booking-approval-flow",
-      "status": "todo",
+      "status": "done",
       "area": "fullstack",
       "risk": "medium",
       "title": "Instant Booking Approval Flow",
@@ -95,11 +99,13 @@
         "The BookingWidget prevents guests from booking a listing that is not instant‑book enabled or that requires host approval, displaying an appropriate message."
       ],
       "created_at": 1788771503.6338148,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "completed_at": 1788787126.4427557,
+      "completed_by": "Veyyon & Codex Backend Subagent"
     },
     {
       "id": "feat-calendar-availability-ical-sync",
-      "status": "todo",
+      "status": "done",
       "area": "fullstack",
       "risk": "medium",
       "title": "iCal Calendar Availability Sync for Listings",
@@ -120,11 +126,13 @@
         "GraphQL query listing(id: $id) { calendarSync { status externalUrl } } returns correct sync information after mutations."
       ],
       "created_at": 1788772426.815056,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "completed_at": 1788787126.4427557,
+      "completed_by": "Veyyon & Codex Backend Subagent"
     },
     {
       "id": "feat-multi-currency-checkout",
-      "status": "todo",
+      "status": "done",
       "area": "fullstack",
       "risk": "medium",
       "title": "Multi‑currency Checkout Support",
@@ -148,11 +156,13 @@
         "Invalid or unsupported currency codes are rejected with a 400 response and a clear error message."
       ],
       "created_at": 1788773969.5041046,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "completed_at": 1788787126.4427557,
+      "completed_by": "Veyyon & Codex Backend Subagent"
     },
     {
       "id": "feat-guest-review-moderation",
-      "status": "todo",
+      "status": "done",
       "area": "fullstack",
       "risk": "medium",
       "title": "Guest Review Moderation Dashboard",
@@ -173,11 +183,13 @@
         "All new DB columns are populated correctly and persisted across server restarts."
       ],
       "created_at": 1788772734.4202356,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "completed_at": 1788787126.4427557,
+      "completed_by": "Veyyon & Codex Backend Subagent"
     },
     {
       "id": "feat-ai-powered-listing-recommendations",
-      "status": "todo",
+      "status": "done",
       "area": "fullstack",
       "risk": "medium",
       "title": "AI‑Powered Personalized Listing Recommendations",
@@ -197,7 +209,9 @@
         "No new security warnings appear in the audit report; rate limiting headers are present on the GraphQL endpoint."
       ],
       "created_at": 1788776733.6427617,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "completed_at": 1788787126.4427557,
+      "completed_by": "Veyyon & Codex Backend Subagent"
     },
     {
       "id": "security-csrf-protection",

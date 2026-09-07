@@ -1,3 +1,4 @@
+import { calculateBookingPrice } from "./bookingEngine.js";
 /**
  * iyzico Payment Gateway Engine (Sandbox & Production)
  * Airbnb Full-Stack Clone
@@ -88,19 +89,25 @@ export function buildPaymentRequest({
   card = null,
   callbackUrl = null,
   conversationId = null,
-  installmentMonths = 1
+  installmentMonths = 1,
+  currency = "TRY"
 }) {
+  const currCode = (currency || "TRY").toUpperCase();
+  if (!["TRY", "USD", "EUR", "GBP"].includes(currCode)) {
+    throw new Error(`Desteklenmeyen para birimi: ${currCode}`);
+  }
   if (!listing || !listing.id) {
     throw new Error("Geçerli bir ilan bilgisi gereklidir.");
   }
-  if (!priceMath || typeof priceMath.basePrice !== "number") {
+  const math = priceMath || (checkIn && checkOut ? calculateBookingPrice(checkIn, checkOut, listing.pricePerNight || 100, listing.cleaningFee || 0, listing.serviceFee || 0) : null);
+  if (!math || typeof math.basePrice !== "number") {
     throw new Error("Fiyat dökümü gereklidir.");
   }
 
   const convId = conversationId || `conv_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
   const basketId = `bsk_${Date.now()}`;
 
-  const basePrice = Number(priceMath.basePrice) || 0;
+  const basePrice = Number(math.basePrice) || 0;
   const cleaningFee = Number(listing.cleaningFee) || 0;
   const serviceFee = Number(listing.serviceFee) || 0;
   const discount = Math.max(0, Number(discountAmount) || 0);
@@ -182,7 +189,7 @@ export function buildPaymentRequest({
     conversationId: convId,
     price: formatIyzicoPrice(rawTotalPrice),
     paidPrice: formatIyzicoPrice(finalPaidPrice),
-    currency: Iyzipay.CURRENCY ? Iyzipay.CURRENCY.TRY : "TRY",
+    currency: Iyzipay.CURRENCY ? (Iyzipay.CURRENCY[currCode] || currCode) : currCode,
     installment: String(installmentMonths || 1),
     basketId,
     paymentChannel: Iyzipay.PAYMENT_CHANNEL ? Iyzipay.PAYMENT_CHANNEL.WEB : "WEB",
@@ -279,3 +286,5 @@ export async function retrieveCheckoutFormResult(token, client = getIyzipayClien
     });
   });
 }
+
+export const createPaymentRequest = buildPaymentRequest;

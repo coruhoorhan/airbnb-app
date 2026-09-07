@@ -26,7 +26,7 @@ export function checkIntervalOverlap(newCheckIn, newCheckOut, existingCheckIn, e
 export function validateBookingConflict(listingId, newCheckIn, newCheckOut, existingBookings = [], availabilityBlocks = []) {
   // 1. Check against confirmed and pending bookings for the same listing
   const activeBookings = existingBookings.filter(
-    (b) => b.listingId === listingId && (b.status === "confirmed" || b.status === "pending")
+    (b) => b.listingId === listingId && (b.status === "confirmed" || b.status === "pending") && b.approvalStatus !== "rejected"
   );
 
   for (const booking of activeBookings) {

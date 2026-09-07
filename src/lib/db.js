@@ -1,3 +1,21 @@
+
+
+try {
+  db.exec("ALTER TABLE listings ADD COLUMN calendarSyncUrl TEXT");
+  db.exec("ALTER TABLE listings ADD COLUMN calendarSyncStatus TEXT DEFAULT 'idle'");
+  db.exec("ALTER TABLE listings ADD COLUMN lastSyncedAt INTEGER");
+} catch (e) {}
+
+
+try {
+  db.exec("ALTER TABLE reviews ADD COLUMN status TEXT DEFAULT 'published'");
+  db.exec("ALTER TABLE reviews ADD COLUMN moderationReason TEXT");
+} catch (e) {}
+
+try {
+  db.exec("ALTER TABLE bookings ADD COLUMN approvalStatus TEXT DEFAULT 'pending'");
+} catch (e) {}
+
 import Database from "better-sqlite3";
 import path from "path";
 import fs from "fs";
@@ -18,6 +36,24 @@ if (!fs.existsSync(dataDir)) {
 
 const dbPath = path.join(dataDir, "airbnb.db");
 export const db = new Database(dbPath);
+
+
+try {
+  db.exec("ALTER TABLE listings ADD COLUMN calendarSyncUrl TEXT");
+  db.exec("ALTER TABLE listings ADD COLUMN calendarSyncStatus TEXT DEFAULT 'idle'");
+  db.exec("ALTER TABLE listings ADD COLUMN lastSyncedAt INTEGER");
+} catch (e) {}
+
+
+try {
+  db.exec("ALTER TABLE reviews ADD COLUMN status TEXT DEFAULT 'published'");
+  db.exec("ALTER TABLE reviews ADD COLUMN moderationReason TEXT");
+} catch (e) {}
+
+try {
+  db.exec("ALTER TABLE bookings ADD COLUMN approvalStatus TEXT DEFAULT 'pending'");
+} catch (e) {}
+
 
 // Enable WAL mode for high performance concurrency
 db.pragma("journal_mode = WAL");
@@ -601,17 +637,18 @@ export function insertBooking(b) {
     INSERT INTO bookings (
       id, listingId, guestId, hostId, checkIn, checkOut, numGuests,
       nightlyPrice, cleaningFee, serviceFee, totalPrice, couponCode, discountAmount,
-      paymentStatus, paymentId, status, createdAt
+      paymentStatus, paymentId, status, approvalStatus, createdAt
     ) VALUES (
       @id, @listingId, @guestId, @hostId, @checkIn, @checkOut, @numGuests,
       @nightlyPrice, @cleaningFee, @serviceFee, @totalPrice, @couponCode, @discountAmount,
-      @paymentStatus, @paymentId, @status, @createdAt
+      @paymentStatus, @paymentId, @status, @approvalStatus, @createdAt
     )
   `).run({
     couponCode: null,
     discountAmount: 0,
     paymentStatus: "unpaid",
     paymentId: null,
+    approvalStatus: b.approvalStatus || (b.status === "confirmed" ? "approved" : "pending"),
     ...b
   });
   return db.prepare("SELECT * FROM bookings WHERE id = ?").get(b.id);
@@ -795,7 +832,7 @@ export function isListingFavorited(userId, listingId) {
 // --- Review Engine Functions ---
 
 export function addReview({ listingId, bookingId, reviewerId, reviewerName, rating, comment }) {
-  const id = `rev_${Date.now()}`;
+  const id = `rev_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
   db.prepare(`
     INSERT INTO reviews (id, listingId, bookingId, reviewerId, reviewerName, rating, comment, createdAt)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -814,8 +851,50 @@ export function addReview({ listingId, bookingId, reviewerId, reviewerName, rati
   return { id, avgRating, reviewCount: stats.count };
 }
 
-export function getReviewsForListing(listingId) {
-  return db.prepare("SELECT * FROM reviews WHERE listingId = ? ORDER BY createdAt DESC").all(listingId);
+export function recalculateListingRating(listingId) {
+  const stats = db.prepare("SELECT AVG(rating) as avg, COUNT(*) as count FROM reviews WHERE listingId = ? AND status != 'hidden'").get(listingId);
+  const avgRating = stats.count > 0 ? Number(stats.avg.toFixed(2)) : 5.0;
+  db.prepare("UPDATE listings SET avgRating = ?, reviewCount = ? WHERE id = ?").run(
+    avgRating,
+    stats.count,
+    listingId
+  );
+  return { avgRating, reviewCount: stats.count };
+}
+
+export function flagReview(id, reason) {
+  const review = db.prepare("SELECT * FROM reviews WHERE id = ?").get(id);
+  if (!review) return null;
+  db.prepare("UPDATE reviews SET status = 'flagged', moderationReason = ? WHERE id = ?").run(reason, id);
+  return db.prepare("SELECT * FROM reviews WHERE id = ?").get(id);
+}
+
+export function moderateReview(id, action, reason = null) {
+  const review = db.prepare("SELECT * FROM reviews WHERE id = ?").get(id);
+  if (!review) return null;
+
+  if (action === "approve") {
+    db.prepare("UPDATE reviews SET status = 'published', moderationReason = ? WHERE id = ?").run(reason || "Onaylandı", id);
+  } else if (action === "hide") {
+    db.prepare("UPDATE reviews SET status = 'hidden', moderationReason = ? WHERE id = ?").run(reason || "Gizlendi", id);
+  } else if (action === "delete") {
+    db.prepare("DELETE FROM reviews WHERE id = ?").run(id);
+  } else {
+    throw new Error(`Geçersiz moderasyon eylemi: ${action}`);
+  }
+
+  recalculateListingRating(review.listingId);
+  if (action === "delete") {
+    return { ...review, status: "deleted" };
+  }
+  return db.prepare("SELECT * FROM reviews WHERE id = ?").get(id);
+}
+
+export function getReviewsForListing(listingId, includeHidden = false) {
+  if (includeHidden) {
+    return db.prepare("SELECT * FROM reviews WHERE listingId = ? ORDER BY createdAt DESC").all(listingId);
+  }
+  return db.prepare("SELECT * FROM reviews WHERE listingId = ? AND status != 'hidden' ORDER BY createdAt DESC").all(listingId);
 }
 
 // --- Autonomous Guardian / Watchdog Issues Functions ---
@@ -1066,4 +1145,121 @@ export function getReviewsForListings(listingIds) {
   if (!listingIds || listingIds.length === 0) return [];
   const placeholders = listingIds.map(() => '?').join(',');
   return db.prepare(`SELECT * FROM reviews WHERE listingId IN (${placeholders})`).all(...listingIds);
+}
+
+
+export function getHostRevenueAnalytics(hostId) {
+  const listings = db.prepare("SELECT * FROM listings WHERE hostId = ?").all(hostId);
+  const listingIds = listings.map(l => l.id);
+  
+  if (listingIds.length === 0) {
+    return {
+      hostId,
+      totalEarnings: 0,
+      pendingPayoutsTotal: 0,
+      averageOccupancyRate: 0,
+      earningsByMonth: [],
+      listingBreakdown: [],
+      pendingPayouts: []
+    };
+  }
+
+  const placeholders = listingIds.map(() => "?").join(",");
+  const bookings = db.prepare(
+    "SELECT b.*, u.name as guestName FROM bookings b LEFT JOIN users u ON b.guestId = u.id WHERE b.hostId = ? OR b.listingId IN (" + placeholders + ")"
+  ).all(hostId, ...listingIds);
+
+  let totalEarnings = 0;
+  let pendingPayoutsTotal = 0;
+  const monthlyMap = {};
+  const listingMap = {};
+  const pendingPayouts = [];
+
+  for (const l of listings) {
+    listingMap[l.id] = {
+      listingId: l.id,
+      title: l.title,
+      totalEarnings: 0,
+      bookingsCount: 0
+    };
+  }
+
+  let totalBookedNights = 0;
+
+  for (const b of bookings) {
+    if (b.status === "cancelled") continue;
+    
+    const earnings = (b.totalPrice || 0) - (b.serviceFee || 0);
+
+    if (b.paymentStatus === "paid" || b.status === "confirmed" || b.status === "completed") {
+      totalEarnings += earnings;
+      
+      if (listingMap[b.listingId]) {
+        listingMap[b.listingId].totalEarnings += earnings;
+        listingMap[b.listingId].bookingsCount += 1;
+      }
+
+      const dateStr = b.checkIn || (b.createdAt ? new Date(b.createdAt).toISOString().slice(0, 10) : "2026-09-01");
+      const month = dateStr.slice(0, 7);
+      if (!monthlyMap[month]) {
+        monthlyMap[month] = { month, earnings: 0, bookingsCount: 0 };
+      }
+      monthlyMap[month].earnings += earnings;
+      monthlyMap[month].bookingsCount += 1;
+
+      if (b.checkIn && b.checkOut) {
+        const d1 = new Date(b.checkIn);
+        const d2 = new Date(b.checkOut);
+        const diffDays = Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
+        totalBookedNights += diffDays;
+      } else {
+        totalBookedNights += 1;
+      }
+    }
+
+    if (b.status === "confirmed" || b.paymentStatus === "paid") {
+      pendingPayouts.push({
+        bookingId: b.id,
+        amount: earnings,
+        payoutDate: b.checkOut || b.checkIn || new Date().toISOString().slice(0, 10),
+        guestName: b.guestName || "Misafir"
+      });
+      pendingPayoutsTotal += earnings;
+    }
+  }
+
+  const possibleNights = Math.max(30, listings.length * 30);
+  const averageOccupancyRate = Math.min(100, Math.round((totalBookedNights / possibleNights) * 100 * 10) / 10);
+  const earningsByMonth = Object.values(monthlyMap).sort((a, b) => a.month.localeCompare(b.month));
+  const listingBreakdown = Object.values(listingMap);
+
+  return {
+    hostId,
+    totalEarnings: Math.round(totalEarnings * 100) / 100,
+    pendingPayoutsTotal: Math.round(pendingPayoutsTotal * 100) / 100,
+    averageOccupancyRate,
+    earningsByMonth,
+    listingBreakdown,
+    pendingPayouts
+  };
+}
+
+
+export function updateBookingApproval(id, approvalStatus) {
+  const current = getBookingById(id);
+  if (!current) return null;
+  const status = approvalStatus === "approved" ? "confirmed" : (approvalStatus === "rejected" ? "cancelled" : current.status);
+  db.prepare("UPDATE bookings SET approvalStatus = ?, status = ? WHERE id = ?").run(approvalStatus, status, id);
+  return getBookingById(id);
+}
+
+
+export function setListingCalendarSyncUrl(listingId, url) {
+  db.prepare("UPDATE listings SET calendarSyncUrl = ?, calendarSyncStatus = 'pending' WHERE id = ?").run(url, listingId);
+  return getListingById(listingId);
+}
+
+export function removeListingCalendarSync(listingId) {
+  db.prepare("UPDATE listings SET calendarSyncUrl = NULL, calendarSyncStatus = 'disabled', lastSyncedAt = NULL WHERE id = ?").run(listingId);
+  return getListingById(listingId);
 }

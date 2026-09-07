@@ -1,3 +1,5 @@
+import { generateIcsFeed, syncExternalIcal } from "./src/lib/calendarSync.js";
+import { saveSubscription, removeSubscription, getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
 import http from "http";
 import { setupChatWebSocketServer, chatEngine } from "./src/lib/chatEngine.js";
 import "express-async-errors";
@@ -1103,6 +1105,54 @@ app.put("/api/listings/:id/last-minute", (req, res) => {
     const updated = toggleLastMinuteDeal(req.params.id, discountPercent);
     if (!updated) return res.status(404).json({ success: false, error: "İlan bulunamadı." });
     res.json({ success: true, data: updated });
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
+});
+
+
+// --- Push Notification Endpoints ---
+app.post('/api/notifications/subscribe', (req, res) => {
+  const { userId, subscription } = req.body;
+  if (!userId || !subscription) {
+    return res.status(400).json({ success: false, error: "userId ve subscription alanları zorunludur." });
+  }
+  const result = saveSubscription(userId, subscription);
+  res.json({ success: true, data: result });
+});
+
+app.post('/api/notifications/unsubscribe', (req, res) => {
+  const { userId, endpoint } = req.body;
+  if (!userId) {
+    return res.status(400).json({ success: false, error: "userId zorunludur." });
+  }
+  const result = removeSubscription(userId, endpoint);
+  res.json({ success: true, data: result });
+});
+
+
+// --- iCal Calendar Sync Endpoints ---
+app.get("/api/calendar/:listingId.ics", (req, res) => {
+  const { listingId } = req.params;
+  const feed = generateIcsFeed(listingId);
+  if (!feed) {
+    return res.status(404).send("Listing not found");
+  }
+  res.setHeader("Content-Type", "text/calendar; charset=utf-8");
+  res.setHeader("Content-Disposition", `attachment; filename="${listingId}.ics"`);
+  res.send(feed);
+});
+
+app.post("/api/calendar/:listingId/sync", async (req, res) => {
+  try {
+    const { listingId } = req.params;
+    const { icalUrl, icalData } = req.body;
+    const source = icalUrl || icalData;
+    if (!source) {
+      return res.status(400).json({ success: false, error: "icalUrl veya icalData zorunludur." });
+    }
+    const result = await syncExternalIcal(listingId, source);
+    res.json({ success: true, data: result });
   } catch (err) {
     res.status(400).json({ success: false, error: err.message });
   }
