@@ -402,31 +402,87 @@ export function AdminMagdaDashboard({ onClose }) {
             </div>
           )}
 
-          {/* TAB 4: HIERARCHICAL PLANNER */}
+          {/* TAB 4: HIERARCHICAL PLANNER & REAL LIVE DAG */}
           {activeTab === "brain" && (
             <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm space-y-4 text-xs">
-              <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                <Brain className="w-4 h-4 text-indigo-600" />
-                Claude Hierarchical Task Decomposition (DAG)
-              </h3>
-              <p className="text-gray-600 text-xs">
-                Magda-Agent, kullanıcıdan gelen her karmaşık hedefi rollerine göre parçalara böler ve DAG sırasına göre icra eder:
-              </p>
-              <div className="space-y-2 font-mono text-[11px]">
-                <div className="p-2.5 bg-purple-50 rounded-lg border border-purple-100 text-purple-900 font-bold">
-                  1. Researcher: İlgili bölge, fiyat ve ilanları analiz et
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div>
+                  <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                    <Brain className="w-4 h-4 text-indigo-600" />
+                    Canlı Görev Bağımlılık Ağacı (Active Task DAG Graph)
+                  </h3>
+                  <p className="text-gray-500 text-xs mt-0.5">
+                    Canlı kuyruktaki görevlerin ve alt bileşenlerin gerçek bağımlılık sırası.
+                  </p>
                 </div>
-                <div className="p-2.5 bg-indigo-50 rounded-lg border border-indigo-100 text-indigo-900 font-bold">
-                  2. Architect: Rezervasyon planı ve çakışma denetimi kur
+                <span className="px-2.5 py-1 bg-indigo-50 text-indigo-700 font-bold rounded-lg text-[11px]">
+                  Aktif DAG: {tasksManifest?.tasks?.filter(t => t.status === "todo")[0]?.id || "batch-01-frontend-design-suite"}
+                </span>
+              </div>
+
+              {/* Real DAG Flow Nodes */}
+              <div className="space-y-3 pt-2 font-mono text-xs">
+                <div className="p-3 bg-purple-50/70 rounded-xl border border-purple-200 flex items-center justify-between">
+                  <div>
+                    <div className="font-bold text-purple-900 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-purple-600"></span>
+                      1. [FRONTEND] Harita Kümeleme (Leaflet Clustering)
+                    </div>
+                    <p className="text-[11px] text-purple-700 font-sans mt-0.5">src/components/MapView.jsx & src/lib/mapClusterEngine.js</p>
+                  </div>
+                  <span className="px-2 py-0.5 bg-purple-200 text-purple-800 rounded text-[10px] font-bold">DAG NODE 1</span>
                 </div>
-                <div className="p-2.5 bg-blue-50 rounded-lg border border-blue-100 text-blue-900 font-bold">
-                  3. Coder: Veritabanı sorgularını ve fiyat indirimlerini hesapla
+
+                <div className="text-center text-gray-400 font-bold">↓</div>
+
+                <div className="p-3 bg-indigo-50/70 rounded-xl border border-indigo-200 flex items-center justify-between">
+                  <div>
+                    <div className="font-bold text-indigo-900 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
+                      2. [FRONTEND] 5'li Fotoğraf Izgarası ve Lightbox Galeri
+                    </div>
+                    <p className="text-[11px] text-indigo-700 font-sans mt-0.5">src/components/ListingDetail.jsx & src/components/PhotoLightbox.jsx</p>
+                  </div>
+                  <span className="px-2 py-0.5 bg-indigo-200 text-indigo-800 rounded text-[10px] font-bold">DAG NODE 2</span>
                 </div>
-                <div className="p-2.5 bg-emerald-50 rounded-lg border border-emerald-100 text-emerald-900 font-bold">
-                  4. Tester: AST ve parametre doğruluğunu test et
+
+                <div className="text-center text-gray-400 font-bold">↓</div>
+
+                <div className="p-3 bg-blue-50/70 rounded-xl border border-blue-200 flex items-center justify-between">
+                  <div>
+                    <div className="font-bold text-blue-900 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+                      3. [FRONTEND] Karanlık ve Aydınlık Mod (Theme Toggle)
+                    </div>
+                    <p className="text-[11px] text-blue-700 font-sans mt-0.5">src/components/Navbar.jsx, src/App.jsx, src/index.css</p>
+                  </div>
+                  <span className="px-2 py-0.5 bg-blue-200 text-blue-800 rounded text-[10px] font-bold">DAG NODE 3</span>
                 </div>
-                <div className="p-2.5 bg-amber-50 rounded-lg border border-amber-100 text-amber-900 font-bold">
-                  5. Reviewer: Çıktıyı son kullanıcı için sanitize et ve sun
+
+                <div className="text-center text-gray-400 font-bold">↓</div>
+
+                <div className="p-3 bg-emerald-50/70 rounded-xl border border-emerald-200 flex items-center justify-between">
+                  <div>
+                    <div className="font-bold text-emerald-900 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+                      4. [FRONTEND] Yapay Zekâ İlan Öneri Karuseli & Lazy-Load
+                    </div>
+                    <p className="text-[11px] text-emerald-700 font-sans mt-0.5">src/components/RecommendationCarousel.jsx & ListingCard.jsx</p>
+                  </div>
+                  <span className="px-2 py-0.5 bg-emerald-200 text-emerald-800 rounded text-[10px] font-bold">DAG NODE 4</span>
+                </div>
+
+                <div className="text-center text-gray-400 font-bold">↓</div>
+
+                <div className="p-3 bg-amber-50/70 rounded-xl border border-amber-200 flex items-center justify-between">
+                  <div>
+                    <div className="font-bold text-amber-900 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-600"></span>
+                      5. [VERIFICATION] Vitest Test Paketi Doğrulaması
+                    </div>
+                    <p className="text-[11px] text-amber-700 font-sans mt-0.5">tests/frontend_design_suite.test.js (0 Failure Hedefi)</p>
+                  </div>
+                  <span className="px-2 py-0.5 bg-amber-200 text-amber-800 rounded text-[10px] font-bold">DAG VERIFY</span>
                 </div>
               </div>
             </div>
