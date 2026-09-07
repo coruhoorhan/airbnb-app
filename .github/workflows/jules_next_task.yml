@@ -63,7 +63,8 @@ jobs:
 
           TASK:
           1. Open agent_tasks.json in the repository root (the single source of truth task manifest).
-          2. STRICT RULE: Look ONLY at the "tasks" array. Find the FIRST task where status is "todo" OR "in_progress" (resume an in_progress task first, never start a second one in parallel).
+          2. STRICT RULE: Look ONLY at the "tasks" array. Find the FIRST task where status is "todo" AND is NOT claimed by human/veyyon (skip tasks where claimed_by == "human" or "veyyon").
+          3. Set claimed_by: "jules" and status: "in_progress" when you begin work. Find the FIRST task where status is "todo" OR "in_progress" (resume an in_progress task first, never start a second one in parallel).
           3. The moment you start work, set that task status to "in_progress" in agent_tasks.json. Set "done" ONLY when the complete PR is ready to open.
           4. Implement the ENTIRE task as described (backend API / frontend components / database operations).
           5. Update agent_tasks.json: set the completed task status to "done".

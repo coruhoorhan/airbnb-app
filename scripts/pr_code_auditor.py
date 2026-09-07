@@ -85,12 +85,16 @@ GIT DIFF:
 {diff_text}
 ```
 
-AUDIT CRITERIA:
-1. Security & Input Sanitization (XSS, SQL/Command Injection, NaN/out-of-bound inputs, rate limiting, authentication/authorization).
-2. Correctness & Error Handling (Unhandled promise rejections, edge cases, error message detail leaks).
-3. Code Quality, Modularity & Performance (Clean structure, no avoidable overhead, sensible abstractions).
-4. Manifest & Test Coverage (Does it meet acceptance criteria and include proper tests?).
-
+DETERMINISTIC ARCHITECTURE & SECURITY RULES:
+- SEC-001 (CSRF): All state-changing mutation endpoints (POST/PUT/DELETE/PATCH) must validate x-csrf-token.
+- SEC-002 (SQL Injection): Raw SQL string interpolation forbidden. Prepared statements (?) mandatory.
+- SEC-003 (Auth Security): Cookie flags (HttpOnly, SameSite, Secure) & JWT expiration limits.
+- SEC-004 (Rate Limiting): Public mutation & auth routes protected with sliding window rate limiters.
+- SEC-005 (CSP): No upgrade-insecure-requests on non-HTTPS environments; valid font/image/style sources.
+- QUAL-001 (Scope Bounding): Changes strictly within allowed_paths.
+- QUAL-002 (Test Coverage): New routes/engines must have corresponding tests in tests/.
+- QUAL-003 (AST Integrity): No broken syntax or invalid JSX tags.
+- QUAL-004 (WCAG Accessibility): Button aria-labels, click div role=button, tabIndex={0}, onKeyDown.
 DECISION RULES (tiered gate - read carefully):
 - CRITICAL/HIGH = exploitable vulnerability, auth bypass, injection, secret leak,
   broken access control, data loss, unhandled crash on main paths. If ANY remain:

@@ -212,7 +212,6 @@
       "description": "Address the non-blocking (MEDIUM/LOW) polish findings from the Magda AI auditor review on https://github.com/coruhoorhan/airbnb-app/pull/10. Read the latest auditor review on that PR and implement every MEDIUM/LOW item. Do NOT re-litigate BLOCKING items; those gate the original PR.",
       "allowed_paths": [
         "agent_tasks.json",
-        "package-lock.json",
         "package.json",
         "server.js",
         "src"
@@ -232,7 +231,6 @@
       "description": "Address the non-blocking (MEDIUM/LOW) polish findings from the Magda AI auditor review on https://github.com/coruhoorhan/airbnb-app/pull/12. Read the latest auditor review on that PR and implement every MEDIUM/LOW item. Do NOT re-litigate BLOCKING items; those gate the original PR.",
       "allowed_paths": [
         "agent_tasks.json",
-        "package-lock.json",
         "package.json",
         "server.js",
         "src",
@@ -271,7 +269,6 @@
       "description": "Address the non-blocking (MEDIUM/LOW) polish findings from the Magda AI auditor review on https://github.com/coruhoorhan/airbnb-app/pull/16. Read the latest auditor review on that PR and implement every MEDIUM/LOW item. Do NOT re-litigate BLOCKING items; those gate the original PR.",
       "allowed_paths": [
         "agent_tasks.json",
-        "package-lock.json",
         "package.json",
         "src",
         "tests"
@@ -291,7 +288,6 @@
       "description": "Address the non-blocking (MEDIUM/LOW) polish findings from the Magda AI auditor review on https://github.com/coruhoorhan/airbnb-app/pull/18. Read the latest auditor review on that PR and implement every MEDIUM/LOW item. Do NOT re-litigate BLOCKING items; those gate the original PR.",
       "allowed_paths": [
         "agent_tasks.json",
-        "package-lock.json",
         "package.json",
         "server.js",
         "src",
@@ -585,7 +581,6 @@
       "description": "Address the non-blocking (MEDIUM/LOW) polish findings from the Magda AI auditor review on https://github.com/coruhoorhan/airbnb-app/pull/19. Read the latest auditor review on that PR and implement every MEDIUM/LOW item. Do NOT re-litigate BLOCKING items; those gate the original PR.",
       "allowed_paths": [
         "agent_tasks.json",
-        "package-lock.json",
         "package.json",
         "server.js",
         "src",

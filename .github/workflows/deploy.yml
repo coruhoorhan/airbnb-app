@@ -1,0 +1,30 @@
+name: 5. Continuous Deployment to Live Server
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies & Build
+        run: |
+          npm ci || npm install
+          npm run build
+
+      - name: Run Integration Tests
+        run: npm test
+
+      - name: Deploy Signal
+        run: |
+          echo "Production build and test suite verified on main."
