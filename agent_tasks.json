@@ -434,7 +434,47 @@
       ],
       "created_at": 1788768632.0397377,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-graphql-depth-limit",
+      "status": "todo",
+      "area": "backend",
+      "risk": "medium",
+      "title": "Add GraphQL query depth limiting",
+      "description": "Integrate a depth‑limiting middleware (e.g., graphql-depth-limit) into the GraphQL handler to reject queries exceeding a configurable depth (e.g., 8). This prevents maliciously crafted deep queries from exhausting CPU and memory, mitigating DoS attacks.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js"
+      ],
+      "acceptance": [
+        "Requests with query depth > 8 receive a 400 response with an error message.",
+        "Normal queries (depth ≤ 8) continue to work unchanged.",
+        "Performance tests show no noticeable latency increase for valid queries."
+      ],
+      "created_at": 1788768697.3870652,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-refresh-token-rotation",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Implement refresh‑token rotation and revocation list",
+      "description": "Modify the authentication flow to issue a short‑lived access token and a refresh token that is stored hashed in the database. On each token refresh, invalidate the previous refresh token and store the new one, adding the old token to a revocation list. This mitigates token replay and stolen‑token attacks.",
+      "allowed_paths": [
+        "src/lib/auth.js",
+        "src/lib/db.js",
+        "server.js"
+      ],
+      "acceptance": [
+        "Refresh endpoint returns a new access token and a new refresh token.",
+        "Using an old refresh token after rotation results in a 401 error.",
+        "Revoked tokens are persisted and checked on each refresh request."
+      ],
+      "created_at": 1788768697.3884633,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788768632.0397406
+  "updated_at": 1788768697.388465
 }
