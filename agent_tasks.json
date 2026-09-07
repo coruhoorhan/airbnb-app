@@ -394,7 +394,30 @@
       ],
       "created_at": 1788785549.5191903,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-07-map-clustering",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Interactive Map Clustering for Listings",
+      "description": "Implement a geospatial clustering feature for the map view. Add a new GET endpoint `/api/map/listings` in server.js that accepts `bbox` (minLng,minLat,maxLng,maxLat) query parameters and returns listings inside the bounding box with a geohash precision based on zoom level. Create a new library module `src/lib/mapEngine.js` that computes geohash clusters and aggregates listing counts. Extend `src/lib/db.js` with a helper `getListingsInBBox(minLng, minLat, maxLng, maxLat)` that uses an indexed SQLite R-Tree for fast spatial queries. Update the frontend `src/components/MapView.jsx` to request clustered data, and add a new component `src/components/MapCluster.jsx` that renders cluster markers (showing count) and individual listing markers when zoomed in. Ensure clicking a cluster zooms the map to its bounds. All code should include input validation, proper error handling, and use existing JWT auth middleware for protected access.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/mapEngine.js",
+        "src/components/MapView.jsx",
+        "src/components/MapCluster.jsx"
+      ],
+      "acceptance": [
+        "GET /api/map/listings with a valid bbox returns a JSON array of cluster objects (geohash, count, centroid) and individual listings when zoom level is high.",
+        "MapView displays cluster markers with correct counts and expands to individual markers on zoom in.",
+        "Clicking a cluster marker smoothly zooms the map to the cluster's bounding box.",
+        "All responses respect authentication and return 401 for unauthenticated requests."
+      ],
+      "created_at": 1788785614.028024,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788785549.5191965
+  "updated_at": 1788785614.028026
 }
