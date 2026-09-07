@@ -87,6 +87,12 @@ EXECUTION PROTOCOL (LOCAL SUBAGENT):
 4. Add focused integration & E2E tests in tests/.
 5. Run `npm test` locally to verify 100% green pass.
 6. Once verified, run `python -m magda_agent.backend_bridge.backend_cli done {tid}`.
+
+📡 INTER-AGENT COMMUNICATION & ESCALATION PROTOCOL:
+- You are an autonomous Subagent paired with the Main Orchestrator in the main chat.
+- IF BLOCKED OR UNCERTAIN: Emit your question clearly prefixed with `[QUESTION TO ORCHESTRATOR]: <question>`. The Main Orchestrator will resolve technical questions directly or consult the human for product decisions.
+- DO NOT GUESS on destructive actions, schema deletions, or ambiguous business logic.
+- ON COMPLETION: Emit `[SUBAGENT COMPLETED]: {tid} | Verification: <tests summary>`.
 ================================================================================"""
 
 
