@@ -1,3 +1,5 @@
+import L from "leaflet";
+if (typeof window !== "undefined") { window.L = L; }
 
 
 let globalCsrfToken = "";
