@@ -60,7 +60,7 @@ export function ExperienceDetailModal({ experience, currency = "TRY", currentUse
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}/> tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} tabIndex={0} onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClose()} role="button" aria-label="Modalı kapat" />
       <div className="relative bg-white dark:bg-[#16191E] rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90dvh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
         <button aria-label="X"
           onClick={onClose}

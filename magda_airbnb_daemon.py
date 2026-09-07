@@ -18,6 +18,7 @@ import logging
 import os
 import re
 import sqlite3
+import subprocess
 import sys
 import time
 from typing import Any, Dict, List, Optional, Set, Tuple
@@ -253,6 +254,7 @@ class MagdaAutonomousWatchdog:
         self._last_scan_result: Dict[str, Any] = {}
         self._is_running = False
         self._llm_scan_counter = 0
+        self._scan_count = 0
 
     def get_connection(self) -> Optional[sqlite3.Connection]:
         if not os.path.exists(self.db_path):
@@ -396,6 +398,79 @@ class MagdaAutonomousWatchdog:
         except Exception as e:
             logger.error(f"Failed to record guardian issue: {e}")
 
+    def _git_commit_and_push(self, message: str) -> bool:
+        """Commits agent_tasks.json changes and pushes to origin/main."""
+        try:
+            # Validate agent_tasks.json before committing
+            validator_script = os.path.join(self.app_root, "scripts", "validate_agent_tasks.py")
+            manifest_file = os.path.join(self.app_root, "agent_tasks.json")
+            if os.path.exists(validator_script) and os.path.exists(manifest_file):
+                v_res = subprocess.run(
+                    [sys.executable, validator_script, manifest_file],
+                    cwd=self.app_root,
+                    capture_output=True,
+                    text=True,
+                    timeout=15,
+                )
+                if v_res.returncode != 0:
+                    logger.error(f"Task validation failed before push: {v_res.stderr or v_res.stdout}. Skipping push.")
+                    return False
+
+            subprocess.run(["git", "add", "agent_tasks.json"], cwd=self.app_root, check=True, capture_output=True, text=True, timeout=15)
+            # Check if there is anything to commit
+            status_res = subprocess.run(["git", "diff", "--staged", "--quiet"], cwd=self.app_root)
+            if status_res.returncode == 0:
+                logger.info("No staged changes to commit for agent_tasks.json.")
+                return False
+
+            commit_res = subprocess.run(
+                ["git", "commit", "-m", message],
+                cwd=self.app_root,
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=15,
+            )
+            logger.info(f"Git commit successful: {commit_res.stdout.strip()}")
+
+            push_res = subprocess.run(
+                ["git", "push", "origin", "main"],
+                cwd=self.app_root,
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            logger.info(f"Git push successful: {push_res.stdout.strip() or 'OK'}")
+            return True
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Git commit/push failed (exit {e.returncode}): {e.stderr or e.stdout}")
+            return False
+        except Exception as e:
+            logger.error(f"Git commit/push unexpected error: {e}")
+            return False
+
+    def _git_pull(self) -> bool:
+        """Pulls latest changes from origin/main."""
+        try:
+            logger.info("Executing periodic git pull origin main...")
+            res = subprocess.run(
+                ["git", "pull", "origin", "main"],
+                cwd=self.app_root,
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            logger.info(f"Git pull result: {res.stdout.strip()}")
+            return True
+        except subprocess.CalledProcessError as e:
+            logger.warning(f"Git pull failed (exit {e.returncode}): {e.stderr or e.stdout}")
+            return False
+        except Exception as e:
+            logger.warning(f"Git pull error: {e}")
+            return False
+
     async def execute_full_scan(self) -> Dict[str, Any]:
         """Executes a full diagnostic and health scan across codebase, database, and tasks."""
         start_t = time.perf_counter()
@@ -413,21 +488,9 @@ class MagdaAutonomousWatchdog:
         self._llm_scan_counter += 1
         llm_proposed_count = 0
 
-        logger.info("Triggering Inception Labs Mercury-2 Fullstack AI Code Reviewer...")
-        new_llm_tasks = await self.llm_reviewer.analyze_and_propose_improvements(existing_ids)
-        for nt in new_llm_tasks:
-            success = self.manifest_mgr.add_task(
-                task_id=nt["id"],
-                title=nt["title"],
-                description=nt["description"],
-                area=nt.get("area", "backend"),
-                risk=nt.get("risk", "medium"),
-                allowed_paths=nt.get("allowed_paths"),
-                acceptance=nt.get("acceptance"),
-            )
-            if success:
-                llm_proposed_count += 1
-                logger.info(f"✨ LLM Reviewer added new task: [{nt['id']}] {nt['title']}")
+        # LLM Auto-generation disabled to prevent queue spam
+        # Tasks are defined only by human/Veyyon in agent_tasks.json
+        new_llm_tasks = []
 
         manifest_data = self.manifest_mgr.load_manifest()
         tasks = manifest_data.get("tasks", [])
@@ -455,6 +518,15 @@ class MagdaAutonomousWatchdog:
             "active_todo_tasks": todo_tasks[:5],
         }
 
+        # Count newly added tasks from DB issues that resulted in new tasks
+        db_tasks_added = sum(1 for d in db_issues if d.get("task_id"))
+        total_new_tasks = llm_proposed_count + db_tasks_added
+
+        if total_new_tasks > 0:
+            commit_msg = f"chore(daemon): auto-sync task queue — {total_new_tasks} new task(s)"
+            logger.info(f"New tasks detected ({total_new_tasks}). Triggering auto-sync commit & push...")
+            self._git_commit_and_push(commit_msg)
+
         self._last_scan_result = result
         logger.info(
             f"Full scan complete in {elapsed:.1f}ms. DB anomalies: {len(db_issues)}, "
@@ -469,6 +541,9 @@ class MagdaAutonomousWatchdog:
 
         while self._is_running:
             try:
+                self._scan_count += 1
+                if self._scan_count % 10 == 0:
+                    self._git_pull()
                 await self.execute_full_scan()
             except Exception as e:
                 logger.error(f"Error in watchdog cycle: {e}", exc_info=True)

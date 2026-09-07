@@ -114,9 +114,22 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://unpkg.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+      imgSrc: ["'self'", "data:", "https:", "blob:", "http:"],
+      connectSrc: ["'self'", "http:", "https:", "ws:", "wss:"],
+      upgradeInsecureRequests: null,
+    },
+  },
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: true,
   credentials: true,
   exposedHeaders: ["x-csrf-token"]
 }));
@@ -139,37 +152,6 @@ const authRateLimiter = createRateLimiter({
   message: "Çok fazla giriş denemesi. Lütfen 1 dakika bekleyin."
 });
 
-app.use("/graphql", authRateLimiter, authMiddleware, createHandler({
-  schema,
-  rootValue,
-  context: (req) => {
-    return {
-      user: req.raw.user,
-      userLoader: new DataLoader(async (ids) => {
-        const users = getUsersByIds(ids);
-        const userMap = users.reduce((acc, user) => { acc[user.id] = user; return acc; }, {});
-        return ids.map(id => userMap[id] || null);
-      }),
-      reviewsLoader: new DataLoader(async (listingIds) => {
-        const reviews = getReviewsForListings(listingIds);
-        const reviewsMap = reviews.reduce((acc, review) => {
-          if (!acc[review.listingId]) acc[review.listingId] = [];
-          acc[review.listingId].push(review);
-          return acc;
-        }, {});
-        return listingIds.map(id => reviewsMap[id] || []);
-      })
-    };
-  },
-  formatError: (err) => ({
-    message: err.message,
-    ...(process.env.NODE_ENV !== "production" && { stack: err.stack })
-  }),
-  errorFormatter: (err) => ({
-    message: err.message,
-    ...(process.env.NODE_ENV !== "production" && { stack: err.stack })
-  })
-}));
 
 
 app.use("/graphql", authRateLimiter, authMiddleware, createHandler({

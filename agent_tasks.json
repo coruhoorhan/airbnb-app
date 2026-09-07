@@ -2,9 +2,7 @@
   "schema_version": 1,
   "project": "airbnb-fatsa-clone",
   "task_source_priority": [
-    "agent_tasks.json",
-    "AGENTS.md",
-    "MASTER_ROADMAP.md"
+    "agent_tasks.json"
   ],
   "risk_levels": [
     "low",
@@ -304,6 +302,280 @@
         "Repo test suite green",
         "No new BLOCKING findings"
       ]
+    },
+    {
+      "id": "security-csrf-protection",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Add CSRF protection to state‑changing endpoints",
+      "description": "Integrate the existing csrfMiddleware into the Express pipeline for all POST/PUT/DELETE routes (including /graphql). Generate a CSRF token on authentication, store it in an HttpOnly, SameSite=Strict cookie, and require the token in the 'x-csrf-token' header. Reject requests missing or with an invalid token with 403. Update authMiddleware to set the cookie flags (secure in production, httpOnly, sameSite).",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/auth.js"
+      ],
+      "acceptance": [
+        "A CSRF token is set as a cookie after login and can be read via generateCsrfToken()",
+        "POST/PUT/DELETE requests without the x-csrf-token header are responded with 403",
+        "Valid token requests succeed and the cookie has HttpOnly, SameSite=Strict, Secure (in prod) flags"
+      ],
+      "created_at": 1788768431.8239622,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-input-validation-sanitization",
+      "status": "todo",
+      "area": "backend",
+      "risk": "medium",
+      "title": "Enforce strict input validation and sanitization for listings and bookings",
+      "description": "Use the existing Joi schemas (listingSchema, bookingSchema) in the request handlers for creating/updating listings and bookings. Replace the simple HTML regex strip with a robust library (e.g., DOMPurify) to prevent XSS, and enforce length limits on strings. Return 400 with clear error messages on validation failure.",
+      "allowed_paths": [
+        "src/lib/db.js",
+        "server.js"
+      ],
+      "acceptance": [
+        "Creating or updating a listing with HTML tags results in stripped content, not stored raw",
+        "Requests with missing required fields or invalid types are rejected with 400 and a Joi error message",
+        "All mutation endpoints (e.g., insertListing, insertBooking) now validate payloads before DB insertion"
+      ],
+      "created_at": 1788768431.8251154,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-secure-cookie-flags",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Set secure cookie attributes for auth tokens",
+      "description": "Configure the authentication cookie to include HttpOnly, Secure, and SameSite=Strict flags. Update the token generation logic in src/lib/auth.js and the cookie middleware in server.js to use these options. This prevents client‑side script access and mitigates CSRF and session hijacking attacks.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/auth.js"
+      ],
+      "acceptance": [
+        "Set‑Cookie header contains HttpOnly; Secure; SameSite=Strict for all authentication cookies",
+        "Browser devtools show the cookie as inaccessible to JavaScript",
+        "Existing login flow works without errors after the change"
+      ],
+      "created_at": 1788768497.6444345,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-hsts-header",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Enforce HTTP Strict Transport Security",
+      "description": "Add the Strict-Transport-Security header via Helmet to force browsers to use HTTPS for all future requests, include subdomains and the preload flag. This protects against protocol downgrade attacks and cookie hijacking.",
+      "allowed_paths": [
+        "server.js"
+      ],
+      "acceptance": [
+        "All HTTPS responses include the 'Strict-Transport-Security' header with max-age>=31536000, includeSubDomains, and preload",
+        "Curl request to https endpoint returns the HSTS header",
+        "Browser console shows no mixed‑content warnings after enabling HSTS"
+      ],
+      "created_at": 1788768565.3190005,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-parameterized-queries",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Migrate all DB access to prepared statements",
+      "description": "Replace any raw string concatenation used in `src/lib/db.js` with parameterized queries using `better-sqlite3`'s `prepare`, `run`, `get`, and `all` methods. Ensure every function that interacts with the database (e.g., insertListing, updateBookingStatus, getUserByEmail, etc.) uses bound parameters to prevent SQL injection and improve query planning. Add unit tests that attempt injection payloads and verify they are safely escaped.",
+      "allowed_paths": [
+        "src/lib/db.js"
+      ],
+      "acceptance": [
+        "All DB functions use `db.prepare(...).run(...)` or `.get(...)` with placeholders",
+        "Injection attempts (e.g., \"' OR 1=1 --\") are rejected or result in no data leakage",
+        "Existing functionality (CRUD operations) continues to work as before"
+      ],
+      "created_at": 1788768632.0397377,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-graphql-depth-limit",
+      "status": "todo",
+      "area": "backend",
+      "risk": "medium",
+      "title": "Add GraphQL query depth limiting",
+      "description": "Integrate a depth‑limiting middleware (e.g., graphql-depth-limit) into the GraphQL handler to reject queries exceeding a configurable depth (e.g., 8). This prevents maliciously crafted deep queries from exhausting CPU and memory, mitigating DoS attacks.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js"
+      ],
+      "acceptance": [
+        "Requests with query depth > 8 receive a 400 response with an error message.",
+        "Normal queries (depth ≤ 8) continue to work unchanged.",
+        "Performance tests show no noticeable latency increase for valid queries."
+      ],
+      "created_at": 1788768697.3870652,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-refresh-token-rotation",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Implement refresh‑token rotation and revocation list",
+      "description": "Modify the authentication flow to issue a short‑lived access token and a refresh token that is stored hashed in the database. On each token refresh, invalidate the previous refresh token and store the new one, adding the old token to a revocation list. This mitigates token replay and stolen‑token attacks.",
+      "allowed_paths": [
+        "src/lib/auth.js",
+        "src/lib/db.js",
+        "server.js"
+      ],
+      "acceptance": [
+        "Refresh endpoint returns a new access token and a new refresh token.",
+        "Using an old refresh token after rotation results in a 401 error.",
+        "Revoked tokens are persisted and checked on each refresh request."
+      ],
+      "created_at": 1788768697.3884633,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-graphql-complexity-limit",
+      "status": "todo",
+      "area": "backend",
+      "risk": "medium",
+      "title": "GraphQL Query Complexity Limiting",
+      "description": "Integrate graphql-query-complexity (or similar) into the GraphQL middleware to calculate a complexity score for each incoming query and reject queries that exceed a configurable threshold (e.g., 200). This prevents abuse via overly deep or wide queries that could degrade performance.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/graphqlSchema.js"
+      ],
+      "acceptance": [
+        "Complexity middleware is applied to the GraphQL endpoint.",
+        "Queries with complexity > 200 receive a 400 response with an error message.",
+        "Normal queries (e.g., fetching a listing with its reviews) succeed unchanged."
+      ],
+      "created_at": 1788768762.4691052,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-auth-rate-limit",
+      "status": "todo",
+      "area": "backend",
+      "risk": "medium",
+      "title": "Authentication Endpoint Rate Limiting & Lockout",
+      "description": "Add a dedicated rate limiter for login, registration, and token refresh endpoints. Limit to 5 attempts per IP per minute and lock the user account for 15 minutes after 10 failed attempts. Store attempt counters in memory or a fast cache (e.g., Redis) and reset on successful login. Return appropriate 429 responses with a clear message.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/auth.js"
+      ],
+      "acceptance": [
+        "More than 5 login attempts from the same IP within a minute receive HTTP 429.",
+        "A user with 10 consecutive failed logins receives a lockout response and cannot log in for 15 minutes.",
+        "Successful login resets the failure counter."
+      ],
+      "created_at": 1788768797.422528,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-listings-pagination",
+      "status": "todo",
+      "area": "backend",
+      "risk": "medium",
+      "title": "Add cursor‑based pagination for listings and bookings APIs",
+      "description": "Implement cursor‑based pagination (limit, after) in the database query layer for listings, bookings, and related GraphQL resolvers. Return a pageInfo object with hasNextPage and endCursor. This reduces payload size and improves response time for large data sets.",
+      "allowed_paths": [
+        "src/lib/db.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/graphqlSchema.js"
+      ],
+      "acceptance": [
+        "API accepts ?limit= and&after=cursor parameters and returns paginated results",
+        "GraphQL query for listings supports arguments (limit: Int, after: String) and returns edges + pageInfo",
+        "Performance test shows reduced response payload size for >1000 listings"
+      ],
+      "created_at": 1788768926.4955626,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-rate-limit-booking-payment",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Per‑user/IP rate limiting for booking and payment endpoints",
+      "description": "Create a dedicated rate limiter (e.g., 5 requests per minute) for high‑risk actions such as '/api/bookings', '/api/payments', and related GraphQL mutations. Tie the limiter to the authenticated user ID and the client IP to prevent brute‑force or abuse while allowing normal usage.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/rateLimiter.js"
+      ],
+      "acceptance": [
+        "Requests exceeding the limit receive HTTP 429 with a clear error message",
+        "Legitimate users can still create bookings/payments within the allowed threshold",
+        "Rate limiting logs are emitted for monitoring and debugging"
+      ],
+      "created_at": 1788769257.2307208,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-dataloader-optimizations",
+      "status": "todo",
+      "area": "backend",
+      "risk": "low",
+      "title": "Batch GraphQL data fetching with DataLoader",
+      "description": "Introduce DataLoader instances for users, listings, and reviews in the GraphQL resolvers to batch and cache database calls, eliminating N+1 query problems and reducing SQLite load. Update src/lib/graphqlResolvers.js and src/lib/db.js to use the new loaders.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/db.js"
+      ],
+      "acceptance": [
+        "GraphQL queries that request nested fields (e.g., listing.author, listing.reviews) result in a single batched SQL statement per type.",
+        "Performance benchmarks show at least a 30% reduction in query count and response time for typical listing detail requests."
+      ],
+      "created_at": 1788769387.1609929,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "frontend-responsive-image-loading",
+      "status": "todo",
+      "area": "frontend",
+      "risk": "low",
+      "title": "Lazy‑load and serve responsive images",
+      "description": "Update all image components (e.g., ListingCard, ListingDetail, ExperienceCard) to use <img loading=\"lazy\" srcSet> with appropriate width descriptors. Add a fallback placeholder and ensure images adapt to device pixel ratio. Improves initial page load and mobile UX.",
+      "allowed_paths": [
+        "src/components/ListingCard.jsx",
+        "src/components/ListingDetail.jsx",
+        "src/components/ExperienceCard.jsx"
+      ],
+      "acceptance": [
+        "Images are not fetched until they enter the viewport (verified via network tab).",
+        "Different image sizes are served based on screen width and DPR (checked with srcset attribute).",
+        "Page load time (TTFB) improves by at least 15% on mobile devices."
+      ],
+      "created_at": 1788769387.162496,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-push-notification-engine",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Push Notification Engine for Real‑time Guest & Host Alerts",
+      "description": "Implement a web‑push notification system that alerts guests and hosts about booking lifecycle events. Add a new module `src/lib/notifications.js` that wraps the `web-push` library, generates VAPID keys, and provides `saveSubscription(userId, subscription)`, `sendNotification(userId, payload)` helpers. Extend `src/lib/db.js` with a `notifications` table (id, userId, endpoint, keys, createdAt) and CRUD functions. Create a new Express route `POST /api/notifications/subscribe` in `server.js` that validates the JWT, stores the subscription, and returns success. Hook into the booking mutation (`addBooking` in `src/lib/graphqlResolvers.js`) to call `sendNotification` for the guest and host when a booking is confirmed, cancelled, or refunded. On the frontend, add `src/components/PushNotificationProvider.jsx` that requests Notification permission, registers the service worker, and posts the subscription to the new endpoint. Also add `src/components/NotificationToast.jsx` that listens for `push` events via the service worker and displays a toast using a UI library. Ensure the service worker file `public/sw.js` is served and can show notifications when the app is in background. Update the UI to include a bell icon in the Navbar that shows unread count and opens a list of recent notifications.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/notifications.js",
+        "src/lib/db.js",
+        "src/components/PushNotificationProvider.jsx",
+        "src/components/NotificationToast.jsx",
+        "public/sw.js"
+      ],
+      "acceptance": [
+        "Granting permission in the browser stores a subscription record in the `notifications` table and returns HTTP 200.",
+        "When a booking is confirmed, the guest receives a web‑push notification (visible in the browser) and a toast appears in the UI.",
+        "The bell icon in the Navbar updates its badge count after a new notification is received.",
+        "If the user revokes permission, the subscription endpoint returns a 403 and the stored subscription is removed."
+      ],
+      "created_at": 1788769969.1371365,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
-  ]
+  ],
+  "updated_at": 1788769969.1371405
 }
