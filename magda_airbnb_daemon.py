@@ -1,3 +1,4 @@
+from magda_agent.guardian.guardian_runner import MagdaGuardianEngine
 #!/usr/bin/env python3
 """
 Magda-Agent 7/24 Autonomous Fullstack Guardian Daemon.
@@ -156,7 +157,7 @@ class AirbnbTasksManifestManager:
 
 
 class FullstackLLMCodeReviewer:
-    """7/24 Senior Fullstack Engineer powered by Inception Labs Mercury-2 LLM."""
+    """7/24 Senior Fullstack Principal Engineer & Architect powered by Inception Labs Mercury-2 LLM."""
 
     def __init__(self, app_root: str = APP_ROOT):
         self.app_root = app_root
@@ -173,47 +174,66 @@ class FullstackLLMCodeReviewer:
         except Exception:
             return ""
 
-    async def analyze_and_propose_improvements(self, existing_task_ids: Set[str]) -> List[Dict[str, Any]]:
-        """Analyzes codebase with Mercury-2 LLM and proposes structured tasks."""
+    async def analyze_and_propose_improvements(
+        self,
+        existing_tasks: List[Dict[str, Any]],
+        existing_task_ids: Set[str]
+    ) -> List[Dict[str, Any]]:
+        """Analyzes fullstack codebase with Mercury-2 LLM and proposes structured tasks for Jules."""
         if not self.llm:
             logger.warning("LLMClient not available for LLM code review.")
             return []
 
-        # Gather codebase snapshots
-        server_code = self._read_file_snippet("server.js", 150)
+        # Gather rich multi-layer codebase snapshots
+        server_code = self._read_file_snippet("server.js", 120)
         db_code = self._read_file_snippet("src/lib/db.js", 100)
-        app_jsx = self._read_file_snippet("App.jsx", 100)
+        app_jsx = self._read_file_snippet("src/App.jsx", 100)
+        booking_widget = self._read_file_snippet("src/components/BookingWidget.jsx", 60)
+        pricing_engine = self._read_file_snippet("src/lib/pricingEngine.js", 60)
 
-        prompt = f"""You are a Senior Fullstack Principal Engineer & Security Architect reviewing the Airbnb Fatsa Clone project.
+        # Existing task summary for full deduplication awareness
+        tasks_summary = "\n".join([
+            f"- [{t.get('status', 'todo')}] {t.get('id')}: {t.get('title')} ({t.get('area', 'feature')})"
+            for t in existing_tasks
+        ])
 
-CURRENT CODEBASE SNAPSHOT:
+        prompt = f"""You are Magda-Agent's 7/24 Principal Architect & Fullstack Guardian reviewing the Airbnb Fatsa Clone application (React, Vite, Node.js, Express, SQLite, GraphQL).
+
+CURRENT CODEBASE SNAPSHOTS:
 --- server.js ---
 {server_code}
 
 --- src/lib/db.js ---
 {db_code}
 
---- App.jsx ---
+--- src/App.jsx ---
 {app_jsx}
 
-EXISTING TASKS ALREADY CREATED (DO NOT DUPLICATE THESE):
-{list(existing_task_ids)}
+--- src/components/BookingWidget.jsx ---
+{booking_widget}
 
-TASK:
-Identify exactly 1-2 critical, high-impact improvements (Frontend UX/Responsive, Backend Performance/API, or Security).
-Return ONLY a valid JSON array of objects with the exact schema:
+--- src/lib/pricingEngine.js ---
+{pricing_engine}
+
+EXISTING TASKS IN MANIFEST (DO NOT DUPLICATE OR PROPOSE SIMILAR TASKS):
+{tasks_summary}
+
+MISSION:
+Identify exactly 1 high-value, novel, and concrete product or architectural capability for the Airbnb application (e.g., Host Payout & Revenue Analytics, Interactive Map Clustering, Multi-currency Checkout, Guest Review Moderation, Push Notification Engine, Calendar Availability iCal Sync, Instant Booking Approval Flow).
+
+Return ONLY a valid JSON array with exactly 1 task object adhering strictly to the schema:
 [
   {{
-    "id": "feat-or-fix-unique-slug",
-    "area": "frontend" | "backend" | "security",
+    "id": "feat-or-fix-unique-descriptive-slug",
+    "area": "frontend" | "backend" | "fullstack" | "security",
     "risk": "low" | "medium",
-    "title": "Short descriptive title in Turkish or English",
-    "description": "Concrete technical description of what to implement and why",
-    "allowed_paths": ["server.js", "src/components/...", "agent_tasks.json"],
-    "acceptance": ["Verification criteria 1", "Verification criteria 2"]
+    "title": "Clear concise descriptive title",
+    "description": "Concrete technical description of what to implement, which files to modify, and the expected behavior",
+    "allowed_paths": ["server.js", "src/components/...", "src/lib/...", "agent_tasks.json"],
+    "acceptance": ["Concrete verification step 1", "Concrete verification step 2"]
   }}
 ]
-Do NOT return any explanation or markdown wrapping outside JSON. Only the JSON array."""
+Output ONLY raw JSON array. No markdown fences, no explanatory text."""
 
         try:
             raw_resp = await self.llm.generate(prompt, temperature=0.3, max_tokens=1024)
@@ -227,7 +247,8 @@ Do NOT return any explanation or markdown wrapping outside JSON. Only the JSON a
             if isinstance(tasks, list):
                 valid_tasks = []
                 for t in tasks:
-                    if t.get("id") and t.get("title") and t.get("id") not in existing_task_ids:
+                    tid = t.get("id", "")
+                    if tid and t.get("title") and tid not in existing_task_ids:
                         valid_tasks.append(t)
                 return valid_tasks
         except Exception as e:
@@ -251,6 +272,7 @@ class MagdaAutonomousWatchdog:
         self.smoke_tester = AiderPostMergeSmokeTesterV1() if AiderPostMergeSmokeTesterV1 else None
         self.code_indexer = AirbnbCodebaseIndexer(app_root) if AirbnbCodebaseIndexer else None
         self.llm_reviewer = FullstackLLMCodeReviewer(app_root)
+        self.guardian_engine = MagdaGuardianEngine(app_root=self.app_root, db_path=self.db_path)
         self._last_scan_result: Dict[str, Any] = {}
         self._is_running = False
         self._llm_scan_counter = 0
@@ -475,6 +497,7 @@ class MagdaAutonomousWatchdog:
         """Executes a full diagnostic and health scan across codebase, database, and tasks."""
         start_t = time.perf_counter()
         logger.info("Executing Magda-Agent Autonomous Watchdog Full Scan...")
+        diag_report = self.guardian_engine.run_full_diagnostics()
         db_issues, healed_count = self.scan_database_and_payments()
         syntax_errors = self.scan_codebase_syntax()
 
@@ -488,9 +511,25 @@ class MagdaAutonomousWatchdog:
         self._llm_scan_counter += 1
         llm_proposed_count = 0
 
-        # LLM Auto-generation disabled to prevent queue spam
-        # Tasks are defined only by human/Veyyon in agent_tasks.json
+        # 7/24 Autonomous Magda Brain: Propose next improvements when queue is low or on schedule
+        should_run_llm = len(todo_tasks) < 5 or (self._llm_scan_counter % 5 == 0)
         new_llm_tasks = []
+        if should_run_llm:
+            logger.info("🧠 Triggering Inception Labs Mercury-2 Fullstack AI Code Reviewer...")
+            new_llm_tasks = await self.llm_reviewer.analyze_and_propose_improvements(tasks, existing_ids)
+            for nt in new_llm_tasks:
+                success = self.manifest_mgr.add_task(
+                    task_id=nt["id"],
+                    title=nt["title"],
+                    description=nt["description"],
+                    area=nt.get("area", "backend"),
+                    risk=nt.get("risk", "medium"),
+                    allowed_paths=nt.get("allowed_paths"),
+                    acceptance=nt.get("acceptance"),
+                )
+                if success:
+                    llm_proposed_count += 1
+                    logger.info(f"✨ Magda Brain added new task: [{nt['id']}] {nt['title']}")
 
         manifest_data = self.manifest_mgr.load_manifest()
         tasks = manifest_data.get("tasks", [])
