@@ -195,6 +195,7 @@ export function ListingDetail({
             alt="Ana Görsel" 
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer" 
             onClick={() => { setLightboxIndex(0); setLightboxOpen(true); }}
+            loading="lazy"
           />
         </div>
         <div className="hidden md:grid md:col-span-2 grid-cols-2 gap-2.5 h-full">
@@ -205,6 +206,7 @@ export function ListingDetail({
                 alt={`Detay ${idx + 1}`} 
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer" 
                 onClick={() => { setLightboxIndex(idx + 1); setLightboxOpen(true); }}
+                loading="lazy"
               />
             </div>
           ))}

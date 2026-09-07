@@ -5,8 +5,12 @@
 /* Taste Skill Anti-Slop & Editorial Styles — korrodesign v3.0 */
 @layer base {
   body {
-    @apply bg-charcoal-bg text-charcoal antialiased;
+    @apply bg-charcoal-bg text-charcoal antialiased transition-colors duration-300;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  .dark body {
+    @apply bg-charcoal-dark text-white;
   }
 
   /* Image outlines — korrodesign: NEVER tinted outline */

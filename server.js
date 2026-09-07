@@ -112,6 +112,7 @@ import { createRateLimiter } from "./src/lib/rateLimiter.js";
 import cookieParser from "cookie-parser";
 import validator from "validator";
 import { authMiddleware, csrfMiddleware, generateToken, generateCsrfToken } from "./src/lib/auth.js";
+import { getRecommendedListings } from "./src/lib/recommendationEngine.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -340,6 +341,19 @@ app.get("/api/admin/analytics", (req, res) => {
     res.json({ success: true, data: analytics });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Recommendations Endpoint
+app.get("/api/recommendations", (req, res) => {
+  const userId = req.query.userId || null;
+  const limit = parseInt(req.query.limit) || 6;
+  try {
+    const recommendations = getRecommendedListings(userId, limit);
+    res.json({ success: true, data: recommendations });
+  } catch (error) {
+    console.error("Recommendation Error:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 });
 

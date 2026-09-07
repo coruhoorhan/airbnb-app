@@ -1,9 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import L from "leaflet";
+import { createMarkerClusterGroup } from "../lib/mapClusterEngine.js";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 export function MapView({ listings = [], onSelectListing }) {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
+  const clusterGroupRef = useRef(null);
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -22,12 +26,24 @@ export function MapView({ listings = [], onSelectListing }) {
 
     const map = mapInstanceRef.current;
 
-    // Clear previous markers
-    map.eachLayer((layer) => {
-      if (layer instanceof L.Marker) {
-        map.removeLayer(layer);
-      }
-    });
+    if (!clusterGroupRef.current) {
+      clusterGroupRef.current = createMarkerClusterGroup();
+      map.addLayer(clusterGroupRef.current);
+
+      map.on('zoomend', () => {
+        const currentZoom = map.getZoom();
+        if (currentZoom < 13) {
+          if (!map.hasLayer(clusterGroupRef.current)) {
+            map.addLayer(clusterGroupRef.current);
+          }
+        } else {
+          // You could conditionally disable clustering if needed
+        }
+      });
+    }
+
+    const clusterGroup = clusterGroupRef.current;
+    clusterGroup.clearLayers();
 
     // Add custom HTML price pill markers (Taste Skill Pill Markers)
     listings.forEach((l) => {
@@ -40,7 +56,7 @@ export function MapView({ listings = [], onSelectListing }) {
         iconAnchor: [40, 15]
       });
 
-      const marker = L.marker([l.lat, l.lng], { icon: customIcon }).addTo(map);
+      const marker = L.marker([l.lat, l.lng], { icon: customIcon });
 
       // Popup card content
       const popupContent = document.createElement("div");
@@ -54,6 +70,7 @@ export function MapView({ listings = [], onSelectListing }) {
       popupContent.onclick = () => onSelectListing(l);
 
       marker.bindPopup(popupContent);
+      clusterGroup.addLayer(marker);
     });
 
   }, [listings, onSelectListing]);
