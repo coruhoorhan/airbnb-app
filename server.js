@@ -142,7 +142,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const globalRateLimiter = createRateLimiter({
   windowMs: 60000,
-  maxRequests: 100,
+  maxRequests: process.env.NODE_ENV === "test" ? 100 : 1000,
   message: "Çok fazla istek gönderildi. Lütfen biraz sonra tekrar deneyin."
 });
 app.use(globalRateLimiter);
