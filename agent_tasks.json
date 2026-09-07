@@ -548,7 +548,46 @@
       ],
       "created_at": 1788768797.422528,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-auth-cookie-flags",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Set Secure, HttpOnly, SameSite flags on auth cookies",
+      "description": "Update the authentication flow to set the JWT/session cookie with Secure, HttpOnly and SameSite=Strict attributes. Ensure cookies are only sent over HTTPS, inaccessible to client‑side scripts, and not sent on cross‑site requests. Add tests to verify the Set‑Cookie header contains these flags.",
+      "allowed_paths": [
+        "src/lib/auth.js",
+        "server.js"
+      ],
+      "acceptance": [
+        "Login endpoint returns Set‑Cookie header with Secure; HttpOnly; SameSite=Strict",
+        "Cookie is not sent over HTTP (checked via integration test)",
+        "No client‑side JavaScript can read the cookie (document.cookie does not contain it)"
+      ],
+      "created_at": 1788768926.493419,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-listings-pagination",
+      "status": "todo",
+      "area": "backend",
+      "risk": "medium",
+      "title": "Add cursor‑based pagination for listings and bookings APIs",
+      "description": "Implement cursor‑based pagination (limit, after) in the database query layer for listings, bookings, and related GraphQL resolvers. Return a pageInfo object with hasNextPage and endCursor. This reduces payload size and improves response time for large data sets.",
+      "allowed_paths": [
+        "src/lib/db.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/graphqlSchema.js"
+      ],
+      "acceptance": [
+        "API accepts ?limit= and&after=cursor parameters and returns paginated results",
+        "GraphQL query for listings supports arguments (limit: Int, after: String) and returns edges + pageInfo",
+        "Performance test shows reduced response payload size for >1000 listings"
+      ],
+      "created_at": 1788768926.4955626,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788768797.4225297
+  "updated_at": 1788768926.4955642
 }
