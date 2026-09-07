@@ -622,7 +622,45 @@
       ],
       "created_at": 1788769058.5375605,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-csrf-enforce-all-routes",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Enforce CSRF protection on all state‑changing routes",
+      "description": "Integrate the existing csrfMiddleware into the Express middleware chain for every POST, PUT, PATCH, DELETE endpoint (including GraphQL mutations). Ensure the CSRF token is generated on GET requests, sent via the 'x-csrf-token' header, and validated on subsequent state‑changing requests. Reject requests with missing or invalid tokens with HTTP 403.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/auth.js"
+      ],
+      "acceptance": [
+        "CSRF token is set as a cookie on initial GET request and also returned in the response header 'x-csrf-token'",
+        "All POST/PUT/PATCH/DELETE routes (REST and GraphQL) return 403 when the 'x-csrf-token' header is absent or does not match the cookie",
+        "Successful state‑changing requests succeed when a valid token is provided"
+      ],
+      "created_at": 1788769257.2290196,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-rate-limit-booking-payment",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Per‑user/IP rate limiting for booking and payment endpoints",
+      "description": "Create a dedicated rate limiter (e.g., 5 requests per minute) for high‑risk actions such as '/api/bookings', '/api/payments', and related GraphQL mutations. Tie the limiter to the authenticated user ID and the client IP to prevent brute‑force or abuse while allowing normal usage.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/rateLimiter.js"
+      ],
+      "acceptance": [
+        "Requests exceeding the limit receive HTTP 429 with a clear error message",
+        "Legitimate users can still create bookings/payments within the allowed threshold",
+        "Rate limiting logs are emitted for monitoring and debugging"
+      ],
+      "created_at": 1788769257.2307208,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788769058.5375621
+  "updated_at": 1788769257.230722
 }
