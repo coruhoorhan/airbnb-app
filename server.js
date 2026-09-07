@@ -402,6 +402,22 @@ app.get("/api/admin/guardian/export-github/:id", (req, res) => {
 // Cache setup for listings
 const listingsCache = new NodeCache({ stdTTL: 300 }); // 5 minutes TTL
 
+
+// ==========================================
+// Recommendation Engine Endpoint
+// ==========================================
+app.get("/api/recommendations", async (req, res) => {
+  try {
+    const { getRecommendedListings } = await import("./src/lib/recommendationEngine.js");
+    const limit = parseInt(req.query.limit) || 6;
+    const userId = req.query.userId || null;
+    const recommendations = getRecommendedListings(userId, limit);
+    res.json({ success: true, data: recommendations });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 app.get("/api/listings", (req, res) => {
   const cacheKey = JSON.stringify(req.query);
   const cachedData = listingsCache.get(cacheKey);
