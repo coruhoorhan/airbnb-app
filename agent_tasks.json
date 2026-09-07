@@ -10395,7 +10395,117 @@
       ],
       "created_at": 1788798460.0735583,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788798462409",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788798462409",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788798462409 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788798528.6652143,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788798462421",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788798462421",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788798462421 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788798528.6753776,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788798462433",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788798462433",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788798462433 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788798528.6858993,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788798462433_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788798462433_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788798462433_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788798528.6960523,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788798463369",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788798463369",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788798463369 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788798528.7074273,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-29-bulk-listing-import",
+      "status": "todo",
+      "area": "backend",
+      "risk": "medium",
+      "title": "Bulk Listing Import via CSV",
+      "description": "Add a new secure CSV import workflow that allows hosts to upload a CSV file containing multiple listings. Implement a POST /api/listings/import endpoint in server.js that validates the JWT, checks host role, and streams the uploaded file to a new library src/lib/csvImport.js. In csvImport.js, use fast-csv to parse rows, validate each against the existing Joi listingSchema, and insert listings in a single transaction using the existing insertListing function. Return a JSON summary with counts of successfully imported listings and detailed error messages for rows that failed validation. Update the GraphQL schema to expose a mutation importListingsFromCsv that triggers the same logic for API‑first consumers. Ensure the endpoint respects existing rate‑limiting and input‑sanitization middleware.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/csvImport.js",
+        "src/lib/auth.js"
+      ],
+      "acceptance": [
+        "Uploading a well‑formed CSV with 5 valid rows results in 5 new listings in the DB and a response { success: true, imported: 5, errors: [] }.",
+        "Uploading a CSV with 2 valid rows and 1 row missing required fields returns { success: false, imported: 2, errors: [{ row: 3, message: \"hostId is required\" }] } and no partial data is left in the DB."
+      ],
+      "created_at": 1788798546.7347522,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788798460.0735602
+  "updated_at": 1788798546.7347574
 }
