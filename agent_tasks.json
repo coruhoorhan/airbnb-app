@@ -889,7 +889,33 @@
       ],
       "created_at": 1788783248.6240454,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-ssr-seo-boost",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Add Server‑Side Rendering (SSR) for SEO‑Critical Pages",
+      "description": "Implement SSR for the main public routes (home, listing detail, search results) using Vite's SSR plugin and Express. Create a new entry point (src/ssr.js) that renders the React app to a string, injects meta tags (title, description, OpenGraph) based on GraphQL data, and sends the HTML to the client. Modify server.js to route GET requests for these pages through the SSR handler, falling back to the existing static build for authenticated routes. Add a lightweight cache (NodeCache) keyed by URL to store rendered HTML for 5 minutes to reduce load. Ensure the client hydrates correctly and that the existing Vite dev server still works in development mode.",
+      "allowed_paths": [
+        "server.js",
+        "src/ssr.js",
+        "src/App.jsx",
+        "src/components/ListingDetail.jsx",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/db.js",
+        "vite.config.js"
+      ],
+      "acceptance": [
+        "Visiting /listing/:id returns HTML containing the listing title and description in <meta> tags without requiring client‑side JS execution.",
+        "Page source shows a fully rendered <div id=\"root\"> with the listing detail markup, and the browser console shows no hydration warnings.",
+        "Cache hit rate for repeated requests to the same URL is at least 80 % after the first request.",
+        "Performance audit (Lighthouse) shows > 90 % SEO score and a > 30 % reduction in Time‑to‑First‑Byte compared to the previous CSR‑only implementation."
+      ],
+      "created_at": 1788783867.507886,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788783248.6240485
+  "updated_at": 1788783867.5078876
 }
