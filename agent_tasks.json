@@ -724,7 +724,25 @@
       ],
       "created_at": 1788790214.16839,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-bkg_1788788662600",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #bkg_1788788662600",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #bkg_1788788662600 (Tutar: 4800.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788790584.236904,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788790337.6619866
+  "updated_at": 1788790584.236908
 }
