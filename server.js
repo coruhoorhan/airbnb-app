@@ -1,3 +1,4 @@
+import fs from "fs";
 import { generateIcsFeed, syncExternalIcal } from "./src/lib/calendarSync.js";
 import { saveSubscription, removeSubscription, getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
 import http from "http";
@@ -1387,6 +1388,18 @@ app.get("/api/magda/status", (req, res) => {
   });
 });
 
+app.get("/api/magda/backend-tasks", (req, res) => {
+  const p = path.join(__dirname, "backend_tasks.json");
+  if (!fs.existsSync(p)) {
+    return res.json({ schema_version: 1, tasks: [] });
+  }
+  try {
+    const data = JSON.parse(fs.readFileSync(p, "utf8"));
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 app.get("/api/magda/tasks", (req, res) => {
   execFile("python3", ["/opt/airbnb-app/magda_airbnb_daemon.py", "tasks"], (error, stdout, stderr) => {
     if (error) {
