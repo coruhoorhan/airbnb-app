@@ -20,12 +20,39 @@ import { GiftCardModal } from "./components/GiftCardModal.jsx";
 import { ExperienceCard } from "./components/ExperienceCard.jsx";
 import { ExperienceDetailModal } from "./components/ExperienceDetailModal.jsx";
 import { AdminMagdaDashboard } from "./components/AdminMagdaDashboard.jsx";
+import { PushNotificationProvider, usePushNotification } from "./components/PushNotificationProvider.jsx";
+import { BellOff } from "lucide-react";
 import { MagdaConciergeWidget } from "./components/MagdaConciergeWidget.jsx";
 import { INITIAL_USERS } from "./data/users.js";
 import { INITIAL_LISTINGS } from "./data/listings.js";
 import { recomputeAverageRating } from "./lib/bookingEngine.js";
 import { formatCurrency, SUPPORTED_CURRENCIES } from "./lib/currencyEngine.js";
 import { Map, List, Globe, Shield, Sparkles, Waves, ArrowRight, Compass, Anchor, ShieldCheck, Sun, Star, Cloud, CloudSun, CloudRain, Droplets, Clock, Bell, Gift } from "lucide-react";
+
+
+function PushToggleWidget() {
+  const { isSupported, isSubscribed, subscribe, unsubscribe } = usePushNotification();
+
+  if (!isSupported) return null;
+
+  return (
+    <div className="fixed bottom-24 right-8 z-40 bg-white dark:bg-charcoal-dark border border-charcoal-border dark:border-white/10 rounded-2xl p-4 shadow-2xl flex flex-col items-center gap-2 max-w-[200px] animate-in slide-in-from-bottom-5">
+      <div className="text-xs font-bold text-charcoal dark:text-white text-center">
+        Anlık Bildirimler
+      </div>
+      <button
+        onClick={() => isSubscribed ? unsubscribe() : subscribe()}
+        className={`flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-colors w-full ${isSubscribed ? 'bg-charcoal text-white hover:bg-black' : 'bg-airbnb text-white hover:bg-airbnb-dark'}`}
+      >
+        {isSubscribed ? (
+          <><BellOff className="w-3.5 h-3.5" /> Kapat</>
+        ) : (
+          <><Bell className="w-3.5 h-3.5" /> Aç</>
+        )}
+      </button>
+    </div>
+  );
+}
 
 export function App() {
   const [isMagdaDashboardOpen, setIsMagdaDashboardOpen] = useState(false);
@@ -478,6 +505,7 @@ export function App() {
   };
 
   return (
+    <PushNotificationProvider currentUser={currentUser}>
     <div className="min-h-[100dvh] flex flex-col bg-white dark:bg-charcoal-dark">
       {/* Coastal Navbar */}
       <Navbar
@@ -938,9 +966,12 @@ export function App() {
         <AdminMagdaDashboard onClose={() => setIsMagdaDashboardOpen(false)} />
       )}
 
+      <PushToggleWidget />
+
       {/* Magda-Agent AI Concierge Floating Widget */}
       <MagdaConciergeWidget onSelectListing={(id) => setSelectedListing(id)} />
 
     </div>
+    </PushNotificationProvider>
   );
 }

@@ -206,6 +206,17 @@ db.exec(`
     FOREIGN KEY(listingId) REFERENCES listings(id) ON DELETE CASCADE
   );
 
+
+  CREATE TABLE IF NOT EXISTS push_subscriptions (
+    id TEXT PRIMARY KEY,
+    userId TEXT NOT NULL,
+    endpoint TEXT NOT NULL,
+    keysP TEXT NOT NULL,
+    keysAuth TEXT NOT NULL,
+    createdAt INTEGER NOT NULL,
+    FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE
+  );
+
   CREATE TABLE IF NOT EXISTS notifications (
     id TEXT PRIMARY KEY,
     userId TEXT NOT NULL,

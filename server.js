@@ -1,6 +1,6 @@
 import fs from "fs";
 import { generateIcsFeed, syncExternalIcal } from "./src/lib/calendarSync.js";
-import { saveSubscription, removeSubscription, getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
+import { getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
 import http from "http";
 import { setupChatWebSocketServer, chatEngine } from "./src/lib/chatEngine.js";
 import "express-async-errors";
@@ -80,6 +80,7 @@ import {
   getLoyaltyTier,
   getLifetimeEarned
 } from "./src/lib/loyaltyEngine.js";
+import { saveSubscription as pushSaveSub, removeSubscription as pushRemoveSub, sendNotification } from "./src/lib/pushNotificationEngine.js";
 import { 
   createGiftCard, 
   getGiftCardByCode, 
@@ -934,6 +935,7 @@ app.put("/api/bookings/:id/status", authMiddleware, csrfMiddleware, (req, res) =
   if (!updated) return res.status(404).json({ error: "Rezervasyon bulunamadı" });
 
   // Loyalty: award points when a pending booking is confirmed by the host
+
   if (status === "confirmed" && updated && updated.guestId) {
     try {
       const spendBase = Math.max(0, (updated.totalPrice || 0) - (updated.serviceFee || 0));
@@ -943,6 +945,21 @@ app.put("/api/bookings/:id/status", authMiddleware, csrfMiddleware, (req, res) =
     } catch (err) {
       console.error("[LOYALTY AWARD ERROR]:", err.message);
     }
+  }
+
+  try {
+    if (updated) {
+       sendNotification(updated.guestId, {
+          title: "Rezervasyon Durumu Güncellendi",
+          body: `Rezervasyonunuzun durumu: ${status}`
+       });
+       sendNotification(updated.hostId, {
+          title: "Rezervasyon Durumu Güncellendi",
+          body: `Rezervasyon durumu: ${status}`
+       });
+    }
+  } catch(e) {
+    console.error("Push Notification Error:", e);
   }
 
   res.json({ success: true, data: updated });
@@ -1129,21 +1146,17 @@ app.put("/api/listings/:id/last-minute", (req, res) => {
 
 
 // --- Push Notification Endpoints ---
-app.post('/api/notifications/subscribe', (req, res) => {
-  const { userId, subscription } = req.body;
-  if (!userId || !subscription) {
-    return res.status(400).json({ success: false, error: "userId ve subscription alanları zorunludur." });
+app.post('/api/notifications/subscribe', authMiddleware, csrfMiddleware, (req, res) => {
+  const { subscription } = req.body;
+  if (!subscription) {
+    return res.status(400).json({ success: false, error: "subscription alanı zorunludur." });
   }
-  const result = saveSubscription(userId, subscription);
+  const result = pushSaveSub(req.user.id, subscription);
   res.json({ success: true, data: result });
 });
 
-app.post('/api/notifications/unsubscribe', (req, res) => {
-  const { userId, endpoint } = req.body;
-  if (!userId) {
-    return res.status(400).json({ success: false, error: "userId zorunludur." });
-  }
-  const result = removeSubscription(userId, endpoint);
+app.post('/api/notifications/unsubscribe', authMiddleware, csrfMiddleware, (req, res) => {
+  const result = pushRemoveSub(req.user.id);
   res.json({ success: true, data: result });
 });
 
@@ -1232,8 +1245,38 @@ app.post("/api/messages", authMiddleware, csrfMiddleware, messageRateLimiter, (r
     if (!user) {
       return res.status(400).json({ success: false, error: "Geçersiz kullanıcı." });
     }
+
     const msg = insertMessage({ listingId, senderId, senderName: user.name, text });
     broadcastToListing(listingId, msg);
+
+    try {
+       const listing = getListingById(listingId);
+       let receiverId = null;
+       // Find the receiver user
+       // If sender is guest, receiver is host. If sender is host, receiver is guest.
+       // Actually we can check recent bookings to find the guest, or just send to host if sender != host
+       if (listing) {
+         if (senderId === listing.hostId) {
+             // Find guest in conversations (a bit complex here, but let's assume we can fetch active bookings)
+             const activeBookings = getActiveBookingsForListing(listingId);
+             const activeGuest = activeBookings.find(b => b.status === "confirmed" || b.status === "pending");
+             if (activeGuest) {
+                 receiverId = activeGuest.guestId;
+             }
+         } else {
+             receiverId = listing.hostId;
+         }
+       }
+       if (receiverId) {
+           sendNotification(receiverId, {
+             title: "Yeni Mesaj",
+             body: `${user.name}: ${text}`
+           });
+       }
+    } catch(e) {
+       console.error("Push Notification Chat Error:", e);
+    }
+
     res.status(201).json({ success: true, data: msg });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });

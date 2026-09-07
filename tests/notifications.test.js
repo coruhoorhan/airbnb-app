@@ -1,3 +1,7 @@
+import { describe, it, expect, vi } from 'vitest';
+import request from 'supertest';
+import { app } from '../server.js';
+import * as pushEngine from '../src/lib/pushNotificationEngine.js';
 import { describe, it, expect, beforeAll } from "vitest";
 import request from "supertest";
 import { app } from "../server.js";
@@ -46,6 +50,49 @@ describe("Push Notification Engine API", () => {
     const res = await request(app)
       .post("/api/notifications/unsubscribe")
       .send({ userId: testUserId, endpoint: "https://fcm.googleapis.com" });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+  });
+});
+
+
+
+vi.mock('../src/lib/auth.js', () => ({
+  authMiddleware: (req, res, next) => {
+    req.user = { id: 'usr_guest_01' };
+    next();
+  },
+  csrfMiddleware: (req, res, next) => next()
+}));
+
+describe('Push Notifications Endpoints', () => {
+  it('should save subscription on /api/notifications/subscribe', async () => {
+    const res = await request(app)
+      .post('/api/notifications/subscribe')
+      .set('Cookie', ['sessionId=mock_session_id; csrfToken=mock_token'])
+      .set('x-csrf-token', 'mock_token')
+      .send({ subscription: { endpoint: 'test-endpoint', keys: { p256dh: 'p', auth: 'a' } } });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+  });
+
+  it('should fail if subscription is missing', async () => {
+    const res = await request(app)
+      .post('/api/notifications/subscribe')
+      .set('Cookie', ['sessionId=mock_session_id; csrfToken=mock_token'])
+      .set('x-csrf-token', 'mock_token')
+      .send({});
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+  });
+
+  it('should remove subscription on /api/notifications/unsubscribe', async () => {
+    const res = await request(app)
+      .post('/api/notifications/unsubscribe')
+      .set('Cookie', ['sessionId=mock_session_id; csrfToken=mock_token'])
+      .set('x-csrf-token', 'mock_token');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
