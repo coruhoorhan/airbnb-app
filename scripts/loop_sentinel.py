@@ -130,6 +130,14 @@ def check_sessions(key):
             title = s.get("title", "") or ""
             if not any(tt in title.lower() for tt in TARGET_TITLES):
                 continue  # not our loop's session; out of scope
+            sid = s.get("id") or s.get("name", "").split("/")[-1]
+            mins = age_minutes(s.get("updateTime", ""))
+
+            # Catch zombie sessions stuck in IN_PROGRESS / PLANNING for >3 hours
+            if state in ("IN_PROGRESS", "PLANNING", "QUEUED") and mins > 180:
+                red.append(f"ZOMBIE SESSION: {sid} in {state} for {mins:.0f}min without progress: {(s.get('title') or '')[:50]}")
+                continue
+
             if state not in ("AWAITING_USER_FEEDBACK", "AWAITING_PLAN_APPROVAL"):
                 continue
             sid = s.get("id") or s.get("name", "").split("/")[-1]

@@ -1421,4 +1421,24 @@ if (process.env.NODE_ENV !== "test") {
   });
 }
 
+
+// --- 15. Graceful Shutdown & Process Safety ---
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("[🔥 FATAL UNHANDLED REJECTION]:", reason);
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("[🔥 FATAL UNCAUGHT EXCEPTION]:", error);
+});
+
+process.on("SIGTERM", () => {
+  console.log("[🛑 SIGTERM RECEIVED]: Closing HTTP server gracefully...");
+  process.exit(0);
+});
+
+process.on("SIGINT", () => {
+  console.log("[🛑 SIGINT RECEIVED]: Shutting down...");
+  process.exit(0);
+});
+
 export { app };
