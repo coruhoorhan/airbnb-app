@@ -2589,7 +2589,118 @@
       ],
       "created_at": 1788792662.6336126,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788792664982",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788792664982",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788792664982 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788792729.3649015,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788792664986",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788792664986",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788792664986 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788792729.3688326,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788792665004",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788792665004",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788792665004 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788792729.372207,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788792665004_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788792665004_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788792665004_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788792729.3753815,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788792665980",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788792665980",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788792665980 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788792729.3789976,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-22-ai-recommendation-engine",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "AI‑Powered Personalized Listings Recommendation Engine",
+      "description": "Introduce a new recommendation service that suggests listings to guests based on their past bookings, search history, and similar users. Add a `src/lib/recommendationEngine.js` module that loads a pre‑computed similarity matrix (SQLite table `user_similarity`) and provides `getRecommendedListings(userId, limit)`. Extend the GraphQL schema (`src/lib/graphqlSchema.js`) with a `recommendedListings(userId: ID!, limit: Int = 10): [Listing]` field and implement its resolver in `src/lib/graphqlResolvers.js` calling the new engine. Update `server.js` to expose the resolver via the existing GraphQL handler. Add a simple in‑memory LRU cache (NodeCache) to memoize results per user for 5 minutes. Ensure the new query respects existing auth middleware and rate limiting.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/recommendationEngine.js",
+        "src/lib/db.js"
+      ],
+      "acceptance": [
+        "GraphQL query `recommendedListings(userId: \"usr_guest_01\", limit: 5)` returns an array of up to 5 listing objects with correct fields.",
+        "Cache hit is verified by checking that a second identical query within 5 minutes does not trigger a new DB read (use console log or mock to confirm)."
+      ],
+      "created_at": 1788792732.4336011,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788792662.6336145
+  "updated_at": 1788792732.4336035
 }
