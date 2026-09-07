@@ -1673,7 +1673,34 @@
       ],
       "created_at": 1788787251.8346105,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-13-review-moderation-dashboard",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Guest Review Moderation Dashboard",
+      "description": "Add a full moderation workflow for guest reviews. Extend the GraphQL schema with queries to fetch pending reviews and mutations to approve or reject a review (including an optional moderationReason). Implement resolver logic in src/lib/graphqlResolvers.js and DB helper functions in src/lib/db.js to update the reviews table (status, moderationReason) and emit a notification via src/lib/notifications.js. Create a new React component src/components/ReviewModerationPanel.jsx that displays pending reviews, provides Approve/Reject buttons, and shows a textarea for the reason. Guard the GraphQL endpoints with authMiddleware so only users with admin role can access. Register the new resolvers in server.js and ensure rate limiting is applied via the existing rate limiter.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/notifications.js",
+        "src/components/ReviewModerationPanel.jsx",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Admin user can open the Review Moderation Panel and see a list of reviews with status 'pending'.",
+        "Clicking Approve changes the review status to 'published', removes it from the pending list, and sends a notification to the reviewer.",
+        "Clicking Reject updates the review status to 'rejected', stores the entered moderationReason, removes it from the pending list, and sends a notification to the reviewer.",
+        "GraphQL query `pendingReviews` returns only reviews with status 'pending'.",
+        "GraphQL mutations `approveReview(id)` and `rejectReview(id, reason)` correctly modify the DB and return the updated review object.",
+        "All actions are blocked for non‑admin users (401 Unauthorized).",
+        "Rate limiting is enforced on the moderation mutations (no more than 10 requests per minute per admin)."
+      ],
+      "created_at": 1788787320.4790003,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788787251.834612
+  "updated_at": 1788787320.4790044
 }
