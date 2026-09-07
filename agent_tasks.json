@@ -1395,7 +1395,121 @@
       ],
       "created_at": 1788791971.2274432,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788791973413",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788791973413",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788791973413 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788792037.3898306,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788791973416",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788791973416",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788791973416 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788792037.3925042,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788791973427",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788791973427",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788791973427 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788792037.3948596,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788791973427_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788791973427_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788791973427_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788792037.397095,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788791974390",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788791974390",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788791974390 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788792037.3996813,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-21-fraud-detection",
+      "status": "todo",
+      "area": "backend",
+      "risk": "medium",
+      "title": "Automated Payment Fraud Detection Engine",
+      "description": "Create a fraud detection module that evaluates each payment request before it is sent to iyzico. Add a new `fraud_score` column to the `payments` table, implement `src/lib/fraudEngine.js` with rule‑based checks (e.g., velocity, mismatched IP/geo, blacklisted cards) and a simple ML scoring stub. Extend `src/lib/iyzicoEngine.js` to call `calculateFraudScore` during `processDirectPayment`, store the score in the DB, and abort the transaction if the score exceeds a configurable threshold (default 80). Update GraphQL resolvers to expose `fraudScore` on the `Payment` type and add a new `paymentFraudCheck` mutation for manual re‑evaluation. Ensure all new code is covered by unit tests and that the existing payment flow remains unchanged for low‑risk scores.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/iyzicoEngine.js",
+        "src/lib/fraudEngine.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "A new column `fraud_score` exists in the `payments` table and is populated on every payment insert.",
+        "Payments with a fraud score > 80 are rejected and the API returns a `FraudDetected` error message.",
+        "The GraphQL schema includes `fraudScore` on the `Payment` type and the `paymentFraudCheck` mutation works as expected.",
+        "Unit tests in `src/lib/__tests__/fraudEngine.test.js` pass with >90% coverage.",
+        "No regression in existing payment processing tests."
+      ],
+      "created_at": 1788792063.2152371,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788791971.2274446
+  "updated_at": 1788792063.2152402
 }
