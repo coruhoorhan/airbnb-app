@@ -25,6 +25,7 @@ import Joi from "joi";
 import { INITIAL_USERS } from "../data/users.js";
 import { INITIAL_LISTINGS } from "../data/listings.js";
 import { INITIAL_EXPERIENCES } from "../data/experiences.js";
+import { sendNotification } from "./pushNotificationEngine.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -325,6 +326,15 @@ db.exec(`
     status TEXT DEFAULT 'confirmed',
     createdAt INTEGER NOT NULL,
     FOREIGN KEY(experienceId) REFERENCES experiences(id) ON DELETE CASCADE,
+    FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS push_subscriptions (
+    id TEXT PRIMARY KEY,
+    userId TEXT NOT NULL,
+    endpoint TEXT NOT NULL,
+    keysP TEXT NOT NULL,
+    keysAuth TEXT NOT NULL,
     FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE
   );
 
@@ -656,7 +666,17 @@ export function insertBooking(b) {
 
 export function updateBookingStatus(id, status, cancelReason = null) {
   db.prepare("UPDATE bookings SET status = ?, cancelReason = ? WHERE id = ?").run(status, cancelReason, id);
-  return db.prepare("SELECT * FROM bookings WHERE id = ?").get(id);
+  const booking = db.prepare("SELECT * FROM bookings WHERE id = ?").get(id);
+
+  if (booking) {
+    sendNotification(booking.guestId, {
+      title: `Booking Update`,
+      body: `Your booking status has changed to ${status}`,
+      url: `/profile`
+    }).catch(console.error);
+  }
+
+  return booking;
 }
 
 export function updateBookingPayment(id, paymentStatus, paymentId) {
@@ -1039,6 +1059,19 @@ export function insertMessage({ listingId, senderId, senderName, text }) {
     INSERT INTO messages (id, listingId, senderId, senderName, text, createdAt, isRead)
     VALUES (@id, @listingId, @senderId, @senderName, @text, @createdAt, 0)
   `).run({ id, listingId, senderId, senderName, text, createdAt });
+
+  const listing = getListingById(listingId);
+  if (listing) {
+    const receiverId = listing.hostId === senderId ? null : listing.hostId;
+    if (receiverId) {
+      sendNotification(receiverId, {
+        title: `New message from ${senderName}`,
+        body: text,
+        url: `/host-inbox`
+      }).catch(console.error);
+    }
+  }
+
   return db.prepare("SELECT * FROM messages WHERE id = ?").get(id);
 }
 

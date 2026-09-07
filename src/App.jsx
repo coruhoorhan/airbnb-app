@@ -14,6 +14,7 @@ import { TripsView } from "./components/TripsView.jsx";
 import { WishlistView } from "./components/WishlistView.jsx";
 import { MapView } from "./components/MapView.jsx";
 import { ChatModal } from "./components/ChatModal.jsx";
+import { PushNotificationProvider, usePushNotification } from "./components/PushNotificationProvider.jsx";
 import { InboxModal } from "./components/InboxModal.jsx";
 import { LoyaltyDashboard } from "./components/LoyaltyDashboard.jsx";
 import { GiftCardModal } from "./components/GiftCardModal.jsx";
@@ -27,7 +28,7 @@ import { recomputeAverageRating } from "./lib/bookingEngine.js";
 import { formatCurrency, SUPPORTED_CURRENCIES } from "./lib/currencyEngine.js";
 import { Map, List, Globe, Shield, Sparkles, Waves, ArrowRight, Compass, Anchor, ShieldCheck, Sun, Star, Cloud, CloudSun, CloudRain, Droplets, Clock, Bell, Gift } from "lucide-react";
 
-export function App() {
+function AppContent() {
   const [isMagdaDashboardOpen, setIsMagdaDashboardOpen] = useState(false);
   const [users, setUsers] = useState(INITIAL_USERS);
 
@@ -942,5 +943,13 @@ export function App() {
       <MagdaConciergeWidget onSelectListing={(id) => setSelectedListing(id)} />
 
     </div>
+  );
+}
+
+export function App() {
+  return (
+    <PushNotificationProvider>
+      <AppContent />
+    </PushNotificationProvider>
   );
 }

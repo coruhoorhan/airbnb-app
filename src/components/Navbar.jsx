@@ -1,6 +1,20 @@
 import React, { useState } from "react";
 import { Search, Menu, Heart, Briefcase, PlusCircle, Home, Bell, Check, Sparkles, Globe, Compass, Waves, MessageCircle, Sun, Moon, Gift, Star } from "lucide-react";
 import { getAvailableCurrencies } from "../lib/currencyEngine.js";
+import { usePushNotification } from "./PushNotificationProvider.jsx";
+
+function NotificationToggle() {
+  const { isSubscribed, toggleSubscription } = usePushNotification();
+  return (
+    <button
+      onClick={toggleSubscription}
+      className="w-full text-left font-medium flex items-center gap-2.5 cursor-pointer text-sm"
+    >
+      <Bell className={`w-4 h-4 ${isSubscribed ? "text-amber-500" : "text-charcoal-light dark:text-gray-600"}`} />
+      <span>{isSubscribed ? "Bildirimleri Kapat" : "Bildirimleri Aç"}</span>
+    </button>
+  );
+}
 
 export function Navbar({ 
   currentUser, 
@@ -306,6 +320,11 @@ export function Navbar({
                     <Gift className="w-4 h-4 text-emerald-600" />
                     <span>Hediye Kartlarım</span>
                   </button>
+
+                  <div className="px-4 py-2 text-sm text-charcoal dark:text-white border-t border-charcoal-border/50 dark:border-white/10 mt-1 pt-2">
+                    <NotificationToggle />
+                  </div>
+
                   <button 
                     onClick={onOpenMagdaDashboard}
                     className="w-full text-left px-4 py-2.5 text-sm text-purple-600 hover:bg-purple-50 font-bold flex items-center gap-2.5 cursor-pointer"

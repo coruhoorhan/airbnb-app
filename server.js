@@ -1,6 +1,7 @@
 import fs from "fs";
 import { generateIcsFeed, syncExternalIcal } from "./src/lib/calendarSync.js";
 import { saveSubscription, removeSubscription, getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
+import { getVapidPublicKey, saveSubscription as savePushSubscription, removeSubscription as removePushSubscription } from "./src/lib/pushNotificationEngine.js";
 import http from "http";
 import { setupChatWebSocketServer, chatEngine } from "./src/lib/chatEngine.js";
 import "express-async-errors";
@@ -17,6 +18,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { execFile } from "child_process";
 import NodeCache from "node-cache";
+import jwt from "jsonwebtoken";
 import { 
   db, 
   getAllListings, 
@@ -1130,21 +1132,46 @@ app.put("/api/listings/:id/last-minute", (req, res) => {
 
 // --- Push Notification Endpoints ---
 app.post('/api/notifications/subscribe', (req, res) => {
-  const { userId, subscription } = req.body;
+  let userId;
+  try {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || "fallback_secret");
+      userId = decoded.id;
+    }
+  } catch(e) {}
+  if (!userId) userId = req.body.userId;
+
+  const { subscription } = req.body;
   if (!userId || !subscription) {
     return res.status(400).json({ success: false, error: "userId ve subscription alanları zorunludur." });
   }
-  const result = saveSubscription(userId, subscription);
+  const result = savePushSubscription(userId, subscription);
   res.json({ success: true, data: result });
 });
 
 app.post('/api/notifications/unsubscribe', (req, res) => {
-  const { userId, endpoint } = req.body;
+  let userId;
+  try {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || "fallback_secret");
+      userId = decoded.id;
+    }
+  } catch(e) {}
+  if (!userId) userId = req.body.userId;
+
   if (!userId) {
     return res.status(400).json({ success: false, error: "userId zorunludur." });
   }
-  const result = removeSubscription(userId, endpoint);
+  const result = removePushSubscription(userId);
   res.json({ success: true, data: result });
+});
+
+app.get('/api/notifications/vapid-key', (req, res) => {
+  res.json({ publicKey: getVapidPublicKey() });
 });
 
 
