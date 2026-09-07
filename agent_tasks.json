@@ -443,7 +443,32 @@
       ],
       "created_at": 1788785679.6280727,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-09-host-payout-analytics",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Host Payout & Revenue Analytics Dashboard",
+      "description": "Implement a secure host payout system and analytics dashboard. Add a new SQLite table for payouts and corresponding CRUD helpers in src/lib/db.js (createPayout, getPayoutsByHost, getHostRevenueSummary). Create a payoutEngine module (src/lib/payoutEngine.js) that calculates host earnings from bookings, applies fees, and schedules payouts. Extend the GraphQL schema (src/lib/graphqlSchema.js) and resolvers (src/lib/graphqlResolvers.js) with queries getHostRevenueSummary and mutation requestPayout. Add a REST endpoint /api/hosts/:hostId/payouts in server.js that returns JSON and supports CSV export via a query param. Build a React component HostPayoutDashboard.jsx under src/components that displaying total earnings, pending payouts, and a paginated payout history, and integrate it as a new tab in HostDashboard.jsx. Protect all new endpoints with authMiddleware so only the authenticated host can access their own data.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/payoutEngine.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js",
+        "src/components/HostPayoutDashboard.jsx",
+        "src/components/HostDashboard.jsx"
+      ],
+      "acceptance": [
+        "Host can view a dashboard showing total earnings, pending payouts, and payout history with correct calculations.",
+        "API endpoint /api/hosts/:hostId/payouts returns JSON of payouts filtered by host and respects auth.",
+        "CSV export via ?format=csv returns a correctly formatted file with payout records.",
+        "All new code passes existing unit tests and linting."
+      ],
+      "created_at": 1788785745.4533908,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788785679.6280787
+  "updated_at": 1788785745.4533968
 }
