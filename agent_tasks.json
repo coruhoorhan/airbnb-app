@@ -9922,7 +9922,120 @@
       ],
       "created_at": 1788798116.8860655,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788798119281",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788798119281",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788798119281 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788798184.8197284,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788798119281",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788798119281",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788798119281 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788798184.8308742,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788798119303",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788798119303",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788798119303 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788798184.8410678,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788798119281_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788798119281_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788798119281_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788798184.8506944,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788798120264",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788798120264",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788798120264 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788798184.860047,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-28-host-earnings-forecast",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Host Earnings Forecast Dashboard",
+      "description": "Add a new analytics engine that aggregates upcoming bookings, dynamic pricing adjustments, and historical payout data to compute a 30‑day earnings forecast for each host. Extend the SQLite schema with a `host_forecasts` table, implement CRUD functions in `src/lib/analyticsEngine.js`, expose a GraphQL query `hostEarningsForecast(hostId: ID!): Forecast` in `src/lib/graphqlResolvers.js`, and update the GraphQL schema accordingly. Create a new React component `HostEarningsForecast.jsx` that fetches the forecast via the GraphQL endpoint, renders a line chart using a charting library (e.g., Recharts), and integrates it into the existing `HostDashboard` view. The forecast should be recomputed nightly via a scheduled job in `server.js` and cached in memory for fast retrieval.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/analyticsEngine.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/graphqlSchema.js",
+        "src/components/HostEarningsForecast.jsx",
+        "src/components/HostDashboard.jsx"
+      ],
+      "acceptance": [
+        "GraphQL query `hostEarningsForecast` returns a JSON object with fields `dates`, `projectedEarnings`, and `currency` for a given hostId.",
+        "The `HostEarningsForecast` component displays a line chart matching the returned data and updates automatically after the nightly recomputation job runs."
+      ],
+      "created_at": 1788798188.2718349,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788798116.8860676
+  "updated_at": 1788798188.2718384
 }
