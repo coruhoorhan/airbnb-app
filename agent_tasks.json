@@ -416,7 +416,25 @@
       ],
       "created_at": 1788768565.3190005,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-parameterized-queries",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Migrate all DB access to prepared statements",
+      "description": "Replace any raw string concatenation used in `src/lib/db.js` with parameterized queries using `better-sqlite3`'s `prepare`, `run`, `get`, and `all` methods. Ensure every function that interacts with the database (e.g., insertListing, updateBookingStatus, getUserByEmail, etc.) uses bound parameters to prevent SQL injection and improve query planning. Add unit tests that attempt injection payloads and verify they are safely escaped.",
+      "allowed_paths": [
+        "src/lib/db.js"
+      ],
+      "acceptance": [
+        "All DB functions use `db.prepare(...).run(...)` or `.get(...)` with placeholders",
+        "Injection attempts (e.g., \"' OR 1=1 --\") are rejected or result in no data leakage",
+        "Existing functionality (CRUD operations) continues to work as before"
+      ],
+      "created_at": 1788768632.0397377,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788768565.319002
+  "updated_at": 1788768632.0397406
 }
