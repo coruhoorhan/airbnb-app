@@ -1,3 +1,27 @@
+
+def auto_close_superseded_prs(repo: str, token: str, current_pr_number: int, current_title: str) -> None:
+    try:
+        headers = {"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json", "User-Agent": "Magda-Code-Auditor"}
+        req = urllib.request.Request(f"https://api.github.com/repos/{repo}/pulls?state=open", headers=headers)
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            open_prs = json.load(resp)
+        for opr in open_prs:
+            op_num = opr.get("number")
+            op_title = opr.get("title", "")
+            if op_num != current_pr_number:
+                if any(kw in op_title.lower() for kw in ["audit", "hardening", "pr10", "followup"]) or op_title[:15] in current_title:
+                    req_close = urllib.request.Request(
+                        f"https://api.github.com/repos/{repo}/pulls/{op_num}",
+                        headers=headers, data=json.dumps({"state": "closed"}).encode(), method="PATCH")
+                    urllib.request.urlopen(req_close, timeout=15)
+                    req_com = urllib.request.Request(
+                        f"https://api.github.com/repos/{repo}/issues/{op_num}/comments",
+                        headers=headers, data=json.dumps({"body": f"🤖 Magda: Bu PR kapatıldı. Değişiklikler PR #{current_pr_number} altında birleştirildi."}).encode(), method="POST")
+                    urllib.request.urlopen(req_com, timeout=15)
+                    print(f"✅ Auto-closed older superseded PR #{op_num} in favor of PR #{current_pr_number}.")
+    except Exception as e:
+        print(f"Auto-close check error: {e}")
+
 #!/usr/bin/env python3
 """
 Magda AI Independent PR Code Auditor & Quality Gate (tiered).
@@ -28,6 +52,7 @@ def review_pr(
     strict_block: bool = True
 ) -> Tuple[str, str]:
     print(f"🔍 [Magda AI Quality Gate]: Auditing PR #{pr_number} on {repo} with {model}...")
+    auto_close_superseded_prs(repo, token, pr_number, pr_title)
     
     headers = {
         "Authorization": f"token {token}",
