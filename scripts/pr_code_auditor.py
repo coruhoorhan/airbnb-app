@@ -52,7 +52,6 @@ def review_pr(
     strict_block: bool = True
 ) -> Tuple[str, str]:
     print(f"🔍 [Magda AI Quality Gate]: Auditing PR #{pr_number} on {repo} with {model}...")
-    auto_close_superseded_prs(repo, token, pr_number, pr_title)
     
     headers = {
         "Authorization": f"token {token}",
@@ -67,6 +66,7 @@ def review_pr(
         pr_data = json.load(resp)
     
     pr_title = pr_data.get("title", "")
+    auto_close_superseded_prs(repo, token, pr_number, pr_title)
     pr_body = pr_data.get("body", "")
     head_ref = pr_data.get("head", {}).get("ref", "")
     head_sha = pr_data.get("head", {}).get("sha", "")
