@@ -23108,7 +23108,120 @@
       ],
       "created_at": 1788808528.4459505,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788808530820",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788808530820",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788808530820 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788808603.359997,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788808530839",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788808530839",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788808530839 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788808603.3828232,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788808530820_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788808530820_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788808530820_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788808603.4064827,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788808530867",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788808530867",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788808530867 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788808603.4302456,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788808531916",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788808531916",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788808531916 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788808603.4552548,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-34-faceted-search-filter",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Faceted Search & Filter Engine",
+      "description": "Add a faceted search capability that lets guests filter listings by price range, amenities, host type, rating, and location. Extend the SQLite schema with indexed columns for price, rating, and a JSON column for amenities. Create src/lib/searchEngine.js exposing a function searchListings(filters, pagination) that builds dynamic SQL with WHERE clauses and returns total count + rows. Add GraphQL fields `searchListings(filters: SearchInput, pagination: PaginationInput): SearchResult` and resolvers in src/lib/graphqlResolvers.js. Update server.js to register the new resolver. In the UI, add a filter panel component (e.g., src/components/FilterPanel.jsx) and integrate it into App.jsx and ListingGrid, wiring the UI controls to call the GraphQL search query via the existing GraphQL client. Ensure the filter state persists in URL query params and that the listing grid updates reactively.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/searchEngine.js",
+        "src/lib/graphqlResolvers.js",
+        "src/components/FilterPanel.jsx",
+        "src/components/ListingGrid.jsx",
+        "src/App.jsx"
+      ],
+      "acceptance": [
+        "When a user selects a price range, amenities, and rating in the filter panel, the listing grid displays only listings that match all criteria and the URL contains the corresponding query parameters.",
+        "A GraphQL query `searchListings` with filter arguments returns a correct totalCount and a paginated list of listings that match the filters, verified by unit tests against the SQLite DB."
+      ],
+      "created_at": 1788808608.4526353,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788808528.4459534
+  "updated_at": 1788808608.4526377
 }
