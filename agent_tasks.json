@@ -689,7 +689,32 @@
       ],
       "created_at": 1788772426.815056,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-guest-review-moderation",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Guest Review Moderation Dashboard",
+      "description": "Add a moderation workflow for guest reviews. Extend the SQLite schema with a `status` column (enum: pending, approved, rejected) and a `flagReason` text field in the `reviews` table. Update DB helper functions to create, fetch, and update review status. Add GraphQL types and mutations: `flagReview(id, reason)`, `moderateReview(id, action)` where action is APPROVE or REJECT. Implement a new React admin component `AdminReviewModeration` that lists reviews with status 'pending', shows the flag reason, and provides Approve/Reject buttons. The component should call the GraphQL mutations, refresh the list, and display success/error toasts. Secure the endpoint with `authMiddleware` ensuring only users with role `admin` can access. Add unit tests for the resolver and integration test for the UI flow.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js",
+        "src/components/AdminReviewModeration.jsx",
+        "src/lib/auth.js"
+      ],
+      "acceptance": [
+        "Admin user can view a list of pending reviews with flag reasons in the AdminReviewModeration UI.",
+        "Clicking Approve changes the review status to 'approved' and removes it from the pending list.",
+        "Clicking Reject changes the review status to 'rejected' and removes it from the pending list.",
+        "GraphQL mutations return the updated review object and appropriate error messages for unauthorized users.",
+        "All new DB columns are populated correctly and persisted across server restarts."
+      ],
+      "created_at": 1788772734.4202356,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788772426.815059
+  "updated_at": 1788772734.420238
 }
