@@ -186,7 +186,7 @@
     },
     {
       "id": "backend-db-connection-pooling-caching",
-      "status": "todo",
+      "status": "done",
       "area": "backend",
       "risk": "medium",
       "title": "Introduce DB connection pooling and in‑memory caching for listings",
