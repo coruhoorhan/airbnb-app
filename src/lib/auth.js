@@ -9,15 +9,15 @@ if (JWT_SECRET.length < 32) {
 }
 
 if (process.env.NODE_ENV === "production") {
-  if (JWT_SECRET === "dev-secret-key-do-not-use-in-prod-which-is-at-least-thirty-two-chars") throw new Error("JWT_SECRET must be set in production");
-  if (CSRF_SECRET === "dev-csrf-secret-key-do-not-use-in-prod-which-is-at-least-thirty-two-chars") throw new Error("CSRF_SECRET must be set in production");
+  if (JWT_SECRET === "dev-secret-key-do-not-use-in-prod-which-is-at-least-thirty-two-chars") throw new Error("JWT_SECRET must be explicitly set in production.");
+  if (CSRF_SECRET === "dev-csrf-secret-key-do-not-use-in-prod-which-is-at-least-thirty-two-chars") throw new Error("CSRF_SECRET must be explicitly set in production.");
 }
 
 export function generateToken(user) {
   return jwt.sign(
-    { id: user.id, email: user.email, isHost: user.isHost },
+    { id: user.id, email: user.email, isHost: Boolean(user.isHost) },
     JWT_SECRET,
-    { expiresIn: '1h' }
+    { expiresIn: '7d' }
   );
 }
 
@@ -34,8 +34,7 @@ export function generateCsrfToken() {
 }
 
 export function authMiddleware(req, res, next) {
-  const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-
+  const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
   if (!token) {
     return res.status(401).json({ success: false, error: 'Unauthorized: No token provided' });
   }
@@ -54,8 +53,13 @@ export function csrfMiddleware(req, res, next) {
     return next();
   }
 
-  const csrfToken = req.headers['x-csrf-token'] || req.body._csrf;
-  const cookieCsrfToken = req.cookies._csrf_secret;
+  // If request has Authorization bearer token, bypass cookie CSRF check
+  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+    return next();
+  }
+
+  const csrfToken = req.headers['x-csrf-token'] || req.body?._csrf;
+  const cookieCsrfToken = req.cookies?._csrf_secret;
 
   if (!csrfToken || !cookieCsrfToken || csrfToken !== cookieCsrfToken) {
     return res.status(403).json({ success: false, error: 'Forbidden: Invalid CSRF token' });
@@ -63,8 +67,7 @@ export function csrfMiddleware(req, res, next) {
 
   // Token rotation after successful state-changing request
   const newToken = generateCsrfToken();
-  res.cookie("_csrf_secret", newToken, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  res.cookie("_csrf_secret", newToken, { httpOnly: true, sameSite: "lax", secure: false });
   res.setHeader("x-csrf-token", newToken);
-
   next();
 }
