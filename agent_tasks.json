@@ -575,6 +575,27 @@
       ],
       "created_at": 1788769969.1371365,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "pr19-hardening-followups",
+      "status": "todo",
+      "area": "security",
+      "risk": "low",
+      "title": "PR #19 auditor polish follow-ups",
+      "description": "Address the non-blocking (MEDIUM/LOW) polish findings from the Magda AI auditor review on https://github.com/coruhoorhan/airbnb-app/pull/19. Read the latest auditor review on that PR and implement every MEDIUM/LOW item. Do NOT re-litigate BLOCKING items; those gate the original PR.",
+      "allowed_paths": [
+        "agent_tasks.json",
+        "package-lock.json",
+        "package.json",
+        "server.js",
+        "src",
+        "tests"
+      ],
+      "acceptance": [
+        "All MEDIUM/LOW auditor findings on PR #19 addressed",
+        "Repo test suite green",
+        "No new BLOCKING findings"
+      ]
     }
   ],
   "updated_at": 1788769969.1371405
