@@ -342,7 +342,45 @@
       ],
       "created_at": 1788768431.8251154,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-secure-cookie-flags",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Set secure cookie attributes for auth tokens",
+      "description": "Configure the authentication cookie to include HttpOnly, Secure, and SameSite=Strict flags. Update the token generation logic in src/lib/auth.js and the cookie middleware in server.js to use these options. This prevents client‑side script access and mitigates CSRF and session hijacking attacks.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/auth.js"
+      ],
+      "acceptance": [
+        "Set‑Cookie header contains HttpOnly; Secure; SameSite=Strict for all authentication cookies",
+        "Browser devtools show the cookie as inaccessible to JavaScript",
+        "Existing login flow works without errors after the change"
+      ],
+      "created_at": 1788768497.6444345,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-csrf-protection-all-routes",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Enforce CSRF token validation on all state‑changing endpoints",
+      "description": "Apply the csrfMiddleware to every POST, PUT, PATCH, DELETE route (including GraphQL mutations) and ensure a token is generated and sent via the X‑CSRF‑Token header. Update the client to read the token from the response header and include it in subsequent mutating requests.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/auth.js"
+      ],
+      "acceptance": [
+        "Missing or invalid X‑CSRF‑Token header results in 403 response",
+        "Successful mutating request includes a valid token and returns 200/201 as expected",
+        "Integration test verifies that a POST request without the token is rejected"
+      ],
+      "created_at": 1788768497.6456192,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788768431.825117
+  "updated_at": 1788768497.645621
 }
