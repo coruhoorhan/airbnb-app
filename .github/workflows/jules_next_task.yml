@@ -27,11 +27,14 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
 
-      - name: Check task queue and select next task
+      - name: Check task queue and anti-duplicate active session guard
         id: task_check
+        env:
+          JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+          FORCE: ${{ inputs.force }}
         run: |
           python3 - <<'PYEOF'
-          import json, os, sys
+          import json, os, sys, urllib.request
 
           manifest_path = "agent_tasks.json"
           if not os.path.exists(manifest_path):
@@ -46,16 +49,44 @@ jobs:
 
           print(f"Total tasks: {len(tasks)} | Active unblocked TODOs: {len(todos)}")
           out_path = os.environ.get("GITHUB_OUTPUT", "/dev/null")
-          with open(out_path, "a", encoding="utf-8") as out:
-              if len(todos) > 0:
-                  next_t = todos[0]
-                  print(f"Next task to assign to Jules: [{next_t.get('id')}] {next_t.get('title')}")
-                  out.write("should_run=true\n")
-                  out.write("next_task_id=" + str(next_t.get("id")) + "\n")
-                  out.write("next_task_title=" + str(next_t.get("title")) + "\n")
-              else:
-                  print("No remaining TODO tasks in queue. Jules is idle.")
+
+          if not todos:
+              print("No remaining TODO tasks in queue. Jules is idle.")
+              with open(out_path, "a", encoding="utf-8") as out:
                   out.write("should_run=false\n")
+              sys.exit(0)
+
+          # Anti-duplicate guard: Check if an active Jules session is already running
+          jules_key = os.environ.get("JULES_API_KEY", "").strip()
+          force = os.environ.get("FORCE", "false").lower() == "true"
+
+          if jules_key and not force:
+              try:
+                  req = urllib.request.Request(
+                      "https://jules.googleapis.com/v1alpha/sessions?pageSize=20",
+                      headers={"X-Goog-Api-Key": jules_key, "Accept": "application/json"}
+                  )
+                  with urllib.request.urlopen(req, timeout=30) as resp:
+                      raw_s = json.load(resp).get("sessions", [])
+
+                  active_states = {"QUEUED", "PLANNING", "IN_PROGRESS", "AWAITING_USER_FEEDBACK", "AWAITING_PLAN_APPROVAL"}
+                  running = [s for s in raw_s if s.get("state") in active_states and "Autonomous Airbnb" in s.get("title", "")]
+
+                  if running:
+                      print(f"⚠️ A Jules session is ALREADY actively running: {running[0].get('name')} (State: {running[0].get('state')}).")
+                      print("Skipping duplicate session spawn to prevent queue congestion.")
+                      with open(out_path, "a", encoding="utf-8") as out:
+                          out.write("should_run=false\n")
+                      sys.exit(0)
+              except Exception as e:
+                  print(f"Active session check warning ({e}); proceeding cautiously.")
+
+          next_t = todos[0]
+          print(f"✅ Dispatching next task to Jules: [{next_t.get('id')}] {next_t.get('title')}")
+          with open(out_path, "a", encoding="utf-8") as out:
+              out.write("should_run=true\n")
+              out.write("next_task_id=" + str(next_t.get("id")) + "\n")
+              out.write("next_task_title=" + str(next_t.get("title")) + "\n")
           PYEOF
 
       - name: Trigger Google Jules via Official API
