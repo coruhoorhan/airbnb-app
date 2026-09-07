@@ -7651,7 +7651,118 @@
       ],
       "created_at": 1788796397.316207,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788796399441",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788796399441",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788796399441 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788796465.180295,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788796399466",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788796399466",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788796399466 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788796465.1902344,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788796399470",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788796399470",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788796399470 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788796465.199023,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788796399466_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788796399466_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788796399466_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788796465.2083418,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788796400402",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788796400402",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788796400402 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788796465.2175288,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-27-mfa-authentication",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Multi‑Factor Authentication (MFA) for Guest & Host Accounts",
+      "description": "Introduce optional time‑based one‑time password (TOTP) MFA. Add a new DB column `mfaEnabled` and `mfaSecret` to the users table. Extend the auth middleware to require a valid `x-mfa-token` header when `mfaEnabled` is true. Implement endpoints `POST /api/auth/mfa/setup` (generates a secret, returns QR code data URL) and `POST /api/auth/mfa/verify` (validates a TOTP code and issues a new JWT). Update `src/lib/auth.js` to include `verifyMfaToken` helper, modify `server.js` to mount the new routes, and adjust login flow to flag `mfaPending` in the JWT payload when MFA is required. Add unit tests in `src/tests/auth.mfa.test.js` to cover setup, verification, and login with MFA.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/auth.js",
+        "src/lib/db.js",
+        "src/tests/auth.mfa.test.js"
+      ],
+      "acceptance": [
+        "User can enable MFA via /api/auth/mfa/setup and receives a QR code data URL.",
+        "Login for a user with MFA enabled returns a JWT with mfaPending flag and no access token until a valid TOTP is posted to /api/auth/mfa/verify.",
+        "All existing non‑MFA login flows remain unchanged."
+      ],
+      "created_at": 1788796467.6542475,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788796397.3162086
+  "updated_at": 1788796467.6542501
 }
