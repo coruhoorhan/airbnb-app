@@ -619,7 +619,32 @@
       ],
       "created_at": 1788770889.6911442,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-instant-booking-approval-flow",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Instant Booking Approval Flow",
+      "description": "Add a host‑driven approval step for instant‑book listings. Extend the bookings table with a new `approvalStatus` column (pending, approved, rejected). Implement a GraphQL mutation `approveBooking(id: ID!, approve: Boolean!): Booking` that updates the column and triggers a notification. Update the booking engine to respect `approvalStatus` when calculating availability and generating payment intents. In the Host Dashboard UI, add a new \"Pending Approvals\" tab that lists pending instant‑book bookings with Approve/Reject buttons, calling the mutation. Ensure the BookingWidget disables the \"Book now\" button for listings with `instantBook = 0` or when the host has disabled auto‑approval. Add server‑side validation to prevent unauthorized users from approving bookings.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/bookingEngine.js",
+        "src/lib/graphqlResolvers.js",
+        "src/components/HostDashboard.jsx",
+        "src/components/BookingWidget.jsx"
+      ],
+      "acceptance": [
+        "A new `approvalStatus` column exists in the `bookings` table and defaults to 'pending' for instant‑book reservations.",
+        "The GraphQL schema includes a `approveBooking` mutation that updates the status and returns the updated booking object.",
+        "Host Dashboard shows a \"Pending Approvals\" section listing only bookings with `approvalStatus = 'pending'` and allows the host to approve or reject each.",
+        "When a booking is approved, the booking becomes visible to the guest and a payment request is generated; when rejected, the booking is cancelled and the guest receives a notification.",
+        "The BookingWidget prevents guests from booking a listing that is not instant‑book enabled or that requires host approval, displaying an appropriate message."
+      ],
+      "created_at": 1788771503.6338148,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788770889.6911483
+  "updated_at": 1788771503.6338172
 }
