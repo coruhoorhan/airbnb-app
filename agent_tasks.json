@@ -456,7 +456,28 @@
       ],
       "created_at": 1788784797.5487294,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-push-notification-engine",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Push Notification Engine for Real‑time Guest & Host Alerts",
+      "description": "Create a unified push‑notification subsystem. Add a `notifications` table in SQLite (id, userId, type, title, body, isRead, createdAt). Implement `src/lib/notificationEngine.js` with functions `createNotification`, `getUserNotifications`, `markNotificationRead`. Extend `server.js` to expose a GraphQL mutation `sendNotification` and a subscription (via the existing WebSocket chat server) that pushes new notifications to connected clients. In the React side, add `src/components/NotificationToast.jsx` that renders toast messages and a notification bell UI. Update `src/App.jsx` to initialize a WebSocket listener on mount, dispatch incoming notifications to a global state, and show the toast component. Ensure that when a booking status changes to \"confirmed\" or \"canceled\", the backend calls `createNotification` for the relevant host and guest, and the frontend displays the toast within 2 seconds. Persist notifications so they appear in the existing `InboxModal` when opened.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/notificationEngine.js",
+        "src/components/NotificationToast.jsx",
+        "src/App.jsx"
+      ],
+      "acceptance": [
+        "Creating a booking with status 'confirmed' triggers a toast notification for both host and guest within 2 seconds of the mutation response.",
+        "Notifications are stored in the SQLite `notifications` table and are listed correctly when the user opens the InboxModal."
+      ],
+      "created_at": 1788785109.1548665,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788784797.5487325
+  "updated_at": 1788785109.1548693
 }
