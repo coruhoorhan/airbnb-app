@@ -16,6 +16,8 @@ export function ExperienceCard({ experience, currency = "TRY", onSelect }) {
       <div className="relative aspect-[4/3] overflow-hidden bg-charcoal-bg">
         <img
           src={experience.images?.[0]}
+          srcSet={`${experience.images?.[0]} 400w, ${experience.images?.[0]} 800w`}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           alt={experience.title}
           loading="lazy"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

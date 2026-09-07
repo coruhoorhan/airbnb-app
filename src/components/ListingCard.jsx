@@ -75,6 +75,8 @@ export function ListingCard({ listing, onSelect, isFavorite, onToggleFavorite, c
       }`}>
         <img
           src={images[currentImgIndex]}
+          srcSet={`${images[currentImgIndex]} 400w, ${images[currentImgIndex]} 800w`}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           alt={listing.title}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-108"
           loading="lazy"

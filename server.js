@@ -16,6 +16,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { execFile } from "child_process";
 import NodeCache from "node-cache";
+import { getRecommendedListings } from "./src/lib/recommendationEngine.js";
 import { 
   db, 
   getAllListings, 
@@ -398,6 +399,13 @@ app.get("/api/admin/guardian/export-github/:id", (req, res) => {
 });
 
 // --- 6. Listings Endpoints ---
+
+app.get("/api/recommendations", (req, res) => {
+  const { userId, limit } = req.query;
+  const count = limit ? parseInt(limit, 10) : 6;
+  const recommendations = getRecommendedListings(userId, count);
+  res.json({ success: true, recommendations });
+});
 
 // Cache setup for listings
 const listingsCache = new NodeCache({ stdTTL: 300 }); // 5 minutes TTL

@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import L from "leaflet";
+import { createClusterGroup } from "../lib/mapClusterEngine.js";
 
 export function MapView({ listings = [], onSelectListing }) {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
+  const clusterGroupRef = useRef(null);
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -17,17 +19,17 @@ export function MapView({ listings = [], onSelectListing }) {
         maxZoom: 18
       }).addTo(map);
 
+      clusterGroupRef.current = createClusterGroup();
+      map.addLayer(clusterGroupRef.current);
+
       mapInstanceRef.current = map;
     }
 
     const map = mapInstanceRef.current;
+    const clusterGroup = clusterGroupRef.current;
 
-    // Clear previous markers
-    map.eachLayer((layer) => {
-      if (layer instanceof L.Marker) {
-        map.removeLayer(layer);
-      }
-    });
+    // Clear previous markers from cluster group
+    clusterGroup.clearLayers();
 
     // Add custom HTML price pill markers (Taste Skill Pill Markers)
     listings.forEach((l) => {
@@ -40,7 +42,7 @@ export function MapView({ listings = [], onSelectListing }) {
         iconAnchor: [40, 15]
       });
 
-      const marker = L.marker([l.lat, l.lng], { icon: customIcon }).addTo(map);
+      const marker = L.marker([l.lat, l.lng], { icon: customIcon });
 
       // Popup card content
       const popupContent = document.createElement("div");
@@ -54,6 +56,7 @@ export function MapView({ listings = [], onSelectListing }) {
       popupContent.onclick = () => onSelectListing(l);
 
       marker.bindPopup(popupContent);
+      clusterGroup.addLayer(marker);
     });
 
   }, [listings, onSelectListing]);

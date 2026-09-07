@@ -20,6 +20,7 @@ import { ExperienceCard } from "./components/ExperienceCard.jsx";
 import { ExperienceDetailModal } from "./components/ExperienceDetailModal.jsx";
 import { AdminMagdaDashboard } from "./components/AdminMagdaDashboard.jsx";
 import { MagdaConciergeWidget } from "./components/MagdaConciergeWidget.jsx";
+import { RecommendationCarousel } from "./components/RecommendationCarousel.jsx";
 import { INITIAL_USERS } from "./data/users.js";
 import { INITIAL_LISTINGS } from "./data/listings.js";
 import { recomputeAverageRating } from "./lib/bookingEngine.js";
@@ -509,6 +510,13 @@ export function App() {
           <div className="flex flex-col">
             {/* Luminous, Sunlit, Coastal Modernist Split Hero */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 w-full">
+              <RecommendationCarousel
+                currentUser={currentUser}
+                onSelectListing={handleOpenListing}
+                currency={currency}
+                isFavorite={(id) => favorites.includes(id)}
+                onToggleFavorite={handleToggleFavorite}
+              />
               <div className="bg-gradient-to-br from-sky-50/40 via-white to-amber-50/30 border border-charcoal-border/70 rounded-3xl p-6 sm:p-10 shadow-md relative overflow-hidden grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 {/* Background Subtle Watermark */}
                 <div className="absolute right-0 bottom-0 opacity-5 pointer-events-none translate-x-8 translate-y-8">
