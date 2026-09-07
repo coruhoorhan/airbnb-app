@@ -17,13 +17,17 @@ export function generateToken(user) {
   return jwt.sign(
     { id: user.id, email: user.email, isHost: user.isHost },
     JWT_SECRET,
-    { expiresIn: '1h' }
+    { expiresIn: '1h', algorithm: 'HS256' }
   );
 }
 
 export function verifyToken(token) {
   try {
-    return jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'], maxAge: '1h' });
+    if (!payload.exp) {
+      throw new Error("Missing exp claim");
+    }
+    return payload;
   } catch (error) {
     return null;
   }
