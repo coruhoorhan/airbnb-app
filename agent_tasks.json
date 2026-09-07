@@ -714,7 +714,35 @@
       ],
       "created_at": 1788772734.4202356,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-multi-currency-checkout",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Multi‑currency Checkout Support",
+      "description": "Implement end‑to‑end multi‑currency checkout. Add a currency selector UI component and persist the user’s preferred currency in a cookie. Extend src/lib/currencyEngine.js to fetch live FX rates from a public API (e.g., exchangerate.host) and cache them for 10 minutes. Update all price‑related calculations (bookingEngine, pricingEngine, couponEngine) to accept a currency argument and convert amounts using the cached rates. Modify the GraphQL schema to expose a `currency` field on Listing, Booking and Payment types and add resolvers that return prices in the user’s selected currency. Update the payment integration in src/lib/iyzicoEngine.js to send the correct `currency` parameter in the request payload. Adjust src/components/PaymentModal.jsx and src/components/BookingWidget.jsx to display prices in the selected currency and to pass the currency to the backend when creating a booking. Ensure that the server validates the currency code against an allowed list and sanitizes the input.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/currencyEngine.js",
+        "src/lib/iyzicoEngine.js",
+        "src/lib/bookingEngine.js",
+        "src/lib/pricingEngine.js",
+        "src/lib/couponEngine.js",
+        "src/components/PaymentModal.jsx",
+        "src/components/BookingWidget.jsx",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js"
+      ],
+      "acceptance": [
+        "A currency selector appears on the listing detail page; selecting EUR updates all displayed prices (nightly, fees, total) to EUR with correct conversion.",
+        "The GraphQL query for a booking returns a `currency` field and all monetary fields are converted to the requested currency.",
+        "When a user confirms a booking in EUR, the request to iyzico contains `currency: \"EUR\"` and the amount matches the converted total.",
+        "Invalid or unsupported currency codes are rejected with a 400 response and a clear error message."
+      ],
+      "created_at": 1788773969.5041046,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788772734.420238
+  "updated_at": 1788773969.504107
 }
