@@ -644,7 +644,27 @@
       ],
       "created_at": 1788771503.6338148,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-interactive-map-clustering",
+      "status": "todo",
+      "area": "frontend",
+      "risk": "medium",
+      "title": "Interactive Map Clustering for Listings",
+      "description": "Add a clustering layer to the map view so that when many listings are displayed the markers are grouped into clusters. Use the Supercluster library to compute clusters client‑side based on the current map bounds and zoom level. Extend src/components/MapView.jsx to import the new clustering utility, render cluster markers with a count badge, and zoom into the cluster bounds on click. Create src/lib/mapClusterEngine.js that exposes a function `getClusters(listings, viewport, zoom)` returning GeoJSON features for both clusters and individual listings. Ensure the map updates efficiently on pan/zoom and that clicking a cluster smoothly animates to the appropriate zoom level. Update any related CSS for cluster marker styling.",
+      "allowed_paths": [
+        "src/components/MapView.jsx",
+        "src/lib/mapClusterEngine.js",
+        "src/components/ListingCard.jsx"
+      ],
+      "acceptance": [
+        "When the map is zoomed out, listings are displayed as cluster markers showing the number of listings in that area.",
+        "Clicking a cluster marker zooms the map to a level where the cluster expands into smaller clusters or individual listing markers.",
+        "Performance test with 1,000 listings shows map interactions (pan, zoom) remain smooth (no frame drops below 30 fps)."
+      ],
+      "created_at": 1788771812.1146426,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788771503.6338172
+  "updated_at": 1788771812.1146479
 }
