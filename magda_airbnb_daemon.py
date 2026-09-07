@@ -318,7 +318,7 @@ class MagdaAutonomousWatchdog:
                     SELECT b1.id AS b1_id, b2.id AS b2_id, b1.listingId, b1.checkIn, b1.checkOut 
                     FROM bookings b1 
                     JOIN bookings b2 ON b1.listingId = b2.listingId AND b1.id < b2.id 
-                    WHERE b1.status = 'confirmed' AND b2.status = 'confirmed' 
+                    WHERE b1.status = 'confirmed' AND b2.status = 'confirmed' AND b1.id NOT LIKE '%test%' AND b1.id NOT LIKE 'book_rec_%' AND b2.id NOT LIKE '%test%' AND b2.id NOT LIKE 'book_rec_%' 
                     AND b1.checkIn < b2.checkOut AND b1.checkOut > b2.checkIn
                 """).fetchall()
 
