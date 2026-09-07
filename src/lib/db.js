@@ -25,6 +25,7 @@ import Joi from "joi";
 import { INITIAL_USERS } from "../data/users.js";
 import { INITIAL_LISTINGS } from "../data/listings.js";
 import { INITIAL_EXPERIENCES } from "../data/experiences.js";
+import { sendNotification } from "./pushNotificationEngine.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -349,6 +350,15 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_payments_paymentId ON payments(paymentId);
   CREATE INDEX IF NOT EXISTS idx_favorites_user ON favorites(userId);
   CREATE INDEX IF NOT EXISTS idx_guardian_issues_status ON guardian_issues(status);
+
+  CREATE TABLE IF NOT EXISTS push_subscriptions (
+    id TEXT PRIMARY KEY,
+    userId TEXT NOT NULL,
+    endpoint TEXT NOT NULL,
+    keysP TEXT NOT NULL,
+    keysAuth TEXT NOT NULL,
+    FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE
+  );
 `);
 
 // Migration helpers
@@ -651,12 +661,53 @@ export function insertBooking(b) {
     approvalStatus: b.approvalStatus || (b.status === "confirmed" ? "approved" : "pending"),
     ...b
   });
-  return db.prepare("SELECT * FROM bookings WHERE id = ?").get(b.id);
+  const booking = db.prepare("SELECT * FROM bookings WHERE id = ?").get(b.id);
+
+  // Need to fetch hostId from listing if not provided in booking object
+  let hostId = b.hostId;
+  if (!hostId) {
+    const listing = db.prepare("SELECT hostId FROM listings WHERE id = ?").get(b.listingId);
+    if (listing) {
+      hostId = listing.hostId;
+    }
+  }
+
+  // Notify host about new booking
+  if (hostId) {
+    sendNotification(hostId, {
+      title: "Yeni Rezervasyon! 🔔",
+      body: `${b.checkIn} - ${b.checkOut} tarihleri için yeni rezervasyon alındı.`,
+      data: { url: "/host/dashboard" }
+    });
+  }
+
+  return booking;
 }
 
 export function updateBookingStatus(id, status, cancelReason = null) {
   db.prepare("UPDATE bookings SET status = ?, cancelReason = ? WHERE id = ?").run(status, cancelReason, id);
-  return db.prepare("SELECT * FROM bookings WHERE id = ?").get(id);
+  const booking = db.prepare("SELECT * FROM bookings WHERE id = ?").get(id);
+
+  if (booking) {
+    let title = "Rezervasyon Güncellemesi";
+    let body = "Rezervasyon durumunuz güncellendi.";
+    if (status === "confirmed") {
+      title = "Rezervasyon Onaylandı! ✅";
+      body = "Talebiniz ev sahibi tarafından onaylandı.";
+    } else if (status === "cancelled") {
+      title = "Rezervasyon İptal Edildi ❌";
+      body = cancelReason || "Rezervasyonunuz iptal edilmiştir.";
+    }
+
+    // Notify guest
+    sendNotification(booking.guestId, {
+      title,
+      body,
+      data: { url: "/trips" }
+    });
+  }
+
+  return booking;
 }
 
 export function updateBookingPayment(id, paymentStatus, paymentId) {
@@ -1039,7 +1090,35 @@ export function insertMessage({ listingId, senderId, senderName, text }) {
     INSERT INTO messages (id, listingId, senderId, senderName, text, createdAt, isRead)
     VALUES (@id, @listingId, @senderId, @senderName, @text, @createdAt, 0)
   `).run({ id, listingId, senderId, senderName, text, createdAt });
-  return db.prepare("SELECT * FROM messages WHERE id = ?").get(id);
+  const msg = db.prepare("SELECT * FROM messages WHERE id = ?").get(id);
+
+  try {
+    const listing = db.prepare("SELECT hostId FROM listings WHERE id = ?").get(listingId);
+    if (listing) {
+      // Find the recipient. If sender is host, notify the guest (but we don't store guest directly on listing).
+      // Wait, messages are tied to listing. Often chat is between host and guest. Let's find conversation participants.
+      const conversation = db.prepare("SELECT senderId FROM messages WHERE listingId = ? AND senderId != ? LIMIT 1").get(listingId, senderId);
+      let recipientId = null;
+
+      if (senderId === listing.hostId) {
+        if (conversation) recipientId = conversation.senderId;
+      } else {
+        recipientId = listing.hostId;
+      }
+
+      if (recipientId) {
+        sendNotification(recipientId, {
+          title: `${senderName} sana bir mesaj gönderdi`,
+          body: text.length > 50 ? text.substring(0, 50) + "..." : text,
+          data: { url: "/inbox" }
+        });
+      }
+    }
+  } catch(e) {
+    // ignore
+  }
+
+  return msg;
 }
 
 export function getMessagesForListing(listingId) {

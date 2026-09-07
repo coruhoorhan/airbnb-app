@@ -1,6 +1,7 @@
 import fs from "fs";
 import { generateIcsFeed, syncExternalIcal } from "./src/lib/calendarSync.js";
-import { saveSubscription, removeSubscription, getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
+import { getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
+import { saveSubscription, removeSubscription, getVapidPublicKey } from "./src/lib/pushNotificationEngine.js";
 import http from "http";
 import { setupChatWebSocketServer, chatEngine } from "./src/lib/chatEngine.js";
 import "express-async-errors";
@@ -1129,7 +1130,11 @@ app.put("/api/listings/:id/last-minute", (req, res) => {
 
 
 // --- Push Notification Endpoints ---
-app.post('/api/notifications/subscribe', (req, res) => {
+app.get('/api/notifications/vapid-public-key', (req, res) => {
+  res.json({ success: true, publicKey: getVapidPublicKey() });
+});
+
+app.post('/api/notifications/subscribe', authMiddleware, csrfMiddleware, (req, res) => {
   const { userId, subscription } = req.body;
   if (!userId || !subscription) {
     return res.status(400).json({ success: false, error: "userId ve subscription alanları zorunludur." });
@@ -1138,10 +1143,10 @@ app.post('/api/notifications/subscribe', (req, res) => {
   res.json({ success: true, data: result });
 });
 
-app.post('/api/notifications/unsubscribe', (req, res) => {
+app.post('/api/notifications/unsubscribe', authMiddleware, csrfMiddleware, (req, res) => {
   const { userId, endpoint } = req.body;
-  if (!userId) {
-    return res.status(400).json({ success: false, error: "userId zorunludur." });
+  if (!userId || !endpoint) {
+    return res.status(400).json({ success: false, error: "userId ve endpoint zorunludur." });
   }
   const result = removeSubscription(userId, endpoint);
   res.json({ success: true, data: result });

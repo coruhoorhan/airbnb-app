@@ -24,6 +24,7 @@ import { MagdaConciergeWidget } from "./components/MagdaConciergeWidget.jsx";
 import { INITIAL_USERS } from "./data/users.js";
 import { INITIAL_LISTINGS } from "./data/listings.js";
 import { recomputeAverageRating } from "./lib/bookingEngine.js";
+import { PushNotificationProvider } from "./components/PushNotificationProvider.jsx";
 import { formatCurrency, SUPPORTED_CURRENCIES } from "./lib/currencyEngine.js";
 import { Map, List, Globe, Shield, Sparkles, Waves, ArrowRight, Compass, Anchor, ShieldCheck, Sun, Star, Cloud, CloudSun, CloudRain, Droplets, Clock, Bell, Gift } from "lucide-react";
 
@@ -478,8 +479,9 @@ export function App() {
   };
 
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-white dark:bg-charcoal-dark">
-      {/* Coastal Navbar */}
+    <PushNotificationProvider currentUser={currentUser}>
+      <div className="min-h-[100dvh] flex flex-col bg-white dark:bg-charcoal-dark">
+        {/* Coastal Navbar */}
       <Navbar
         currentUser={currentUser}
         onSwitchUser={handleSwitchUser}
@@ -941,6 +943,7 @@ export function App() {
       {/* Magda-Agent AI Concierge Floating Widget */}
       <MagdaConciergeWidget onSelectListing={(id) => setSelectedListing(id)} />
 
-    </div>
+      </div>
+    </PushNotificationProvider>
   );
 }

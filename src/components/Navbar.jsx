@@ -1,6 +1,35 @@
 import React, { useState, useEffect } from "react";
-import { Search, Menu, Heart, Briefcase, PlusCircle, Home, Bell, Check, Sparkles, Globe, Compass, Waves, MessageCircle, Sun, Moon, Gift, Star } from "lucide-react";
+import { Search, Menu, Heart, Briefcase, PlusCircle, Home, Bell, Check, Sparkles, Globe, Compass, Waves, MessageCircle, Sun, Moon, Gift, Star, BellRing, BellOff } from "lucide-react";
 import { getAvailableCurrencies } from "../lib/currencyEngine.js";
+import { usePushNotifications } from "./PushNotificationProvider.jsx";
+
+function PushNotificationToggle() {
+  const { isSupported, isSubscribed, subscribe, unsubscribe } = usePushNotifications();
+
+  if (!isSupported) return null;
+
+  return (
+    <button
+      onClick={(e) => {
+        e.preventDefault();
+        isSubscribed ? unsubscribe() : subscribe();
+      }}
+      className="w-full text-left px-4 py-2.5 text-sm text-charcoal dark:text-white hover:bg-charcoal-bg dark:hover:bg-white/5 font-medium flex items-center gap-2.5 cursor-pointer"
+    >
+      {isSubscribed ? (
+        <>
+          <BellOff className="w-4 h-4 text-red-500" />
+          <span>Bildirimleri Kapat</span>
+        </>
+      ) : (
+        <>
+          <BellRing className="w-4 h-4 text-airbnb" />
+          <span>Bildirimleri Aç</span>
+        </>
+      )}
+    </button>
+  );
+}
 
 export function Navbar({ 
   currentUser, 
@@ -313,6 +342,10 @@ export function Navbar({
                     <Sparkles className="w-4 h-4 text-purple-600" />
                     <span>🤖 Magda AI Kontrol Merkezi</span>
                   </button>
+                </div>
+
+                <div className="border-t border-charcoal-border/50 dark:border-white/10 py-1">
+                  <PushNotificationToggle />
                 </div>
 
 
