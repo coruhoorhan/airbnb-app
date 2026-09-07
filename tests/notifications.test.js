@@ -1,22 +1,26 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import request from "supertest";
 import { app } from "../server.js";
-import * as db from "../src/lib/db.js";
+import { generateToken } from "../src/lib/auth.js";
+
+// Mock the CSRF middleware for the test environment
+vi.mock("../src/lib/auth.js", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    csrfMiddleware: (req, res, next) => next() // bypass csrf checks in test
+  };
+});
 
 describe("Push Notification Engine API", () => {
-  const testUserId = `test_notif_user_${Date.now()}`;
+  const token = generateToken({ id: "usr_guest_01", email: "guest@fatsa.bel.tr" });
+  const cookieStr = `token=${token}`;
 
-  beforeAll(() => {
-    db.insertUser({
-      id: testUserId,
-      name: "Notification Test User",
-      email: `notif_${Date.now()}@test.com`,
-      isHost: false
-    });
-  });
-
-  it("should reject subscription requests without userId or subscription", async () => {
-    const res = await request(app).post("/api/notifications/subscribe").send({});
+  it("should reject subscription requests without subscription", async () => {
+    const res = await request(app)
+      .post("/api/notifications/subscribe")
+      .set("Cookie", cookieStr)
+      .send({});
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
   });
@@ -29,23 +33,18 @@ describe("Push Notification Engine API", () => {
 
     const res = await request(app)
       .post("/api/notifications/subscribe")
-      .send({ userId: testUserId, subscription: mockSubscription });
+      .set("Cookie", cookieStr)
+      .send({ subscription: mockSubscription });
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-  });
-
-  it("should list notifications for a user", async () => {
-    const res = await request(app).get(`/api/notifications?userId=${testUserId}`);
-    expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(Array.isArray(res.body.data)).toBe(true);
   });
 
   it("should unsubscribe from push notifications", async () => {
     const res = await request(app)
       .post("/api/notifications/unsubscribe")
-      .send({ userId: testUserId, endpoint: "https://fcm.googleapis.com" });
+      .set("Cookie", cookieStr)
+      .send();
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);

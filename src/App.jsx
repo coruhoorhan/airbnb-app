@@ -26,8 +26,9 @@ import { INITIAL_LISTINGS } from "./data/listings.js";
 import { recomputeAverageRating } from "./lib/bookingEngine.js";
 import { formatCurrency, SUPPORTED_CURRENCIES } from "./lib/currencyEngine.js";
 import { Map, List, Globe, Shield, Sparkles, Waves, ArrowRight, Compass, Anchor, ShieldCheck, Sun, Star, Cloud, CloudSun, CloudRain, Droplets, Clock, Bell, Gift } from "lucide-react";
+import { PushNotificationProvider, usePushNotification } from "./components/PushNotificationProvider.jsx";
 
-export function App() {
+function AppContent() {
   const [isMagdaDashboardOpen, setIsMagdaDashboardOpen] = useState(false);
   const [users, setUsers] = useState(INITIAL_USERS);
 
@@ -504,6 +505,8 @@ export function App() {
         onOpenMagdaDashboard={() => setIsMagdaDashboardOpen(true)}
       />
 
+      <PushNotificationToggle />
+
       {/* Main Content View */}
       <main className="flex-1">
         {currentView === "explore" && (
@@ -942,5 +945,35 @@ export function App() {
       <MagdaConciergeWidget onSelectListing={(id) => setSelectedListing(id)} />
 
     </div>
+  );
+}
+
+
+function PushNotificationToggle() {
+  const { isSupported, permission, isSubscribed, loading, toggleSubscription } = usePushNotification();
+  if (!isSupported) return null;
+
+  return (
+    <div className="bg-white dark:bg-[#16191E] border-b border-charcoal-border dark:border-white/10 px-4 py-2 flex items-center justify-between z-40 relative">
+      <div className="flex items-center gap-2 text-sm text-charcoal dark:text-white">
+        <Bell className="w-4 h-4 text-airbnb" />
+        <span className="font-medium">Anlık Bildirimler</span>
+      </div>
+      <button
+        onClick={toggleSubscription}
+        disabled={loading || permission === 'denied'}
+        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${isSubscribed ? 'bg-airbnb' : 'bg-gray-300 dark:bg-gray-600'} ${(loading || permission === 'denied') ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+      >
+        <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${isSubscribed ? 'translate-x-4' : 'translate-x-1'}`} />
+      </button>
+    </div>
+  );
+}
+
+export function App() {
+  return (
+    <PushNotificationProvider>
+      <AppContent />
+    </PushNotificationProvider>
   );
 }

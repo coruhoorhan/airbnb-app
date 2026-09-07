@@ -1,4 +1,5 @@
 import fs from "fs";
+import { saveSubscription as savePushSub, removeSubscription as removePushSub, sendNotification } from "./src/lib/pushNotificationEngine.js";
 import { generateIcsFeed, syncExternalIcal } from "./src/lib/calendarSync.js";
 import { saveSubscription, removeSubscription, getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
 import http from "http";
@@ -686,6 +687,11 @@ app.post("/api/payments/iyzico/direct-pay", paymentRateLimiter, async (req, res)
     // Award loyalty points to the guest (accommodation spend = nights + cleaning, after coupon)
     const loyaltyResult = awardLoyaltyPoints(guestId || "usr_guest_01", bookingId, Math.max(0, afterCouponPrice - listing.serviceFee));
 
+    sendNotification(listing.hostId, {
+      title: 'Yeni Rezervasyon Onaylandı 🔔',
+      body: `${checkIn} - ${checkOut} tarihleri için ₺${finalTotalPrice} tutarında rezervasyon onaylandı.`,
+      url: '/'
+    }).catch(err => console.error(err));
     // Insert payment record
     const paymentRecord = insertPayment({
       id: `pay_${Date.now()}`,
@@ -933,6 +939,14 @@ app.put("/api/bookings/:id/status", authMiddleware, csrfMiddleware, (req, res) =
   const updated = updateBookingStatus(req.params.id, status, cancelReason);
   if (!updated) return res.status(404).json({ error: "Rezervasyon bulunamadı" });
 
+  if (updated && updated.guestId) {
+    sendNotification(updated.guestId, {
+      title: `Rezervasyon ${status === 'confirmed' ? 'Onaylandı' : (status === 'cancelled' ? 'İptal Edildi' : 'Güncellendi')}`,
+      body: `Durum: ${status}`,
+      url: '/'
+    }).catch(err => console.error(err));
+  }
+
   // Loyalty: award points when a pending booking is confirmed by the host
   if (status === "confirmed" && updated && updated.guestId) {
     try {
@@ -1129,21 +1143,17 @@ app.put("/api/listings/:id/last-minute", (req, res) => {
 
 
 // --- Push Notification Endpoints ---
-app.post('/api/notifications/subscribe', (req, res) => {
-  const { userId, subscription } = req.body;
-  if (!userId || !subscription) {
-    return res.status(400).json({ success: false, error: "userId ve subscription alanları zorunludur." });
+app.post('/api/notifications/subscribe', authMiddleware, csrfMiddleware, (req, res) => {
+  const { subscription } = req.body;
+  if (!subscription) {
+    return res.status(400).json({ success: false, error: "subscription alanları zorunludur." });
   }
-  const result = saveSubscription(userId, subscription);
+  const result = savePushSub(req.user.id, subscription);
   res.json({ success: true, data: result });
 });
 
-app.post('/api/notifications/unsubscribe', (req, res) => {
-  const { userId, endpoint } = req.body;
-  if (!userId) {
-    return res.status(400).json({ success: false, error: "userId zorunludur." });
-  }
-  const result = removeSubscription(userId, endpoint);
+app.post('/api/notifications/unsubscribe', authMiddleware, csrfMiddleware, (req, res) => {
+  const result = removePushSub(req.user.id);
   res.json({ success: true, data: result });
 });
 
@@ -1233,6 +1243,19 @@ app.post("/api/messages", authMiddleware, csrfMiddleware, messageRateLimiter, (r
       return res.status(400).json({ success: false, error: "Geçersiz kullanıcı." });
     }
     const msg = insertMessage({ listingId, senderId, senderName: user.name, text });
+
+    // Send push notification to receiver
+    const listing = db.prepare("SELECT hostId FROM listings WHERE id = ?").get(listingId);
+    if (listing) {
+      const receiverId = (senderId === listing.hostId) ? null : listing.hostId; // Need guest id if host is sender, but for simplification in this task we can notify host when guest messages, and guest when host messages. In this schema, we only have senderId and listingId on message. The booking is another source, but chat is tied to listing. We will just notify the host if sender is not host.
+      if (receiverId) {
+        sendNotification(receiverId, {
+          title: `Yeni Mesaj: ${user.name}`,
+          body: text,
+          url: "/"
+        }).catch(err => console.error(err));
+      }
+    }
     broadcastToListing(listingId, msg);
     res.status(201).json({ success: true, data: msg });
   } catch (err) {
