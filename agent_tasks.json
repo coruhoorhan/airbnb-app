@@ -587,7 +587,42 @@
       ],
       "created_at": 1788768926.4955626,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-csp-strongening",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "CSP Güçlendirme ve Inline Script Engelleme",
+      "description": "Helmet CSP konfigürasyonundan 'unsafe-inline' ve 'unsafe-eval' direktiflerini kaldırın. Tüm inline scriptler için nonce veya hash kullanarak güvenli bir CSP oluşturun. Bu, XSS saldırılarını önlemek için kritik bir adımdır.",
+      "allowed_paths": [
+        "server.js"
+      ],
+      "acceptance": [
+        "CSP header içinde 'script-src' ve 'style-src' değerleri 'unsafe-inline' ve 'unsafe-eval' içermez.",
+        "Tarayıcı güvenlik test araçları (ör. securityheaders.com) CSP'nin 'script-src' ve 'style-src' kısmının uygun şekilde kısıtlandığını raporlar."
+      ],
+      "created_at": 1788769058.5360692,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-csrf-middleware-enforcement",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "CSRF Koruma Middleware'ının Tüm State-Change Rotlerine Uygulanması",
+      "description": "src/lib/auth.js içinde tanımlı csrfMiddleware'i tüm POST, PUT, DELETE ve PATCH isteklerine global olarak ekleyin. Token'ı çerezde HttpOnly ve SameSite=Strict olarak ayarlayın ve istemciden token header'ı (x-csrf-token) doğrulayın.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/auth.js"
+      ],
+      "acceptance": [
+        "POST/PUT/PATCH/DELETE isteklerinde eksik ya da geçersiz CSRF token gönderildiğinde 403 yanıtı alınır.",
+        "Tarayıcı geliştirici araçları ile gönderilen isteklerde 'x-csrf-token' header'ı çerezdeki token ile eşleşir."
+      ],
+      "created_at": 1788769058.5375605,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788768926.4955642
+  "updated_at": 1788769058.5375621
 }
