@@ -1,6 +1,7 @@
 import fs from "fs";
 import { generateIcsFeed, syncExternalIcal } from "./src/lib/calendarSync.js";
-import { saveSubscription, removeSubscription, getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
+import { getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
+import { saveSubscription, removeSubscription, sendNotification } from "./src/lib/pushNotificationEngine.js";
 import http from "http";
 import { setupChatWebSocketServer, chatEngine } from "./src/lib/chatEngine.js";
 import "express-async-errors";
@@ -719,6 +720,8 @@ app.post("/api/payments/iyzico/direct-pay", paymentRateLimiter, async (req, res)
       Date.now()
     );
 
+    sendNotification(listing.hostId, { title: "Yeni Rezervasyon!", body: `${listing.title} için ödeme alındı ve onaylandı.` }).catch(console.error);
+
     res.status(201).json({
       success: true,
       message: "Ödeme ve rezervasyon başarıyla tamamlandı.",
@@ -945,6 +948,8 @@ app.put("/api/bookings/:id/status", authMiddleware, csrfMiddleware, (req, res) =
     }
   }
 
+  sendNotification(updated.guestId, { title: "Rezervasyon Durumu", body: `Rezervasyonunuzun durumu güncellendi: ${status}` }).catch(console.error);
+
   res.json({ success: true, data: updated });
 });
 
@@ -967,6 +972,8 @@ app.post("/api/bookings/:id/cancel", authMiddleware, csrfMiddleware, (req, res) 
 
     db.prepare(`INSERT INTO notifications (id, userId, type, title, body, isRead, createdAt) VALUES (?, ?, 'cancelled', 'Rezervasyon İptal Edildi', ?, 0, ?)`)
       .run(`notif_${Date.now()}`, booking.guestId, `${refund.description} İade: ₺${refund.refundAmount}`, Date.now());
+
+    sendNotification(booking.guestId, { title: "Rezervasyon İptali", body: `Rezervasyonunuz iptal edildi. İade: ₺${refund.refundAmount}` }).catch(console.error);
 
     res.json({ success: true, data: { ...refund, bookingId: req.params.id, status: "cancelled" } });
   } catch (err) {
@@ -1129,21 +1136,20 @@ app.put("/api/listings/:id/last-minute", (req, res) => {
 
 
 // --- Push Notification Endpoints ---
-app.post('/api/notifications/subscribe', (req, res) => {
-  const { userId, subscription } = req.body;
-  if (!userId || !subscription) {
-    return res.status(400).json({ success: false, error: "userId ve subscription alanları zorunludur." });
+app.post('/api/notifications/subscribe', authMiddleware, csrfMiddleware, (req, res) => {
+  const { subscription } = req.body;
+  if (!req.user || !subscription) {
+    return res.status(400).json({ success: false, error: "Kullanıcı ve subscription zorunludur." });
   }
-  const result = saveSubscription(userId, subscription);
+  const result = saveSubscription(req.user.id, subscription);
   res.json({ success: true, data: result });
 });
 
-app.post('/api/notifications/unsubscribe', (req, res) => {
-  const { userId, endpoint } = req.body;
-  if (!userId) {
-    return res.status(400).json({ success: false, error: "userId zorunludur." });
+app.post('/api/notifications/unsubscribe', authMiddleware, csrfMiddleware, (req, res) => {
+  if (!req.user) {
+    return res.status(400).json({ success: false, error: "Kullanıcı zorunludur." });
   }
-  const result = removeSubscription(userId, endpoint);
+  const result = removeSubscription(req.user.id);
   res.json({ success: true, data: result });
 });
 
@@ -1234,6 +1240,22 @@ app.post("/api/messages", authMiddleware, csrfMiddleware, messageRateLimiter, (r
     }
     const msg = insertMessage({ listingId, senderId, senderName: user.name, text });
     broadcastToListing(listingId, msg);
+
+    // Push notification logic
+    const listing = db.prepare("SELECT hostId FROM listings WHERE id = ?").get(listingId);
+    if (listing) {
+      let recipientId;
+      if (listing.hostId === senderId) {
+        const guestRow = db.prepare("SELECT senderId FROM messages WHERE listingId = ? AND senderId != ? ORDER BY createdAt DESC LIMIT 1").get(listingId, senderId);
+        if (guestRow) recipientId = guestRow.senderId;
+      } else {
+        recipientId = listing.hostId;
+      }
+      if (recipientId) {
+        sendNotification(recipientId, { title: `Yeni Mesaj: ${user.name}`, body: text }).catch(console.error);
+      }
+    }
+
     res.status(201).json({ success: true, data: msg });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -1477,6 +1499,10 @@ app.get("/api/magda/codebase-knowledge", (req, res) => {
 });
 
 // --- 13. Static Frontend Serving ---
+app.get("/service-worker.js", (req, res) => {
+  res.sendFile(path.join(__dirname, "src", "service-worker.js"));
+});
+
 const distPath = path.join(__dirname, "dist");
 app.use(express.static(distPath));
 

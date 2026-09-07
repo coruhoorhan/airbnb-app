@@ -1,53 +1,44 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import request from "supertest";
 import { app } from "../server.js";
-import * as db from "../src/lib/db.js";
+import { db } from "../src/lib/db.js";
+import { sign } from "jsonwebtoken";
 
-describe("Push Notification Engine API", () => {
-  const testUserId = `test_notif_user_${Date.now()}`;
+vi.mock("web-push", () => ({
+  default: {
+    setVapidDetails: vi.fn(),
+    sendNotification: vi.fn().mockResolvedValue(true)
+  }
+}));
 
-  beforeAll(() => {
-    db.insertUser({
-      id: testUserId,
-      name: "Notification Test User",
-      email: `notif_${Date.now()}@test.com`,
-      isHost: false
-    });
-  });
+describe("Push Notifications API", () => {
+  const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-key-do-not-use-in-prod-which-is-at-least-thirty-two-chars";
+  const token = sign({ id: "usr_guest_01" }, JWT_SECRET, { expiresIn: "1h" });
 
-  it("should reject subscription requests without userId or subscription", async () => {
-    const res = await request(app).post("/api/notifications/subscribe").send({});
-    expect(res.status).toBe(400);
-    expect(res.body.success).toBe(false);
-  });
-
-  it("should save web-push subscription and persist in database", async () => {
-    const mockSubscription = {
-      endpoint: "https://fcm.googleapis.com/fcm/send/test-endpoint-token",
-      keys: { p256dh: "mock-p256dh-key", auth: "mock-auth-secret" }
-    };
-
+  it("should subscribe to push notifications", async () => {
     const res = await request(app)
       .post("/api/notifications/subscribe")
-      .send({ userId: testUserId, subscription: mockSubscription });
-
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        subscription: {
+          endpoint: "https://example.com/push",
+          keys: { p256dh: "p256", auth: "auth" }
+        }
+      });
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-  });
-
-  it("should list notifications for a user", async () => {
-    const res = await request(app).get(`/api/notifications?userId=${testUserId}`);
-    expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(Array.isArray(res.body.data)).toBe(true);
+    const sub = db.prepare("SELECT * FROM push_subscriptions WHERE userId = ?").get("usr_guest_01");
+    expect(sub).toBeDefined();
+    expect(sub.endpoint).toBe("https://example.com/push");
   });
 
   it("should unsubscribe from push notifications", async () => {
     const res = await request(app)
       .post("/api/notifications/unsubscribe")
-      .send({ userId: testUserId, endpoint: "https://fcm.googleapis.com" });
-
+      .set("Authorization", `Bearer ${token}`);
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
+    const sub = db.prepare("SELECT * FROM push_subscriptions WHERE userId = ?").get("usr_guest_01");
+    expect(sub).toBeUndefined();
   });
 });

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Search, Menu, Heart, Briefcase, PlusCircle, Home, Bell, Check, Sparkles, Globe, Compass, Waves, MessageCircle, Sun, Moon, Gift, Star } from "lucide-react";
 import { getAvailableCurrencies } from "../lib/currencyEngine.js";
+import { usePushNotification } from "./PushNotificationProvider.jsx";
 
 export function Navbar({ 
   currentUser, 
@@ -40,6 +41,11 @@ export function Navbar({
 
   const [notifOpen, setNotifOpen] = useState(false);
   const [currencyOpen, setCurrencyOpen] = useState(false);
+
+  const pushContext = usePushNotification();
+  const isSubscribed = pushContext?.isSubscribed || false;
+  const toggleSubscription = pushContext?.toggleSubscription || (() => {});
+  const isSupported = pushContext?.isSupported || false;
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
   const currencies = getAvailableCurrencies();
@@ -315,6 +321,22 @@ export function Navbar({
                   </button>
                 </div>
 
+                {isSupported && (
+                  <div className="border-t border-charcoal-border/50 dark:border-white/10 py-1">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleSubscription(); }}
+                      className="w-full text-left px-4 py-2.5 text-sm text-charcoal dark:text-white hover:bg-charcoal-bg dark:hover:bg-white/5 font-medium flex items-center justify-between cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Bell className="w-4 h-4 text-sky-500" />
+                        <span>Anlık Bildirimler</span>
+                      </div>
+                      <div className={`w-8 h-4 rounded-full flex items-center p-0.5 transition-colors ${isSubscribed ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-600'}`}>
+                        <div className={`w-3 h-3 bg-white rounded-full shadow-sm transform transition-transform ${isSubscribed ? 'translate-x-4' : 'translate-x-0'}`} />
+                      </div>
+                    </button>
+                  </div>
+                )}
 
                 <div className="border-t border-charcoal-border/50 dark:border-white/10 py-1">
                   <button
