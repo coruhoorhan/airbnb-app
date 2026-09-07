@@ -38539,7 +38539,119 @@
       ],
       "created_at": 1788822284.3050482,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788822286661",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788822286661",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788822286661 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788822371.825565,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788822286691",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788822286691",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788822286691 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788822371.8606608,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788822286716",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788822286716",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788822286716 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788822371.898227,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788822286716_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788822286716_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788822286716_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788822371.933634,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788822287655",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788822287655",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788822287655 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788822371.9679472,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-38-visual-similarity-search",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Visual Similarity Search for Listings",
+      "description": "Add a visual similarity engine that generates image embeddings for each listing photo and stores them in the SQLite DB. Implement a new library module src/lib/imageEmbedding.js that uses a pre‑trained CLIP model (via @tensorflow/tfjs-node) to compute a 512‑dimensional vector for a given image. Extend src/lib/searchEngine.js with a function findSimilarListings(listingId, limit) that loads the target embedding and performs a cosine‑similarity query against all stored embeddings, returning the top N most similar listings. Update the GraphQL schema in server.js to expose a new query similarListings(listingId: ID!, limit: Int = 5): [Listing!]!. Modify src/components/ListingDetail.jsx to call this query after the listing loads and render a “Similar Listings” carousel using the existing ListingCard component. Ensure that when a new listing is created or its main photo is updated, the embedding is (‑computed and persisted.",
+      "allowed_paths": [
+        "src/lib/imageEmbedding.js",
+        "src/lib/searchEngine.js",
+        "server.js",
+        "src/components/ListingDetail.jsx",
+        "src/components/ListingCard.jsx"
+      ],
+      "acceptance": [
+        "When a listing with a main photo is created, an embedding is stored in the DB and a console log confirms the vector length is 512.",
+        "Running the GraphQL query similarListings(listingId: \"list_01\", limit: 3) returns an array of up to three listings whose similarity scores are > 0.8 and the IDs are different from the source listing.",
+        "The ListingDetail page displays a “Similar Listings” carousel with at least one card for a listing that shares visual characteristics with the current listing."
+      ],
+      "created_at": 1788822378.1771297,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788822284.3050506
+  "updated_at": 1788822378.1771472
 }
