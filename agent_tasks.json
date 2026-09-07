@@ -417,7 +417,33 @@
       ],
       "created_at": 1788785614.028024,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-08-instant-booking-approval",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Instant Booking Approval Flow",
+      "description": "Add a host‑side approval workflow for instant‑booking requests. Extend the GraphQL schema with a new mutation `approveBooking(id: ID!, approved: Boolean!): Booking` and a subscription `bookingStatusChanged(hostId: ID!): Booking`. Implement the resolver in `src/lib/graphqlResolvers.js` and the business logic in `src/lib/bookingEngine.js` to update booking status, send a push notification, and log the action. Create a new UI component `src/components/BookingApprovalModal.jsx` that lists pending instant‑booking requests for the logged‑in host, shows listing details, and lets the host approve or reject with an optional message. Wire the component into `HostDashboard` and ensure the GraphQL client updates the UI via the subscription. Add necessary DB fields (`approvedAt`, `approvalStatus`) to the `bookings` table in `src/lib/db.js` and migrate existing data. Ensure proper authorization checks using `authMiddleware`.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/bookingEngine.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/graphqlSchema.js",
+        "src/components/HostDashboard.jsx",
+        "src/components/BookingApprovalModal.jsx"
+      ],
+      "acceptance": [
+        "Host dashboard shows a badge with the count of pending instant‑booking requests.",
+        "Clicking a request opens BookingApprovalModal with correct listing info and approve/reject buttons.",
+        "Approving a request updates the booking status to `approved`, sets `approvedAt`, and triggers a GraphQL subscription that updates the guest UI in real time.",
+        "Rejecting a request updates the status to `rejected`, stores the host's optional message, and notifies the guest via push notification.",
+        "Unauthorized users cannot invoke the approveBooking mutation; attempts return a 403 error."
+      ],
+      "created_at": 1788785679.6280727,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788785614.028026
+  "updated_at": 1788785679.6280787
 }
