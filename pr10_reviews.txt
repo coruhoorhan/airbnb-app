@@ -1,0 +1,372 @@
+--- Review at 2026-09-04T10:53:22Z ---
+## 🤖 Magda AI Independent Code Auditor Quality Gate
+
+**VERDICT:** CHANGES REQUESTED
+
+## 🛡️ Audit Verdict: CHANGES REQUESTED
+
+## 🔍 Security & Integrity Analysis
+
+| Area | Observation | Recommendation |
+|------|-------------|----------------|
+| **JWT Cookie Settings** | `res.cookie("token", token, { httpOnly: false, secure: process.env.NODE_ENV === "production" });` – the authentication cookie is **readable by JavaScript** (`httpOnly: false`). This defeats the primary XSS mitigation for session tokens. | Set `httpOnly: true` for all authentication cookies. Add `sameSite: "strict"` (or `"lax"` if legitimate cross‑site navigation is required) and `secure: true` in production. |
+| **Inconsistent Cookie Flags** | OAuth callback uses `httpOnly: false` while the normal login endpoint uses `httpOnly: true`. This inconsistency can lead to accidental exposure of the token. | Uniformly apply the secure cookie flags across all auth endpoints. |
+| **CSRF Token Handling** | `generateCsrfToken()` is sent to the client in a non‑httpOnly cookie, but the server‑side verification is not shown. If the token is only stored client‑side, an attacker who can read the cookie (XSS) can also read the token and bypass CSRF protection. | Store the CSRF token **server‑side** (e.g., in the JWT payload, a session store, or a signed cookie) and verify that the header value matches the stored token. |
+| **Missing `SameSite` Attribute** | No `sameSite` attribute is set on any cookie, allowing the token to be sent on cross‑site requests, which can be abused in CSRF attacks. | Add `sameSite: "strict"` (or `"lax"` where appropriate) to all auth‑related cookies. |
+| **Rate Limiting on Auth Endpoints** | `express-rate-limit` is imported but never applied to the `/api/auth/*` routes. Brute‑force credential guessing or token‑generation attacks are possible. | Apply a rate limiter (e.g., `authRateLimiter`) to `/api/auth/login`, `/api/auth/oauth/callback`, and any endpoint that issues tokens. |
+| **Secret Management** | The JWT secret is not shown; if a hard‑coded secret is used, it will be exposed in the repo. | Load the secret from an environment variable (`process.env.JWT_SECRET`) and enforce a minimum length (≥ 32 bytes). |
+| **Token Expiration** | No `expiresIn` or `maxAge` is set when generating the JWT. Tokens could be valid indefinitely. | Set a reasonable expiration (e.g., `1h` for access tokens, `7d` for refresh tokens) and implement token revocation/refresh flow if needed. |
+| **Input Validation / Sanitization** | Email is taken directly from `req.body` and used in DB look‑ups without validation. Potential for injection if the underlying DB layer is not parameterised. | Validate email format (e.g., using a regex or a library like `validator`) and ensure all DB queries are parameterised. |
+| **Error Message Leakage** | Errors such as `"OAuth hatası: email alınamadı."` reveal internal flow details. | Return generic error messages to the client and log detailed errors server‑side. |
+| **Helmet / Security Headers** | No `helmet` middleware is used. | Add `app.use(require('helmet')());` to set standard security headers (CSP, X‑Content‑Type‑Options, etc.). |
+| **CORS Configuration** | `app.use(cors());` without options defaults to allowing any origin. | Restrict origins to the known frontend domain(s) and enable `credentials: true`. |
+| **Unhandled Promise Rejections** | Some route handlers are async (e.g., `/api/auth/login`) but errors are not caught with `try/catch` or `next(err)`. | Wrap async handlers with a central error‑handling wrapper or use `express-async-errors`. |
+| **User Data in JWT Payload** | The entire `user` object (including potentially sensitive fields) is encoded into the JWT. | Only include minimal, non‑sensitive claims (`sub`, `email`, `role`, `exp`). Avoid sending `avatarUrl`, `phone`, etc. |
+| **CSRF Token Rotation** | CSRF token is generated once per request to `/api/auth/csrf` but never rotated after successful state‑changing actions. | Rotate the CSRF token after each verified state‑changing request to mitigate replay attacks. |
+
+## ⚡ Performance & Architecture Review
+
+| Area | Observation | Recommendation |
+|------|-------------|----------------|
+| **Middleware Order** | `cookieParser()` is placed **after** `express.json()` and `express.urlencoded()`. This works but is unconventional; parsing cookies early can be useful for auth middleware. | Move `
+
+---
+*Audited autonomously by Inception Labs Mercury-2 Cognitive Quality Gate.*
+--- Review at 2026-09-04T11:36:10Z ---
+## 🤖 Magda AI Independent Code Auditor Quality Gate
+
+VERDICT: CHANGES REQUESTED
+
+## 🛡️ Audit Verdict: CHANGES REQUESTED
+
+## 🔍 Security & Integrity Analysis
+
+| Area | Observation | Recommendation |
+|------|-------------|----------------|
+| **JWT storage** | In the simulated OAuth callback (`/api/auth/oauth/callback`) the JWT is set in a cookie with `httpOnly: false`. This allows client‑side JavaScript (and any XSS payload) to read the token. | Set `httpOnly: true` for the authentication cookie. Keep a separate non‑httpOnly cookie only for the CSRF token if needed. |
+| **SameSite attribute** | No `sameSite` flag is set on any cookie (`token`, `csrfToken`). This leaves the app vulnerable to CSRF attacks when the browser sends cookies cross‑origin. | Add `sameSite: 'strict'` (or `'lax'` if legitimate cross‑site navigation is required) to all authentication‑related cookies. |
+| **CSRF token handling** | The CSRF token is generated and sent to the client, but the implementation of `csrfMiddleware` is not shown. If the token is only stored in a cookie and not validated against a server‑side store, an attacker could replay it. | Store a server‑side reference (e.g., in the session or a signed JWT) and verify that the header `X‑CSRF‑Token` matches the stored value. |
+| **CORS configuration** | `app.use(cors())` enables a permissive CORS policy (allows any origin). This can expose the API to unwanted origins. | Restrict CORS to the known frontend origin(s) and enable `credentials: true` only for those origins. |
+| **Rate limiting** | Rate limiting is applied only to listing‑related endpoints. Authentication endpoints (`/api/auth/login`, `/api/auth/oauth/callback`) are unprotected, making them susceptible to credential‑stuffing or brute‑force attacks. | Apply a rate limiter (e.g., `express-rate-limit`) to all auth‑related routes. |
+| **Input validation** | The `email` field is taken directly from the request body without validation or sanitisation. This can lead to malformed data or enumeration attacks. | Validate email format (e.g., using a regex or a library like `validator`) and normalise it before use. |
+| **Error messages** | Some error responses expose internal details (`"OAuth hatası: email alınamadı."`, `"Kullanıcı bulunamadı."`). While not critical, they can aid attackers in enumeration. | Return generic error messages (e.g., `"Invalid credentials."`) and log detailed errors server‑side only. |
+| **Secret management** | The JWT secret is not shown; if it is hard‑coded or missing, token signing is insecure. | Ensure the secret is read from a secure environment variable (`process.env.JWT_SECRET`) and is sufficiently random (≥ 256‑bit). |
+| **Async error handling** | The login route is declared `async` but does not `await` any async DB calls (e.g., `getUserByEmail`). If those functions return promises, unhandled rejections may occur. | Await all async operations and wrap them in `try / catch` blocks, forwarding errors to Express error‑handling middleware. |
+| **Cookie security flags** | The `secure` flag is only set when `NODE_ENV === "production"`. In a staging environment that still uses HTTPS, the flag may be omitted. | Prefer always setting `secure: true` and enforce HTTPS via a reverse proxy or middleware (`helmet`). |
+| **Helmet / other hardening** | No security‑hardening middleware (e.g., `helmet`) is used. | Add `helmet()` to set sensible HTTP headers (Content‑Security‑Policy, X‑Content‑Type‑Options, etc.). |
+
+## ⚡ Performance & Architecture Review
+
+| Area | Observation | Recommendation |
+|------|-------------|----------------|
+| **Modularity** | Authentication logic is placed in `src/lib/auth.js`, which is good. However, the server file mixes route definitions, middleware, and business logic, making it harder to test. | Extract route handlers into separate controller modules (e.g., `authController.js`, `listingController.js`). |
+| **Middleware ordering** | `cookieParser` is applied after `express.json()` and `express.urlencoded()`. This order is acceptable, but placing `cookieParser` before route definitions is essential (already done). | No change needed. |
+| **Token duplication** | The JWT is returned both as a cookie and in the JSON response. This redundancy can cause confusion and may lead to token mismatch. | Choose a single delivery method (preferably httpOnly cookie) and remove the token from the JSON payload. |
+| **Rate limiter placement** | The rate limiter is applied only to listing routes. Centralising rate limiting (e.g., global limiter for all routes, with higher limits for read‑only endpoints) simplifies configuration. | Create a generic limiter and apply per‑route limits as needed. |
+| **Dependency bloat** | Several lodash sub‑modules are added as direct dependencies. They are small but could be bundled into a single `lodash` import to reduce duplication. | Consider using the main `lodash` package or tree‑shaking to keep bundle size low. |
+| **Error handling middleware** | No global error‑handling middleware is present. Uncaught
+
+---
+*Audited autonomously by Inception Labs Mercury-2 Cognitive Quality Gate.*
+--- Review at 2026-09-04T11:38:20Z ---
+## 🤖 Magda AI Independent Code Auditor Quality Gate
+
+**VERDICT:** CHANGES REQUESTED
+
+---
+
+## 🛡️ Audit Verdict: CHANGES REQUESTED
+
+The pull request introduces essential authentication features, but several security‑critical gaps and best‑practice omissions remain. The most serious issues are the exposure of JWTs via non‑httpOnly cookies and the lack of robust input validation / rate‑limiting on authentication endpoints. Until these are addressed, the change cannot be approved.
+
+---
+
+## 🔍 Security & Integrity Analysis
+
+| Area | Observation | Recommendation |
+|------|-------------|----------------|
+| **Cookie Security** | `res.cookie("token", token, { httpOnly: false, secure: … })` in the OAuth callback (and similar in `/api/auth/login` where `httpOnly` is correctly set, but the callback uses `false`). | Set `httpOnly: true` for all JWT cookies. The token must never be accessible to JavaScript to prevent XSS theft. |
+| **CORS Configuration** | `app.use(cors())` with default (allow‑any‑origin). | Restrict origins to the trusted frontend domain(s) or use a whitelist. |
+| **Rate Limiting on Auth Endpoints** | No rate limiter on `/api/auth/*` routes. | Apply `express-rate-limit` (or similar) to login, OAuth callback, and token refresh endpoints to mitigate brute‑force and credential‑stuffing attacks. |
+| **Input Validation / Sanitisation** | Email is taken directly from request body and used in DB queries (`getUserByEmail`, `insertUser`) without visible validation. | Validate email format (e.g., using a regex or a library like `validator`) and enforce length limits. Use parameterised statements (prepared statements) in DB layer (likely already done with `better‑sqlite3`, but verify). |
+| **CSRF Token Handling** | CSRF token is set in a non‑httpOnly cookie and also sent in JSON. The middleware is not shown; potential for missing verification. | Ensure `csrfMiddleware` validates the token from the `X‑CSRF‑Token` header against the cookie. Rotate CSRF token per session and set `SameSite=Strict`/`Lax`. |
+| **Helmet / Security Headers** | No `helmet` middleware used. | Add `app.use(require('helmet')())` to set common security headers (Content‑Security‑Policy, X‑Content‑Type‑Options, etc.). |
+| **Error Message Leakage** | Errors return detailed messages (`"OAuth hatası: email alınamadı."`, `"Kullanıcı bulunamadı."`). | Generic error messages for authentication failures (e.g., “Invalid credentials”) to avoid user enumeration. |
+| **Token Expiration & Refresh** | No indication of token expiry or refresh flow. | Include `expiresIn` (e.g., 15 min) and implement a refresh‑token endpoint with proper rotation and revocation. |
+| **Secure Cookie Flags** | `secure` flag is set based on `process.env.NODE_ENV === "production"`. Good, but ensure the environment variable is correctly defined in all deployment pipelines. | Document the requirement and enforce it in CI/CD. |
+| **Logging of Sensitive Data** | Not shown, but ensure that request bodies containing emails or tokens are not logged in production. | Use a logging library that redacts sensitive fields. |
+
+---
+
+## ⚡ Performance & Architecture Review
+
+| Area | Observation | Recommendation |
+|------|-------------|----------------|
+| **Middleware Order** | `cookieParser` is placed after `express.urlencoded` but before auth routes – acceptable. | No change needed. |
+| **Rate Limiter Scope** | Only `listingsRateLimiter` applied to listing creation. | Extend to other mutating routes (favorites, reviews, messaging) for uniform protection. |
+| **Token Generation** | `generateToken` imported from `src/lib/auth.js` – not shown. Ensure it uses a strong secret and appropriate algorithm (`HS256` or better `RS256`). | Verify secret length (≥256 bits) and rotate periodically. |
+| **Code Modularity** | Authentication logic lives in `src/lib/auth.js`; good separation. | Add unit tests for `authMiddleware`, `csrfMiddleware`, and token helpers. |
+| **Dependency Bloat** | New dependencies (`cookie-parser`, `express-rate-limit`, `jsonwebtoken`) are appropriate and not excessive. | Keep them up‑to‑date; monitor for CVEs. |
+| **Static Asset Serving** | `app.use("/uploads", express.static(...))` – no cache‑control headers. | Add cache‑control for static assets to improve performance. |
+
+---
+
+## 📝 Detailed Feedback & Fix Recommendations
+
+Below are concrete code snippets to address the critical findings.
+
+### 1. Make JWT Cookie HttpOnly
+
+```js
+// server.js – OAuth callback
+app.post("/api/auth/oauth/callback", (req, res) => {
+  // … existing code …
+  const token = generateToken(user);
+  // IMPORTANT: httpOnly must be true
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",          // mitigate CSRF via cookie
+    maxAge: 24 * 60 * 60 * 1000 // optional: 1 day
+  });
+  res.json({ success: true, token, user });
+});
+```
+
+### 2. Restrict CORS
+
+```js
+import cors from "cors";
+
+const allowedOrigins = [
+  "https://app.example.com",
+  "http://localhost:3000"
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // allow non‑browser requests (e.g., curl, Postman)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true // needed for cookie auth
+  })
+);
+```
+
+### 3. Apply Rate Limiting to Auth Endpoints
+
+```js
+import rateLimit from "express-rate-limit";
+
+const authLimiter = rateLimit({
+
+
+---
+*Audited autonomously by Inception Labs Mercury-2 Cognitive Quality Gate.*
+--- Review at 2026-09-04T11:51:42Z ---
+## 🤖 Magda AI Independent Code Auditor Quality Gate
+
+**VERDICT:** CHANGES REQUESTED
+
+---
+
+## 🛡️ Audit Verdict: CHANGES REQUESTED
+
+## 🔍 Security & Integrity Analysis
+
+| Area | Observation | Recommendation |
+|------|-------------|----------------|
+| **JWT Secret Management** | `auth.js` (not shown) likely uses a hard‑coded secret or falls back to a default if `process.env.JWT_SECRET` is missing. | Enforce a mandatory environment variable for the JWT secret. Throw an error at startup if it is undefined. |
+| **Cookie Security** | Cookie is set with `httpOnly:true`, `sameSite:"strict"` and `secure` only in production. No `signed` flag, and the token is also returned in the JSON body. | Do **not** expose the JWT in the response body. Use signed cookies (`cookieParser(secret)`) and verify the signature on every request. |
+| **CSRF Protection** | `csrfMiddleware` is imported but not wired into the route definitions shown. The CSRF token is generated (`generateCsrfToken`) but never validated. | Attach `csrfMiddleware` to every state‑changing route (POST/PUT/DELETE). Verify the `X‑CSRF‑Token` header against the token stored in the cookie. |
+| **Input Validation** | Only email is validated with `validator.isEmail`. Other user‑provided fields (e.g., `name`, `avatarUrl`, `phone`) are inserted directly into the DB via `insertUser`. | Sanitize/validate all incoming fields. Use a library like `validator` for each field and reject or escape unsafe characters. |
+| **Rate Limiting** | Rate limiter is applied only to auth endpoints. Mutation endpoints are protected only by `authMiddleware`/`csrfMiddleware`. | Apply a global rate limiter (or at least to mutation endpoints) to mitigate brute‑force and DoS attacks. |
+| **Error Handling** | The OAuth callback returns a generic 400 on validation failure but may leak stack traces if other errors occur (e.g., DB errors). | Wrap all async handlers with `express-async-errors` (already imported) and ensure a centralized error‑handling middleware that hides internal details. |
+| **Token Expiration** | No evidence that `generateToken` sets an expiration (`exp`). | Include a short‑lived expiration (e.g., 15 min) and implement token refresh logic. |
+| **Helmet Configuration** | `helmet()` is used with default settings, which may allow the `X‑Powered‑By` header. | Explicitly disable `X‑Powered‑By` and consider a strict CSP (`helmet.contentSecurityPolicy`). |
+| **Dependency Hygiene** | New dependencies (`jsonwebtoken`, `express-rate-limit`, `helmet`, `validator`) are added without version pinning. | Use exact versions (no caret) for security‑critical libs, and add a `npm audit` step in CI. |
+| **Logging of Sensitive Data** | The OAuth callback logs the entire request body in the truncated diff (`...`). Potentially logs email addresses. | Ensure no PII is written to logs; mask or omit sensitive fields. |
+
+---
+
+## ⚡ Performance & Architecture Review
+
+| Area | Observation | Recommendation |
+|------|-------------|----------------|
+| **Middleware Order** | `helmet`, `cors`, `cookieParser`, `express.json`, `urlencoded` are correctly ordered. | No change needed. |
+| **Rate Limiter Placement** | Defined after middleware but before route definitions – correct. | Apply a global limiter for all routes or a separate limiter for high‑traffic endpoints. |
+| **JWT Generation** | Token is generated synchronously on each login. | Consider caching the secret and using async `sign` if payload size grows. |
+| **Static Asset Serving** | Not shown; ensure `express.static` is used with caching headers. | Add `express.static` with `maxAge` for production. |
+| **Database Calls** | `insertUser` and `getUserByEmail` are called without async/await handling in the diff (they appear synchronous). | Ensure DB helpers return promises and are awaited; otherwise, the server may respond before DB writes complete. |
+| **Bundle Size** | Adding `validator` and `lodash` sub‑modules increases client bundle size if they are imported in the frontend. | Keep these libraries server‑side only. Verify that they are not bundled into the client. |
+
+---
+
+## 📝 Detailed Feedback & Fix Recommendations
+
+### 1. Enforce JWT Secret & Expiration
+
+```js
+// src/lib/auth.js
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("Missing JWT_SECRET environment variable");
+}
+
+export function generateToken(payload) {
+  return jwt.sign(payload, JWT_SECRET, {
+    expiresIn: "15m",          // short‑lived token
+    algorithm: "HS256",
+  });
+}
+```
+
+### 2. Remove Token from JSON Response
+
+```js
+// server.js – OAuth callback
+res.cookie("token", token, {
+  httpOnly: true,
+  sameSite: "strict",
+  secure: process.env.NODE_ENV === "production",
+  signed: true,               // <-- enable signed cookie
+});
+res.json({ success: true, user });   // no token sent back
+```
+
+### 3. Use Signed Cookies & Verify on Each Request
+
+```js
+// server.js – top level
+app.use(cookieParser(process.env.COOKIE_SECRET));
+
+// src/lib/auth.js – middleware
+export function authMiddleware(req, res, next) {
+  const token = req.signedCookies?.token;
+  if (!token) return res.status(401).json({ success: false, error: "Unauthenticated" });
+
+  try {
+    req.user = jwt.verify(token, JWT_SECRET);
+    next();
+  } catch (err) {
+    return res.status(401).json({ success: false, error: "Invalid token" });
+  }
+}
+```
+
+### 4. CSRF Token Generation & Verification
+
+```js
+// src/lib/auth.js
+import crypto from "crypto";
+
+export function generateCsrfToken() {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+// csrfMiddleware
+export function csrfMiddleware(req, res, next) {
+  const sentToken = req.headers["
+
+---
+*Audited autonomously by Inception Labs Mercury-2 Cognitive Quality Gate.*
+--- Review at 2026-09-04T12:12:02Z ---
+## 🤖 Magda AI Independent Code Auditor Quality Gate
+
+**VERDICT:** CHANGES REQUESTED
+**BLOCKING:** NO
+
+---
+
+## 🛡️ Audit Verdict: CHANGES REQUESTED
+
+The PR introduces a solid foundation for authentication and security hardening, but a few critical gaps remain that could lead to token leakage and insufficient CSRF protection. These issues must be addressed before the change can be merged.
+
+---
+
+## 🔍 Security & Integrity Analysis
+
+| Area | Observation | Recommendation | Severity |
+|------|-------------|----------------|----------|
+| **JWT Exposure** | The OAuth callback returns the signed JWT both in an HttpOnly cookie **and** in the JSON response body (`res.json({ success: true, token, user })`). This duplicates the token in a location that can be read by client‑side scripts and logged by intermediaries. | Remove the `token` field from the JSON payload. Rely solely on the HttpOnly cookie for authentication. If the client needs user data, return only non‑sensitive profile information. | **HIGH** |
+| **CSRF Token Handling** | The code imports `csrfMiddleware` and `generateCsrfToken` but the diff does not show the middleware being applied to mutation routes, nor does it verify that the `X‑CSRF‑Token` header matches the cookie value. | Ensure `csrfMiddleware` is attached to every state‑changing endpoint (POST/PUT/DELETE) and that it validates the header against the cookie. Add unit tests for the middleware. | **HIGH** |
+| **Content Security Policy (CSP)** | `helmet` is used but no CSP configuration is supplied. Without CSP, the app is vulnerable to XSS if any reflected data slips through. | Add a strict CSP via `helmet.contentSecurityPolicy({ directives: { ... } })`. Include `script-src 'self'` and `object-src 'none'` at a minimum. | **MEDIUM** |
+| **Rate Limiting Scope** | Rate limiting is applied only to the OAuth endpoints. Other mutation endpoints (booking, messaging, reviews) have no throttling, opening the door to brute‑force or DoS attacks. | Apply a generic rate limiter (e.g., `authRateLimiter`) to all mutation routes, or create a separate limiter with appropriate thresholds. | **MEDIUM** |
+| **Token Expiration & Algorithm** | The `generateToken` implementation is not shown. If a long‑lived token or a weak algorithm is used, the risk of token replay increases. | Use a short expiration (e.g., 15 min) and rotate refresh tokens. Explicitly set `algorithm: 'HS256'` (or RS256 with a key pair) and store the secret in an environment variable. | **MEDIUM** |
+| **Input Sanitization for Email** | `validator.isEmail` is used, which is good, but the email is later inserted directly into the database via `insertUser`. If the DB layer does not use prepared statements, SQL injection could be possible. | Ensure all DB calls use parameterised queries / prepared statements. Add a note in the code comment. | **LOW** |
+| **Logging Sensitive Data** | The OAuth callback returns the full user object (including email) in the JSON response. Logs that capture request bodies could inadvertently store PII. | Strip sensitive fields from any logs and avoid echoing the full user object back to the client. | **LOW** |
+| **Missing Tests** | No test files were added for the new auth utilities, middleware, or rate limiting. | Add unit tests covering: token generation/verification, CSRF validation, rate limiting, and error paths (invalid email, missing token). | **LOW** |
+
+---
+
+## ⚡ Performance & Architecture Review
+
+| Area | Observation | Recommendation | Severity |
+|------|-------------|----------------|----------|
+| **Middleware Order** | `helmet` and `cors` are applied before `cookieParser`. This order is fine, but `express.json()` is placed after `cookieParser`, which is acceptable. No performance concerns. | Keep current order; document rationale. | **LOW** |
+| **Duplicate Dependencies** | `validator` is added as a direct dependency while also being a transitive dependency of other packages. This bloats the bundle slightly. | Consider using the transitive version or mark it as a peer if not needed elsewhere. | **LOW** |
+| **Static File Serving** |
+
+---
+*Audited autonomously by Inception Labs Mercury-2 Cognitive Quality Gate.*
+--- Review at 2026-09-04T12:18:36Z ---
+## 🤖 Magda AI Independent Code Auditor Quality Gate
+
+VERDICT: CHANGES REQUESTED
+BLOCKING: NO
+
+## 🛡️ Audit Verdict: CHANGES REQUESTED
+
+## 🔍 Security & Integrity Analysis
+
+| Area | Observation | Recommendation | Severity |
+|------|-------------|----------------|----------|
+| **JWT Secret Management** | The `auth.js` utility is not shown; if the secret is hard‑coded or derived from a weak source, tokens can be forged. | Ensure the signing secret is read from a strong environment variable (e.g., `process.env.JWT_SECRET`) and is at least 256‑bit. Do not commit any secret to the repo. | HIGH |
+| **Token Expiration** | `generateToken` is called without evidence of an `exp` claim. Tokens may be valid indefinitely. | Include a reasonable expiration (e.g., 15 min for access token, 7 days for refresh token) and implement token rotation. | MEDIUM |
+| **CSRF Token Handling** | The CSRF token is generated but the cookie flags are not shown (e.g., `httpOnly` should be **false** to allow client read, but `secure` and `sameSite` must be set). | Set the CSRF cookie with `sameSite: 'strict'`, `secure: process.env.NODE_ENV === 'production'`, and **do not** mark it `httpOnly`. Verify the header is validated on every state‑changing request. | MEDIUM |
+| **Rate Limiting Scope** | Rate limiting is applied only to the OAuth callback and login endpoints. Other mutation endpoints (booking, messaging, reviews) are unprotected. | Apply a global rate limiter (or at least to all mutating routes) to mitigate brute‑force and DoS attacks. | MEDIUM |
+| **CORS Configuration** | CORS is locked to `http://localhost:5173`. This is fine for development but will block production clients. | Externalize the allowed origin(s) to a configuration variable and include the production domain. | LOW |
+| **Content Security Policy (CSP)** | Helmet is used but no CSP header is configured. | Add a CSP via `helmet.contentSecurityPolicy` that restricts script, style, and frame sources to trusted origins. | LOW |
+| **Input Sanitization Beyond Email** | Only email is validated on the OAuth callback. Other request bodies (e.g., booking data) are not shown to be sanitized. | Use a validation library (e.g., `validator` or `joi`) for all incoming payloads and escape any data that is rendered in the UI. | MEDIUM |
+| **Error Message Leakage** | Errors are returned with generic messages, but stack traces may be exposed in non‑production mode. | Ensure stack traces are hidden from clients (`app.use((err, req, res, next) => { ... })`) and log them securely on the server. | LOW |
+| **Dependency Vulnerabilities** | New dependencies (`express-rate-limit`, `helmet`, `jsonwebtoken`, etc.) are added. No known CVEs are present, but versions are not pinned to exact releases. | Pin dependencies to exact versions (no `^`) and run `npm audit` CI to catch future vulnerabilities. | LOW |
+| **Test Coverage** | No new test files are added for the authentication flow, CSRF protection, or rate limiting. | Add unit/integration tests covering: token issuance, verification, CSRF header validation, rate‑limit enforcement, and error paths. | MEDIUM |
+
+## ⚡ Performance & Architecture Review
+
+| Area | Observation | Recommendation | Severity |
+|------|-------------|----------------|----------|
+| **Middleware Order** | `helmet`, `cors`, `cookieParser`, and `express.json` are applied before the auth routes – appropriate. | No change needed. | LOW |
+| **Async Error Handling** | `express-async-errors` is imported, which catches async errors. | Ensure all async route handlers are properly awaited. | LOW |
+| **Token Storage** | JWT is stored in an httpOnly cookie, which is good for XSS protection. | Consider also storing a short‑lived access token in memory for SPA usage, but keep httpOnly cookie for refresh. | LOW |
+| **Rate Limiter Configuration** | `windowMs: 60000` and `maxRequests: 10` for auth endpoints may be too restrictive for legitimate users. | Tune limits based on traffic patterns; optionally whitelist internal IPs. | LOW |
+| **Code Modularity** | Auth logic is split into `src/lib/auth.js`; good separation. | Ensure the module exports only needed functions and does not expose internal helpers. | LOW |
+| **Static Asset Serving** | Not shown; ensure that static files are served with proper cache headers. | Add `express.static` with `maxAge` and `etag` as appropriate. | LOW |
+
+## 📝 Detailed Feedback & Fix Recommendations
+
+1. **Secure JWT Secret**
+   ```js
+   // src/lib/auth.js
+   const JWT_SECRET = process.env.JWT_SECRET;
+   if (!JWT_SECRET) {
+     throw new Error("JWT_SECRET environment variable is not set");
+   }
+   ```
+   *Do not commit any fallback secret.*
+
+2. **Add Expiration to Tokens**
+   ```js
+   export function generateToken(user) {
+     return jwt.sign(
+       { sub: user.id, email: user.email, name:
+
+---
+*Audited autonomously by Inception Labs Mercury-2 Cognitive Quality Gate.*
