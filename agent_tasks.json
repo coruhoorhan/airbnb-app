@@ -11765,7 +11765,122 @@
       ],
       "created_at": 1788799510.082135,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788799512423",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788799512423",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788799512423 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788799578.6852744,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788799512430",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788799512430",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788799512430 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788799578.697498,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788799512423_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788799512423_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788799512423_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788799578.708429,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788799512462",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788799512462",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788799512462 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788799578.7194023,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788799513428",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788799513428",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788799513428 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788799578.7313657,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-30-smart-lock-integration",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Smart‑Lock Self‑Check‑In Integration",
+      "description": "Add end‑to‑end support for generating one‑time access codes for smart‑lock devices. Create a new lockEngine module with functions generateAccessCode(listingId, bookingId) and revokeAccessCode(lockId, code). Extend the DB schema (src/lib/db.js) with a locks table (id, listingId, lockProvider, lockExternalId, lastCode, lastCodeExpires). Update the booking flow (src/lib/bookingEngine.js) to call generateAccessCode after payment confirmation and store the code. Add a new GraphQL mutation `createLockAccessCode(listingId, bookingId): AccessCodePayload`. Modify server.js to expose the mutation via the GraphQL handler. In the frontend, add a \"Show Access Code\" button in the BookingConfirmation component (src/components/BookingConfirmation.jsx) that fetches the code via the new mutation and displays it in a modal. Ensure the code is sent via the existing push‑notification engine (src/lib/notificationEngine.js).",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/bookingEngine.js",
+        "src/lib/notificationEngine.js",
+        "src/lib/lockEngine.js",
+        "src/components/BookingConfirmation.jsx"
+      ],
+      "acceptance": [
+        "Database contains a new `locks` table with the correct columns.",
+        "After a successful booking payment, the GraphQL mutation `createLockAccessCode` returns a 6‑digit code and an expiration timestamp.",
+        "The BookingConfirmation UI shows a \"Show Access Code\" button that opens a modal displaying the code and expiry.",
+        "The generated code is sent as a push notification to the guest device.",
+        "Calling the mutation with an invalid listingId or bookingId returns a GraphQL error."
+      ],
+      "created_at": 1788799587.7864785,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788799510.0821373
+  "updated_at": 1788799587.7864811
 }
