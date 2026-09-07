@@ -372,7 +372,8 @@
       ],
       "status": "todo",
       "created_at": 1788786000,
-      "created_by": "Magda Principal Architect"
+      "created_by": "Magda Principal Architect",
+      "updated_at": 1788788961.9970012
     },
     {
       "id": "feat-06-push-notification-engine",
