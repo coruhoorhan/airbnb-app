@@ -433,7 +433,30 @@
         "Sayfa ilk açılış süresi ve veri tüketimi optimize edilir"
       ],
       "status": "todo"
+    },
+    {
+      "id": "feat-ical-sync",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "iCal Calendar Sync for Listings",
+      "description": "Add iCal integration so hosts can export their listing availability as an .ics feed and import external calendar events. Extend the users table with an `externalCalendarUrl` column. Implement a new module `src/lib/calendarSync.js` that (a) generates an iCal feed from current bookings (GET /api/listings/:id/ical), (b) receives webhook POSTs with iCal data (POST /api/calendar-sync/webhook) and parses events, (c) creates or updates bookings while respecting existing reservations and invoking `validateBookingConflict` from `bookingEngine`. Schedule a periodic job (using `node-cron` or similar) to fetch external iCal URLs and reconcile conflicts. Update `server.js` to register the new routes and middleware, and expose a simple UI button in the host dashboard (`src/components/HostDashboard.jsx`) to copy the iCal URL and toggle sync.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/calendarSync.js",
+        "src/lib/bookingEngine.js",
+        "src/components/HostDashboard.jsx"
+      ],
+      "acceptance": [
+        "GET /api/listings/:id/ical returns a valid .ics file containing all confirmed bookings for that listing.",
+        "POST /api/calendar-sync/webhook with a valid iCal payload creates new bookings or updates existing ones without causing overlapping reservations.",
+        "The `users` table now has an `externalCalendarUrl` TEXT column and the DB schema migration runs without errors.",
+        "Host dashboard displays a 'Sync Calendar' button that copies the iCal URL to clipboard and shows a toggle indicating sync status."
+      ],
+      "created_at": 1788784797.5487294,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788784178.184475
+  "updated_at": 1788784797.5487325
 }
