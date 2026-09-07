@@ -20837,7 +20837,118 @@
       ],
       "created_at": 1788806669.4888225,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788806671748",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788806671748",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788806671748 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788806741.966962,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788806671769",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788806671769",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788806671769 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788806741.9923828,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788806671748_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788806671748_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788806671748_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788806742.0138905,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788806671793",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788806671793",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788806671793 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788806742.0347476,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788806672649",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788806672649",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788806672649 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788806742.0599196,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-33-semantic-search",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Semantic Search with Vector Embeddings",
+      "description": "Add a natural‑language search capability that matches listings based on semantic meaning rather than keyword matching. Implement a new module src/lib/searchEngine.js that loads a pre‑trained sentence‑transformer model (e.g., all-MiniLM-L6-v2) via @xenova/transformers, generates a 384‑dimensional embedding for each listing description and title, and stores the embeddings as BLOBs in a new SQLite table (listings_embeddings). Extend server.js to expose a GraphQL query `semanticSearch(query: String!, limit: Int = 10): [Listing]` that computes the query embedding, performs a cosine‑similarity search against the stored embeddings using an in‑memory approximate nearest‑neighbor library (e.g., Annoy or a simple linear scan for <=10k rows), and returns the top‑N listings sorted by similarity. Update src/lib/graphqlSchema.js and src/lib/graphqlResolvers.js to wire the resolver. Add a background job that re‑embeds listings on create/update via a new function `updateListingEmbedding(listingId)` called from existing insertListing and updateListing functions. Ensure the new endpoint respects existing auth middleware and rate limiting.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/searchEngine.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/db.js"
+      ],
+      "acceptance": [
+        "Calling the GraphQL query `semanticSearch(query: \"beach house with pool\", limit: 5)` returns at least one listing whose title or description contains a beach and a pool, and the results are ordered by decreasing cosine similarity.",
+        "The semantic search query for a dataset of 5,000 listings completes in ≤ 200 ms on the CI test runner, and the embedding table is correctly populated after inserting a new listing."
+      ],
+      "created_at": 1788806748.4015405,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788806669.4888246
+  "updated_at": 1788806748.4015448
 }
