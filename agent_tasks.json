@@ -342,163 +342,37 @@
       ]
     },
     {
-      "id": "feat-interactive-map-clustering",
+      "id": "batch-01-frontend-design-suite",
       "area": "frontend",
-      "risk": "low",
-      "title": "Fatsa Haritasında İnteraktif İlan Kümeleme (Leaflet Map Clustering)",
-      "description": "Leaflet haritasında çok sayıda ilan olduğunda pinleri sayı baloncukları olarak kümele. Harita yakınlaştırıldığında (zoom in) baloncuklar açılarak bireysel fiyat etiketli pinlere dönüşsün.",
+      "risk": "medium",
+      "title": "5'li Arayüz ve Tasarım Süper Paketi (Map Clustering, Lightbox, Dark Mode, AI Recommendations, Lazy Loading)",
+      "description": "Implement the complete 5-feature Frontend & Design suite in a single integrated PR:\n1. Leaflet Map Clustering: Cluster listing markers into number bubbles when zoomed out (< 13); smooth zoom on click; individual price badges when zoomed in.\n2. 5-Photo Grid & Lightbox: Airbnb standard 1 large + 4 small photo grid on ListingDetail.jsx; click opens full-screen accessible Lightbox modal with keyboard navigation (ESC, arrow keys).\n3. Dark / Light Mode Toggle: Smooth animated sun/moon theme switch button on Navbar.jsx; persist in localStorage; apply Tailwind dark: styles across all cards and modals.\n4. AI-Powered Recommendations Carousel: RecommendationCarousel.jsx on home page showing smart matching listings based on category & viewed listings.\n5. Responsive & Lazy-Load Images: Add loading=\"lazy\" and responsive srcset across ListingCard.jsx, ListingDetail.jsx, and ExperienceCard.jsx.",
       "allowed_paths": [
         "src/components/MapView.jsx",
         "src/lib/mapClusterEngine.js",
-        "src/components/ListingCard.jsx",
-        "agent_tasks.json"
-      ],
-      "acceptance": [
-        "Zoom seviyesi 13 altındayken pinler küme baloncuklarında toplanır",
-        "Kümeye tıklandığında yumuşak animasyonla o bölgeye zoom yapar",
-        "100+ ilan haritada 60 FPS akıcı şekilde render edilir"
-      ],
-      "status": "todo"
-    },
-    {
-      "id": "ui-photo-gallery-lightbox",
-      "area": "frontend",
-      "risk": "low",
-      "title": "Airbnb Tarzı 5'li Fotoğraf Izgarası ve Tam Ekran Lightbox Galeri",
-      "description": "İlan detay sayfasında Airbnb standardı olan 1 büyük + 4 küçük fotoğraf düzenini uygula. Fotoğraflara tıklandığında klavye (sağ/sol/ESC) ile gezilebilen tam ekran Lightbox galeri modalı aç.",
-      "allowed_paths": [
         "src/components/ListingDetail.jsx",
         "src/components/PhotoLightbox.jsx",
-        "agent_tasks.json"
-      ],
-      "acceptance": [
-        "Detay sayfasında 5 fotoğraflı grid kusursuz görünür",
-        "Fotoğrafa tıklandığında tam ekran Lightbox modalı açılır",
-        "Klavyedeki ESC tuşu modalı kapatır, sağ/sol ok tuşları fotoğrafları değiştirir"
-      ],
-      "status": "todo"
-    },
-    {
-      "id": "ui-dark-light-mode-toggle",
-      "area": "frontend",
-      "risk": "low",
-      "title": "Akıcı Karanlık ve Aydınlık Mod (Dark/Light Theme Toggle)",
-      "description": "Navbar'a güneş/ay ikonlu akıcı geçişli bir tema butonu ekle. Tercihi localStorage'ta sakla. Tailwind dark: sınıflarını tüm kart, modal ve çubuklarda kusursuz hale getir.",
-      "allowed_paths": [
         "src/components/Navbar.jsx",
-        "src/App.jsx",
-        "src/index.css",
-        "agent_tasks.json"
-      ],
-      "acceptance": [
-        "Navbar'daki tema butonuna basıldığında sayfa anında karanlık/aydınlık moda geçer",
-        "Kullanıcının tema tercihi sayfa yenilendiğinde hatırlanır",
-        "Tüm metin ve arka plan renkleri WCAG kontrast standartlarına uygun kalır"
-      ],
-      "status": "todo"
-    },
-    {
-      "id": "feat-ai-powered-listing-recommendations",
-      "area": "frontend",
-      "risk": "low",
-      "title": "Yapay Zekâ Destekli Kişiselleştirilmiş İlan Öneri Karuseli (UI)",
-      "description": "Anasayfada seçilen kategoriye ve kullanıcının incelediği son ilanlara göre benzer Fatsa konaklama yerlerini gösteren kaydırmalı (carousel) öneri bileşeni ekle.",
-      "allowed_paths": [
-        "src/App.jsx",
+        "src/components/ListingCard.jsx",
+        "src/components/ExperienceCard.jsx",
         "src/components/RecommendationCarousel.jsx",
         "src/lib/recommendationEngine.js",
+        "src/App.jsx",
+        "src/index.css",
+        "tests/frontend_design_suite.test.js",
         "agent_tasks.json"
       ],
       "acceptance": [
-        "Anasayfada İlgili İlanlar karuseli listelenir",
-        "Kategori değiştiğinde öneriler dinamik olarak güncellenir",
-        "Kullanıcı son gezdiği kategoriye uygun önerileri görür"
+        "1. Map Clustering: Zooming out clusters listing markers; clicking zooms into the cluster area smoothly.",
+        "2. Photo Lightbox: 5-photo grid renders on detail page; clicking any image opens full-screen gallery with ESC/arrow key controls.",
+        "3. Theme Switcher: Theme button toggles between light and dark modes with persistent localStorage state.",
+        "4. Recommendation Carousel: Matching listings carousel renders on home page without layout shifts.",
+        "5. Lazy Loading: Off-screen images have loading=\"lazy\" and load on demand as user scrolls.",
+        "6. Test Coverage: All tests in tests/frontend_design_suite.test.js pass cleanly with 0 failures."
       ],
-      "status": "todo"
-    },
-    {
-      "id": "frontend-responsive-image-loading",
-      "area": "frontend",
-      "risk": "low",
-      "title": "Responsive ve Lazy-Load Görsel Yükleme Optimizasyonu",
-      "description": "ListingCard, ListingDetail ve ExperienceCard bileşenlerindeki tüm görsel etiketlerini loading=\"lazy\" ve srcset ile duyarlı hale getirerek açılış hızını optimize et.",
-      "allowed_paths": [
-        "src/components/ListingCard.jsx",
-        "src/components/ListingDetail.jsx",
-        "src/components/ExperienceCard.jsx",
-        "agent_tasks.json"
-      ],
-      "acceptance": [
-        "Ekranda görünmeyen görseller kullanıcı aşağı kaydırana kadar indirilmez",
-        "Sayfa ilk açılış süresi ve veri tüketimi optimize edilir"
-      ],
-      "status": "todo"
-    },
-    {
-      "id": "feat-ical-sync",
       "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "iCal Calendar Sync for Listings",
-      "description": "Add iCal integration so hosts can export their listing availability as an .ics feed and import external calendar events. Extend the users table with an `externalCalendarUrl` column. Implement a new module `src/lib/calendarSync.js` that (a) generates an iCal feed from current bookings (GET /api/listings/:id/ical), (b) receives webhook POSTs with iCal data (POST /api/calendar-sync/webhook) and parses events, (c) creates or updates bookings while respecting existing reservations and invoking `validateBookingConflict` from `bookingEngine`. Schedule a periodic job (using `node-cron` or similar) to fetch external iCal URLs and reconcile conflicts. Update `server.js` to register the new routes and middleware, and expose a simple UI button in the host dashboard (`src/components/HostDashboard.jsx`) to copy the iCal URL and toggle sync.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/db.js",
-        "src/lib/calendarSync.js",
-        "src/lib/bookingEngine.js",
-        "src/components/HostDashboard.jsx"
-      ],
-      "acceptance": [
-        "GET /api/listings/:id/ical returns a valid .ics file containing all confirmed bookings for that listing.",
-        "POST /api/calendar-sync/webhook with a valid iCal payload creates new bookings or updates existing ones without causing overlapping reservations.",
-        "The `users` table now has an `externalCalendarUrl` TEXT column and the DB schema migration runs without errors.",
-        "Host dashboard displays a 'Sync Calendar' button that copies the iCal URL to clipboard and shows a toggle indicating sync status."
-      ],
-      "created_at": 1788784797.5487294,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-push-notification-engine",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Push Notification Engine for Real‑time Guest & Host Alerts",
-      "description": "Create a unified push‑notification subsystem. Add a `notifications` table in SQLite (id, userId, type, title, body, isRead, createdAt). Implement `src/lib/notificationEngine.js` with functions `createNotification`, `getUserNotifications`, `markNotificationRead`. Extend `server.js` to expose a GraphQL mutation `sendNotification` and a subscription (via the existing WebSocket chat server) that pushes new notifications to connected clients. In the React side, add `src/components/NotificationToast.jsx` that renders toast messages and a notification bell UI. Update `src/App.jsx` to initialize a WebSocket listener on mount, dispatch incoming notifications to a global state, and show the toast component. Ensure that when a booking status changes to \"confirmed\" or \"canceled\", the backend calls `createNotification` for the relevant host and guest, and the frontend displays the toast within 2 seconds. Persist notifications so they appear in the existing `InboxModal` when opened.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/db.js",
-        "src/lib/notificationEngine.js",
-        "src/components/NotificationToast.jsx",
-        "src/App.jsx"
-      ],
-      "acceptance": [
-        "Creating a booking with status 'confirmed' triggers a toast notification for both host and guest within 2 seconds of the mutation response.",
-        "Notifications are stored in the SQLite `notifications` table and are listed correctly when the user opens the InboxModal."
-      ],
-      "created_at": 1788785109.1548665,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-host-payout-revenue-analytics",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Host Payout & Revenue Analytics Dashboard",
-      "description": "Add a complete payout and revenue analytics capability for hosts. Implement a new payout engine (src/lib/payoutEngine.js) that calculates host earnings, platform fees, taxes, and upcoming payout dates based on completed bookings. Extend the SQLite schema in src/lib/db.js with a `payouts` table and necessary indexes. Create GraphQL resolvers (src/lib/graphqlResolvers.js) and REST endpoints in server.js for fetching payout history, current balance, and earnings summary. Build a new React dashboard component (src/components/HostPayoutDashboard.jsx) that consumes the API, displays total earnings, pending payouts, and a line chart of earnings over the past 12 months using a chart library (e.g., Recharts). Add a helper chart component (src/components/RevenueChart.jsx) for rendering the earnings timeline. Ensure all new endpoints are protected by authMiddleware and rate‑limited via createRateLimiter.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/payoutEngine.js",
-        "src/lib/db.js",
-        "src/lib/graphqlResolvers.js",
-        "src/components/HostPayoutDashboard.jsx",
-        "src/components/RevenueChart.jsx"
-      ],
-      "acceptance": [
-        "GET /api/host/:hostId/payouts returns a JSON payload with totalEarned, pendingPayouts, and an array of monthlyEarnings objects matching the data shown in the dashboard.",
-        "The HostPayoutDashboard component renders the earnings summary and a line chart that updates when the API returns new data, and the chart matches the monthlyEarnings values."
-      ],
-      "created_at": 1788785418.9394362,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_at": 1788786000,
+      "created_by": "Magda Principal Architect"
     }
   ],
   "updated_at": 1788785418.93944
