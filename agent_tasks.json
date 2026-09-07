@@ -596,7 +596,30 @@
         "Repo test suite green",
         "No new BLOCKING findings"
       ]
+    },
+    {
+      "id": "feat-host-payout-revenue-analytics",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Host Payout & Revenue Analytics Dashboard",
+      "description": "Implement a new analytics dashboard for hosts that shows payout history, upcoming payouts, and revenue breakdown per listing. Add a new GraphQL query `hostRevenueAnalytics(hostId: ID!): RevenueAnalytics!` returning total earnings, earnings by month, pending payouts, and average occupancy rate. Create resolver in `src/lib/graphqlResolvers.js` and data fetchers in `src/lib/db.js` using parameterized queries and aggregation. Add a new React component `src/components/HostPayoutAnalytics.jsx` that fetches the data via Apollo client, displays charts using a lightweight chart library (e.g., Chart.js), and integrates with existing `HostDashboard`. Secure the endpoint with auth middleware and ensure only the host can access their own data. Update `server.js` to register the new resolver and add rate limiting for the analytics query.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/db.js",
+        "src/components/HostPayoutAnalytics.jsx",
+        "src/components/HostDashboard.jsx"
+      ],
+      "acceptance": [
+        "Authenticated host can open the Host Dashboard and see a new 'Payout & Revenue' tab displaying a chart of monthly earnings and a table of pending payouts.",
+        "GraphQL query `hostRevenueAnalytics` returns correct aggregated values for a host with multiple listings, verified by comparing against raw DB data.",
+        "Unauthenticated or other‑host users receive an authorization error when attempting to query `hostRevenueAnalytics`.",
+        "Rate limiting middleware rejects requests exceeding 10 queries per minute per host IP."
+      ],
+      "created_at": 1788770889.6911442,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788769969.1371405
+  "updated_at": 1788770889.6911483
 }
