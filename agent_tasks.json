@@ -699,7 +699,46 @@
       ],
       "created_at": 1788769322.0503778,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-dataloader-optimizations",
+      "status": "todo",
+      "area": "backend",
+      "risk": "low",
+      "title": "Batch GraphQL data fetching with DataLoader",
+      "description": "Introduce DataLoader instances for users, listings, and reviews in the GraphQL resolvers to batch and cache database calls, eliminating N+1 query problems and reducing SQLite load. Update src/lib/graphqlResolvers.js and src/lib/db.js to use the new loaders.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/db.js"
+      ],
+      "acceptance": [
+        "GraphQL queries that request nested fields (e.g., listing.author, listing.reviews) result in a single batched SQL statement per type.",
+        "Performance benchmarks show at least a 30% reduction in query count and response time for typical listing detail requests."
+      ],
+      "created_at": 1788769387.1609929,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "frontend-responsive-image-loading",
+      "status": "todo",
+      "area": "frontend",
+      "risk": "low",
+      "title": "Lazy‑load and serve responsive images",
+      "description": "Update all image components (e.g., ListingCard, ListingDetail, ExperienceCard) to use <img loading=\"lazy\" srcSet> with appropriate width descriptors. Add a fallback placeholder and ensure images adapt to device pixel ratio. Improves initial page load and mobile UX.",
+      "allowed_paths": [
+        "src/components/ListingCard.jsx",
+        "src/components/ListingDetail.jsx",
+        "src/components/ExperienceCard.jsx"
+      ],
+      "acceptance": [
+        "Images are not fetched until they enter the viewport (verified via network tab).",
+        "Different image sizes are served based on screen width and DPR (checked with srcset attribute).",
+        "Page load time (TTFB) improves by at least 15% on mobile devices."
+      ],
+      "created_at": 1788769387.162496,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788769322.0503793
+  "updated_at": 1788769387.1624973
 }
