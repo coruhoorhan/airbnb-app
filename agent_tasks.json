@@ -343,599 +343,96 @@
     },
     {
       "id": "feat-interactive-map-clustering",
-      "status": "todo",
       "area": "frontend",
-      "risk": "medium",
-      "title": "Interactive Map Clustering for Listings",
-      "description": "Add a clustering layer to the map view so that when many listings are displayed the markers are grouped into clusters. Use the Supercluster library to compute clusters client‑side based on the current map bounds and zoom level. Extend src/components/MapView.jsx to import the new clustering utility, render cluster markers with a count badge, and zoom into the cluster bounds on click. Create src/lib/mapClusterEngine.js that exposes a function `getClusters(listings, viewport, zoom)` returning GeoJSON features for both clusters and individual listings. Ensure the map updates efficiently on pan/zoom and that clicking a cluster smoothly animates to the appropriate zoom level. Update any related CSS for cluster marker styling.",
+      "risk": "low",
+      "title": "Fatsa Haritasında İnteraktif İlan Kümeleme (Leaflet Map Clustering)",
+      "description": "Leaflet haritasında çok sayıda ilan olduğunda pinleri sayı baloncukları olarak kümele. Harita yakınlaştırıldığında (zoom in) baloncuklar açılarak bireysel fiyat etiketli pinlere dönüşsün.",
       "allowed_paths": [
         "src/components/MapView.jsx",
         "src/lib/mapClusterEngine.js",
-        "src/components/ListingCard.jsx"
+        "src/components/ListingCard.jsx",
+        "agent_tasks.json"
       ],
       "acceptance": [
-        "When the map is zoomed out, listings are displayed as cluster markers showing the number of listings in that area.",
-        "Clicking a cluster marker zooms the map to a level where the cluster expands into smaller clusters or individual listing markers.",
-        "Performance test with 1,000 listings shows map interactions (pan, zoom) remain smooth (no frame drops below 30 fps)."
+        "Zoom seviyesi 13 altındayken pinler küme baloncuklarında toplanır",
+        "Kümeye tıklandığında yumuşak animasyonla o bölgeye zoom yapar",
+        "100+ ilan haritada 60 FPS akıcı şekilde render edilir"
       ],
-      "created_at": 1788771812.1146426,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "status": "todo"
     },
     {
-      "id": "feat-real-time-chat-websocket",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Real‑time Chat Messaging via WebSocket",
-      "description": "Add a WebSocket layer to the existing chat system so that messages are delivered instantly to all participants. Implement a lightweight chat engine (src/lib/chatEngine.js) that persists messages in SQLite and emits events through socket.io. Extend server.js to initialize a Socket.io server, register connection handlers, and integrate with existing insertMessage / getMessagesForListing functions. Update the front‑end components ChatModal.jsx and InboxModal.jsx to open a socket connection, listen for incoming messages, and update the UI state without a page refresh. Ensure fallback to the existing REST/GraphQL API for initial load and for browsers without WebSocket support.",
+      "id": "ui-photo-gallery-lightbox",
+      "area": "frontend",
+      "risk": "low",
+      "title": "Airbnb Tarzı 5'li Fotoğraf Izgarası ve Tam Ekran Lightbox Galeri",
+      "description": "İlan detay sayfasında Airbnb standardı olan 1 büyük + 4 küçük fotoğraf düzenini uygula. Fotoğraflara tıklandığında klavye (sağ/sol/ESC) ile gezilebilen tam ekran Lightbox galeri modalı aç.",
       "allowed_paths": [
-        "server.js",
-        "src/lib/chatEngine.js",
-        "src/components/ChatModal.jsx",
-        "src/components/InboxModal.jsx"
+        "src/components/ListingDetail.jsx",
+        "src/components/PhotoLightbox.jsx",
+        "agent_tasks.json"
       ],
       "acceptance": [
-        "When a user sends a message in a listing chat, the other participant sees the new message instantly in the UI without reloading the page.",
-        "All sent messages are persisted in the SQLite database and are loaded correctly after a full page refresh."
+        "Detay sayfasında 5 fotoğraflı grid kusursuz görünür",
+        "Fotoğrafa tıklandığında tam ekran Lightbox modalı açılır",
+        "Klavyedeki ESC tuşu modalı kapatır, sağ/sol ok tuşları fotoğrafları değiştirir"
       ],
-      "created_at": 1788779796.2391877,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "status": "todo"
     },
     {
-      "id": "feat-push-notification-engine",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Push Notification Engine for Real‑time Guest & Host Alerts",
-      "description": "Implement a web‑push notification system that alerts guests and hosts about booking lifecycle events. Add a new module `src/lib/notifications.js` that wraps the `web-push` library, generates VAPID keys, and provides `saveSubscription(userId, subscription)`, `sendNotification(userId, payload)` helpers. Extend `src/lib/db.js` with a `notifications` table (id, userId, endpoint, keys, createdAt) and CRUD functions. Create a new Express route `POST /api/notifications/subscribe` in `server.js` that validates the JWT, stores the subscription, and returns success. Hook into the booking mutation (`addBooking` in `src/lib/graphqlResolvers.js`) to call `sendNotification` for the guest and host when a booking is confirmed, cancelled, or refunded. On the frontend, add `src/components/PushNotificationProvider.jsx` that requests Notification permission, registers the service worker, and posts the subscription to the new endpoint. Also add `src/components/NotificationToast.jsx` that listens for `push` events via the service worker and displays a toast using a UI library. Ensure the service worker file `public/sw.js` is served and can show notifications when the app is in background. Update the UI to include a bell icon in the Navbar that shows unread count and opens a list of recent notifications.",
+      "id": "ui-dark-light-mode-toggle",
+      "area": "frontend",
+      "risk": "low",
+      "title": "Akıcı Karanlık ve Aydınlık Mod (Dark/Light Theme Toggle)",
+      "description": "Navbar'a güneş/ay ikonlu akıcı geçişli bir tema butonu ekle. Tercihi localStorage'ta sakla. Tailwind dark: sınıflarını tüm kart, modal ve çubuklarda kusursuz hale getir.",
       "allowed_paths": [
-        "server.js",
-        "src/lib/notifications.js",
-        "src/lib/db.js",
-        "src/components/PushNotificationProvider.jsx",
-        "src/components/NotificationToast.jsx",
-        "public/sw.js"
+        "src/components/Navbar.jsx",
+        "src/App.jsx",
+        "src/index.css",
+        "agent_tasks.json"
       ],
       "acceptance": [
-        "Granting permission in the browser stores a subscription record in the `notifications` table and returns HTTP 200.",
-        "When a booking is confirmed, the guest receives a web‑push notification (visible in the browser) and a toast appears in the UI.",
-        "The bell icon in the Navbar updates its badge count after a new notification is received.",
-        "If the user revokes permission, the subscription endpoint returns a 403 and the stored subscription is removed."
+        "Navbar'daki tema butonuna basıldığında sayfa anında karanlık/aydınlık moda geçer",
+        "Kullanıcının tema tercihi sayfa yenilendiğinde hatırlanır",
+        "Tüm metin ve arka plan renkleri WCAG kontrast standartlarına uygun kalır"
       ],
-      "created_at": 1788769969.1371365,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-host-payout-revenue-analytics",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Host Payout & Revenue Analytics Dashboard",
-      "description": "Implement a new analytics dashboard for hosts that shows payout history, upcoming payouts, and revenue breakdown per listing. Add a new GraphQL query `hostRevenueAnalytics(hostId: ID!): RevenueAnalytics!` returning total earnings, earnings by month, pending payouts, and average occupancy rate. Create resolver in `src/lib/graphqlResolvers.js` and data fetchers in `src/lib/db.js` using parameterized queries and aggregation. Add a new React component `src/components/HostPayoutAnalytics.jsx` that fetches the data via Apollo client, displays charts using a lightweight chart library (e.g., Chart.js), and integrates with existing `HostDashboard`. Secure the endpoint with auth middleware and ensure only the host can access their own data. Update `server.js` to register the new resolver and add rate limiting for the analytics query.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/graphqlResolvers.js",
-        "src/lib/db.js",
-        "src/components/HostPayoutAnalytics.jsx",
-        "src/components/HostDashboard.jsx"
-      ],
-      "acceptance": [
-        "Authenticated host can open the Host Dashboard and see a new 'Payout & Revenue' tab displaying a chart of monthly earnings and a table of pending payouts.",
-        "GraphQL query `hostRevenueAnalytics` returns correct aggregated values for a host with multiple listings, verified by comparing against raw DB data.",
-        "Unauthenticated or other‑host users receive an authorization error when attempting to query `hostRevenueAnalytics`.",
-        "Rate limiting middleware rejects requests exceeding 10 queries per minute per host IP."
-      ],
-      "created_at": 1788770889.6911442,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-instant-booking-approval-flow",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Instant Booking Approval Flow",
-      "description": "Add a host‑driven approval step for instant‑book listings. Extend the bookings table with a new `approvalStatus` column (pending, approved, rejected). Implement a GraphQL mutation `approveBooking(id: ID!, approve: Boolean!): Booking` that updates the column and triggers a notification. Update the booking engine to respect `approvalStatus` when calculating availability and generating payment intents. In the Host Dashboard UI, add a new \"Pending Approvals\" tab that lists pending instant‑book bookings with Approve/Reject buttons, calling the mutation. Ensure the BookingWidget disables the \"Book now\" button for listings with `instantBook = 0` or when the host has disabled auto‑approval. Add server‑side validation to prevent unauthorized users from approving bookings.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/db.js",
-        "src/lib/bookingEngine.js",
-        "src/lib/graphqlResolvers.js",
-        "src/components/HostDashboard.jsx",
-        "src/components/BookingWidget.jsx"
-      ],
-      "acceptance": [
-        "A new `approvalStatus` column exists in the `bookings` table and defaults to 'pending' for instant‑book reservations.",
-        "The GraphQL schema includes a `approveBooking` mutation that updates the status and returns the updated booking object.",
-        "Host Dashboard shows a \"Pending Approvals\" section listing only bookings with `approvalStatus = 'pending'` and allows the host to approve or reject each.",
-        "When a booking is approved, the booking becomes visible to the guest and a payment request is generated; when rejected, the booking is cancelled and the guest receives a notification.",
-        "The BookingWidget prevents guests from booking a listing that is not instant‑book enabled or that requires host approval, displaying an appropriate message."
-      ],
-      "created_at": 1788771503.6338148,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-calendar-availability-ical-sync",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "iCal Calendar Availability Sync for Listings",
-      "description": "Add bi‑directional iCal synchronization for listing availability. Implement a new Express route GET /api/calendar/:listingId.ics that generates a valid iCal feed containing all booked dates for the given listing. Add a POST /api/calendar/:listingId/sync endpoint that accepts an external iCal URL, parses events, and creates corresponding blocked bookings in the DB. Extend the GraphQL schema with a `listingCalendarSync` field (status, externalUrl) and mutations `setCalendarSyncUrl` and `removeCalendarSync`. Create a new backend module src/lib/calendarSync.js handling iCal generation, parsing (using  node-ical library), and DB updates. Add a UI component src/components/CalendarSyncWidget.jsx that lets hosts view current sync status, set an external iCal URL, and download their own iCal feed. Update host dashboard to include the widget. Ensure proper validation, error handling, and caching of generated feeds for 5 minutes.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/calendarSync.js",
-        "src/lib/db.js",
-        "src/lib/graphqlSchema.js",
-        "src/lib/graphqlResolvers.js",
-        "src/components/CalendarSyncWidget.jsx",
-        "src/components/HostDashboard.jsx"
-      ],
-      "acceptance": [
-        "GET /api/calendar/:listingId.ics returns a 200 response with Content‑Type text/calendar and contains VEVENT entries for each confirmed booking of the listing.",
-        "POST /api/calendar/:listingId/sync with a valid iCal URL creates blocked bookings that prevent overlapping reservations, verified by attempting to book a conflicting date and receiving a conflict error.",
-        "The CalendarSyncWidget shows the current sync status, allows setting/removing an external iCal URL, and displays a download button that triggers the GET iCal endpoint.",
-        "GraphQL query listing(id: $id) { calendarSync { status externalUrl } } returns correct sync information after mutations."
-      ],
-      "created_at": 1788772426.815056,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-multi-currency-checkout",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Multi‑currency Checkout Support",
-      "description": "Implement end‑to‑end multi‑currency checkout. Add a currency selector UI component and persist the user’s preferred currency in a cookie. Extend src/lib/currencyEngine.js to fetch live FX rates from a public API (e.g., exchangerate.host) and cache them for 10 minutes. Update all price‑related calculations (bookingEngine, pricingEngine, couponEngine) to accept a currency argument and convert amounts using the cached rates. Modify the GraphQL schema to expose a `currency` field on Listing, Booking and Payment types and add resolvers that return prices in the user’s selected currency. Update the payment integration in src/lib/iyzicoEngine.js to send the correct `currency` parameter in the request payload. Adjust src/components/PaymentModal.jsx and src/components/BookingWidget.jsx to display prices in the selected currency and to pass the currency to the backend when creating a booking. Ensure that the server validates the currency code against an allowed list and sanitizes the input.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/currencyEngine.js",
-        "src/lib/iyzicoEngine.js",
-        "src/lib/bookingEngine.js",
-        "src/lib/pricingEngine.js",
-        "src/lib/couponEngine.js",
-        "src/components/PaymentModal.jsx",
-        "src/components/BookingWidget.jsx",
-        "src/lib/graphqlSchema.js",
-        "src/lib/graphqlResolvers.js"
-      ],
-      "acceptance": [
-        "A currency selector appears on the listing detail page; selecting EUR updates all displayed prices (nightly, fees, total) to EUR with correct conversion.",
-        "The GraphQL query for a booking returns a `currency` field and all monetary fields are converted to the requested currency.",
-        "When a user confirms a booking in EUR, the request to iyzico contains `currency: \"EUR\"` and the amount matches the converted total.",
-        "Invalid or unsupported currency codes are rejected with a 400 response and a clear error message."
-      ],
-      "created_at": 1788773969.5041046,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-guest-review-moderation",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Guest Review Moderation Dashboard",
-      "description": "Add a moderation workflow for guest reviews. Extend the SQLite schema with a `status` column (enum: pending, approved, rejected) and a `flagReason` text field in the `reviews` table. Update DB helper functions to create, fetch, and update review status. Add GraphQL types and mutations: `flagReview(id, reason)`, `moderateReview(id, action)` where action is APPROVE or REJECT. Implement a new React admin component `AdminReviewModeration` that lists reviews with status 'pending', shows the flag reason, and provides Approve/Reject buttons. The component should call the GraphQL mutations, refresh the list, and display success/error toasts. Secure the endpoint with `authMiddleware` ensuring only users with role `admin` can access. Add unit tests for the resolver and integration test for the UI flow.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/db.js",
-        "src/lib/graphqlSchema.js",
-        "src/lib/graphqlResolvers.js",
-        "src/components/AdminReviewModeration.jsx",
-        "src/lib/auth.js"
-      ],
-      "acceptance": [
-        "Admin user can view a list of pending reviews with flag reasons in the AdminReviewModeration UI.",
-        "Clicking Approve changes the review status to 'approved' and removes it from the pending list.",
-        "Clicking Reject changes the review status to 'rejected' and removes it from the pending list.",
-        "GraphQL mutations return the updated review object and appropriate error messages for unauthorized users.",
-        "All new DB columns are populated correctly and persisted across server restarts."
-      ],
-      "created_at": 1788772734.4202356,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "status": "todo"
     },
     {
       "id": "feat-ai-powered-listing-recommendations",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "AI‑Powered Personalized Listing Recommendations",
-      "description": "Implement a recommendation engine that suggests listings to a guest based on their past bookings, search history, and similar user behavior. Add a new GraphQL query `recommendedListings(userId: ID!, limit: Int = 10): [Listing]` that returns a ranked list of listings. Create a server‑side module `src/lib/recommendationEngine.js` that uses SQLite queries and a simple collaborative‑filtering algorithm (e.g., user‑based similarity on booking categories). Extend `server.js` to register the resolver. Build a frontend carousel component `src/components/RecommendationCarousel.jsx` that fetches the data via the GraphQL query and displays cards with lazy‑loaded images. Insert the carousel into the home page (`src/App.jsx`) under the “Explore” section. Ensure the new endpoint is protected by existing auth middleware and respects rate limiting.",
+      "area": "frontend",
+      "risk": "low",
+      "title": "Yapay Zekâ Destekli Kişiselleştirilmiş İlan Öneri Karuseli (UI)",
+      "description": "Anasayfada seçilen kategoriye ve kullanıcının incelediği son ilanlara göre benzer Fatsa konaklama yerlerini gösteren kaydırmalı (carousel) öneri bileşeni ekle.",
       "allowed_paths": [
-        "server.js",
-        "src/lib/recommendationEngine.js",
-        "src/lib/graphqlResolvers.js",
-        "src/lib/graphqlSchema.js",
+        "src/App.jsx",
         "src/components/RecommendationCarousel.jsx",
-        "src/App.jsx"
+        "src/lib/recommendationEngine.js",
+        "agent_tasks.json"
       ],
       "acceptance": [
-        "GraphQL query `recommendedListings` returns at most `limit` listings and includes fields `id`, `title`, `pricePerNight`, `images`.",
-        "When a logged‑in user opens the home page, the recommendation carousel appears with at least one listing card and scrolls horizontally.",
-        "Recommendations differ between two users with distinct booking histories, demonstrating personalization.",
-        "No new security warnings appear in the audit report; rate limiting headers are present on the GraphQL endpoint."
+        "Anasayfada İlgili İlanlar karuseli listelenir",
+        "Kategori değiştiğinde öneriler dinamik olarak güncellenir",
+        "Kullanıcı son gezdiği kategoriye uygun önerileri görür"
       ],
-      "created_at": 1788776733.6427617,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "status": "todo"
     },
     {
       "id": "frontend-responsive-image-loading",
-      "status": "todo",
       "area": "frontend",
       "risk": "low",
-      "title": "Lazy‑load and serve responsive images",
-      "description": "Update all image components (e.g., ListingCard, ListingDetail, ExperienceCard) to use <img loading=\"lazy\" srcSet> with appropriate width descriptors. Add a fallback placeholder and ensure images adapt to device pixel ratio. Improves initial page load and mobile UX.",
+      "title": "Responsive ve Lazy-Load Görsel Yükleme Optimizasyonu",
+      "description": "ListingCard, ListingDetail ve ExperienceCard bileşenlerindeki tüm görsel etiketlerini loading=\"lazy\" ve srcset ile duyarlı hale getirerek açılış hızını optimize et.",
       "allowed_paths": [
         "src/components/ListingCard.jsx",
         "src/components/ListingDetail.jsx",
-        "src/components/ExperienceCard.jsx"
+        "src/components/ExperienceCard.jsx",
+        "agent_tasks.json"
       ],
       "acceptance": [
-        "Images are not fetched until they enter the viewport (verified via network tab).",
-        "Different image sizes are served based on screen width and DPR (checked with srcset attribute).",
-        "Page load time (TTFB) improves by at least 15% on mobile devices."
+        "Ekranda görünmeyen görseller kullanıcı aşağı kaydırana kadar indirilmez",
+        "Sayfa ilk açılış süresi ve veri tüketimi optimize edilir"
       ],
-      "created_at": 1788769387.162496,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "security-csrf-protection",
-      "status": "todo",
-      "area": "security",
-      "risk": "medium",
-      "title": "Add CSRF protection to state‑changing endpoints",
-      "description": "Integrate the existing csrfMiddleware into the Express pipeline for all POST/PUT/DELETE routes (including /graphql). Generate a CSRF token on authentication, store it in an HttpOnly, SameSite=Strict cookie, and require the token in the 'x-csrf-token' header. Reject requests missing or with an invalid token with 403. Update authMiddleware to set the cookie flags (secure in production, httpOnly, sameSite).",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/auth.js"
-      ],
-      "acceptance": [
-        "A CSRF token is set as a cookie after login and can be read via generateCsrfToken()",
-        "POST/PUT/DELETE requests without the x-csrf-token header are responded with 403",
-        "Valid token requests succeed and the cookie has HttpOnly, SameSite=Strict, Secure (in prod) flags"
-      ],
-      "created_at": 1788768431.8239622,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "backend-input-validation-sanitization",
-      "status": "todo",
-      "area": "backend",
-      "risk": "medium",
-      "title": "Enforce strict input validation and sanitization for listings and bookings",
-      "description": "Use the existing Joi schemas (listingSchema, bookingSchema) in the request handlers for creating/updating listings and bookings. Replace the simple HTML regex strip with a robust library (e.g., DOMPurify) to prevent XSS, and enforce length limits on strings. Return 400 with clear error messages on validation failure.",
-      "allowed_paths": [
-        "src/lib/db.js",
-        "server.js"
-      ],
-      "acceptance": [
-        "Creating or updating a listing with HTML tags results in stripped content, not stored raw",
-        "Requests with missing required fields or invalid types are rejected with 400 and a Joi error message",
-        "All mutation endpoints (e.g., insertListing, insertBooking) now validate payloads before DB insertion"
-      ],
-      "created_at": 1788768431.8251154,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "security-secure-cookie-flags",
-      "status": "todo",
-      "area": "security",
-      "risk": "medium",
-      "title": "Set secure cookie attributes for auth tokens",
-      "description": "Configure the authentication cookie to include HttpOnly, Secure, and SameSite=Strict flags. Update the token generation logic in src/lib/auth.js and the cookie middleware in server.js to use these options. This prevents client‑side script access and mitigates CSRF and session hijacking attacks.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/auth.js"
-      ],
-      "acceptance": [
-        "Set‑Cookie header contains HttpOnly; Secure; SameSite=Strict for all authentication cookies",
-        "Browser devtools show the cookie as inaccessible to JavaScript",
-        "Existing login flow works without errors after the change"
-      ],
-      "created_at": 1788768497.6444345,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "security-hsts-header",
-      "status": "todo",
-      "area": "security",
-      "risk": "medium",
-      "title": "Enforce HTTP Strict Transport Security",
-      "description": "Add the Strict-Transport-Security header via Helmet to force browsers to use HTTPS for all future requests, include subdomains and the preload flag. This protects against protocol downgrade attacks and cookie hijacking.",
-      "allowed_paths": [
-        "server.js"
-      ],
-      "acceptance": [
-        "All HTTPS responses include the 'Strict-Transport-Security' header with max-age>=31536000, includeSubDomains, and preload",
-        "Curl request to https endpoint returns the HSTS header",
-        "Browser console shows no mixed‑content warnings after enabling HSTS"
-      ],
-      "created_at": 1788768565.3190005,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "backend-parameterized-queries",
-      "status": "todo",
-      "area": "backend",
-      "risk": "high",
-      "title": "Migrate all DB access to prepared statements",
-      "description": "Replace any raw string concatenation used in `src/lib/db.js` with parameterized queries using `better-sqlite3`'s `prepare`, `run`, `get`, and `all` methods. Ensure every function that interacts with the database (e.g., insertListing, updateBookingStatus, getUserByEmail, etc.) uses bound parameters to prevent SQL injection and improve query planning. Add unit tests that attempt injection payloads and verify they are safely escaped.",
-      "allowed_paths": [
-        "src/lib/db.js"
-      ],
-      "acceptance": [
-        "All DB functions use `db.prepare(...).run(...)` or `.get(...)` with placeholders",
-        "Injection attempts (e.g., \"' OR 1=1 --\") are rejected or result in no data leakage",
-        "Existing functionality (CRUD operations) continues to work as before"
-      ],
-      "created_at": 1788768632.0397377,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "backend-graphql-depth-limit",
-      "status": "todo",
-      "area": "backend",
-      "risk": "medium",
-      "title": "Add GraphQL query depth limiting",
-      "description": "Integrate a depth‑limiting middleware (e.g., graphql-depth-limit) into the GraphQL handler to reject queries exceeding a configurable depth (e.g., 8). This prevents maliciously crafted deep queries from exhausting CPU and memory, mitigating DoS attacks.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/graphqlSchema.js",
-        "src/lib/graphqlResolvers.js"
-      ],
-      "acceptance": [
-        "Requests with query depth > 8 receive a 400 response with an error message.",
-        "Normal queries (depth ≤ 8) continue to work unchanged.",
-        "Performance tests show no noticeable latency increase for valid queries."
-      ],
-      "created_at": 1788768697.3870652,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "security-refresh-token-rotation",
-      "status": "todo",
-      "area": "security",
-      "risk": "medium",
-      "title": "Implement refresh‑token rotation and revocation list",
-      "description": "Modify the authentication flow to issue a short‑lived access token and a refresh token that is stored hashed in the database. On each token refresh, invalidate the previous refresh token and store the new one, adding the old token to a revocation list. This mitigates token replay and stolen‑token attacks.",
-      "allowed_paths": [
-        "src/lib/auth.js",
-        "src/lib/db.js",
-        "server.js"
-      ],
-      "acceptance": [
-        "Refresh endpoint returns a new access token and a new refresh token.",
-        "Using an old refresh token after rotation results in a 401 error.",
-        "Revoked tokens are persisted and checked on each refresh request."
-      ],
-      "created_at": 1788768697.3884633,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "backend-graphql-complexity-limit",
-      "status": "todo",
-      "area": "backend",
-      "risk": "medium",
-      "title": "GraphQL Query Complexity Limiting",
-      "description": "Integrate graphql-query-complexity (or similar) into the GraphQL middleware to calculate a complexity score for each incoming query and reject queries that exceed a configurable threshold (e.g., 200). This prevents abuse via overly deep or wide queries that could degrade performance.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/graphqlSchema.js"
-      ],
-      "acceptance": [
-        "Complexity middleware is applied to the GraphQL endpoint.",
-        "Queries with complexity > 200 receive a 400 response with an error message.",
-        "Normal queries (e.g., fetching a listing with its reviews) succeed unchanged."
-      ],
-      "created_at": 1788768762.4691052,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "backend-auth-rate-limit",
-      "status": "todo",
-      "area": "backend",
-      "risk": "medium",
-      "title": "Authentication Endpoint Rate Limiting & Lockout",
-      "description": "Add a dedicated rate limiter for login, registration, and token refresh endpoints. Limit to 5 attempts per IP per minute and lock the user account for 15 minutes after 10 failed attempts. Store attempt counters in memory or a fast cache (e.g., Redis) and reset on successful login. Return appropriate 429 responses with a clear message.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/auth.js"
-      ],
-      "acceptance": [
-        "More than 5 login attempts from the same IP within a minute receive HTTP 429.",
-        "A user with 10 consecutive failed logins receives a lockout response and cannot log in for 15 minutes.",
-        "Successful login resets the failure counter."
-      ],
-      "created_at": 1788768797.422528,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "backend-listings-pagination",
-      "status": "todo",
-      "area": "backend",
-      "risk": "medium",
-      "title": "Add cursor‑based pagination for listings and bookings APIs",
-      "description": "Implement cursor‑based pagination (limit, after) in the database query layer for listings, bookings, and related GraphQL resolvers. Return a pageInfo object with hasNextPage and endCursor. This reduces payload size and improves response time for large data sets.",
-      "allowed_paths": [
-        "src/lib/db.js",
-        "src/lib/graphqlResolvers.js",
-        "src/lib/graphqlSchema.js"
-      ],
-      "acceptance": [
-        "API accepts ?limit= and&after=cursor parameters and returns paginated results",
-        "GraphQL query for listings supports arguments (limit: Int, after: String) and returns edges + pageInfo",
-        "Performance test shows reduced response payload size for >1000 listings"
-      ],
-      "created_at": 1788768926.4955626,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "security-rate-limit-booking-payment",
-      "status": "todo",
-      "area": "security",
-      "risk": "medium",
-      "title": "Per‑user/IP rate limiting for booking and payment endpoints",
-      "description": "Create a dedicated rate limiter (e.g., 5 requests per minute) for high‑risk actions such as '/api/bookings', '/api/payments', and related GraphQL mutations. Tie the limiter to the authenticated user ID and the client IP to prevent brute‑force or abuse while allowing normal usage.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/rateLimiter.js"
-      ],
-      "acceptance": [
-        "Requests exceeding the limit receive HTTP 429 with a clear error message",
-        "Legitimate users can still create bookings/payments within the allowed threshold",
-        "Rate limiting logs are emitted for monitoring and debugging"
-      ],
-      "created_at": 1788769257.2307208,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "backend-dataloader-optimizations",
-      "status": "todo",
-      "area": "backend",
-      "risk": "low",
-      "title": "Batch GraphQL data fetching with DataLoader",
-      "description": "Introduce DataLoader instances for users, listings, and reviews in the GraphQL resolvers to batch and cache database calls, eliminating N+1 query problems and reducing SQLite load. Update src/lib/graphqlResolvers.js and src/lib/db.js to use the new loaders.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/graphqlResolvers.js",
-        "src/lib/db.js"
-      ],
-      "acceptance": [
-        "GraphQL queries that request nested fields (e.g., listing.author, listing.reviews) result in a single batched SQL statement per type.",
-        "Performance benchmarks show at least a 30% reduction in query count and response time for typical listing detail requests."
-      ],
-      "created_at": 1788769387.1609929,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-graphql-subscriptions-realtime-updates",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Real‑time Booking Updates via GraphQL Subscriptions",
-      "description": "Add GraphQL subscription support so hosts and guests receive live updates when a booking status changes. Install graphql-ws, create a WebSocket server in server.js, extend the GraphQL schema with a `bookingUpdated` subscription, implement resolver that publishes to a PubSub instance when `updateBookingStatus` is called. Update the client side (e.g., src/components/BookingWidget.jsx) to open a subscription using @apollo/client's `useSubscription` hook and display a toast notification. Ensure authentication middleware validates the token for subscription connections.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/graphqlSchema.js",
-        "src/lib/graphqlResolvers.js",
-        "src/components/BookingWidget.jsx"
-      ],
-      "acceptance": [
-        "When a booking status is changed via the existing mutation, a `bookingUpdated` event is published and the subscribed client receives the new status within 2 seconds.",
-        "The UI shows a toast notification in the host dashboard and guest view without a page reload."
-      ],
-      "created_at": 1788781033.77983,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-faceted-search-filter",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Faceted Search and Filter Engine",
-      "description": "Add a faceted search system that lets users filter listings by price range, amenities, rating, and location. Implement a new GraphQL query `searchListings(filter: SearchFilter, pagination: PaginationInput): ListingConnection` with a resolver in server.js that uses a parameterized SQL builder in a new module `src/lib/searchEngine.js`. The engine will construct safe WHERE clauses and leverage DataLoader for batch loading of related data (e.g., amenities). Create a UI filter panel component `src/components/FacetedSearch.jsx` and modify `src/components/ListingGrid.jsx` to accept filter props and request filtered data via the new GraphQL query. Validate filter inputs with Joi in `src/lib/searchEngine.js` and ensure all queries use prepared statements to prevent injection.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/searchEngine.js",
-        "src/components/FacetedSearch.jsx",
-        "src/components/ListingGrid.jsx",
-        "src/lib/graphqlSchema.js",
-        "src/lib/graphqlResolvers.js"
-      ],
-      "acceptance": [
-        "Selecting a price range and one or more amenities updates the listing grid to show only listings that match all selected criteria.",
-        "The GraphQL `searchListings` query returns a correct totalCount and a paginated list of listings matching the filter, verified by a GraphQL Playground test.",
-        "All SQL statements generated by the search engine use parameterized queries; attempts to inject SQL via filter fields are safely escaped and do not affect the query.",
-        "The filter UI remains responsive, with the filtered results rendering in under 200 ms for a dataset of 1,000 listings."
-      ],
-      "created_at": 1788781655.6439717,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-host-google-calendar-sync",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Google Calendar Sync for Host Listings",
-      "description": "Add a Google Calendar integration that lets hosts link their Google account and automatically push confirmed bookings to their personal calendar. Implement OAuth2 flow, store encrypted refresh tokens, extend the users table with a google_calendar_id column, create a new googleCalendarEngine module with functions to generate auth URLs, exchange tokens, and create events. Add REST endpoints /api/google/auth-url, /api/google/callback, and /api/google/sync-booking in server.js. Update HostDashboard UI to show a \"Connect Google Calendar\" button and a sync status indicator. On booking confirmation, trigger a background job that calls googleCalendarEngine.createEvent(listingId, bookingId).",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/googleCalendarEngine.js",
-        "src/lib/db.js",
-        "src/components/HostDashboard.jsx",
-        "src/lib/auth.js"
-      ],
-      "acceptance": [
-        "Host can click \"Connect Google Calendar\" and is redirected to Google OAuth consent screen; after granting access, the callback stores a refresh token and updates the user record with google_calendar_id.",
-        "When a booking is confirmed for a host with a linked Google Calendar, a calendar event appears in the host's Google Calendar (verified via Google Calendar API mock or real API call)."
-      ],
-      "created_at": 1788781965.5760226,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-pwa-offline-support",
-      "status": "todo",
-      "area": "frontend",
-      "risk": "medium",
-      "title": "Progressive Web App Offline Support and Installable Experience",
-      "description": "Implement full PWA capabilities: add a web app manifest, register a service worker that caches core assets and API responses, configure Vite to output the service worker, and create an offline fallback UI. Update src/App.jsx to detect online/offline status and display a banner when offline. Add a manifest.json in the public folder with icons and start_url. Ensure the service worker is registered in index.html and that the app prompts the install banner on supported browsers. Modify vite.config.js to copy the manifest and service worker into the build output.",
-      "allowed_paths": [
-        "src/App.jsx",
-        "src/service-worker.js",
-        "vite.config.js",
-        "public/manifest.json",
-        "public/index.html"
-      ],
-      "acceptance": [
-        "Service worker registers on page load, caches static assets, and serves them when the network is unavailable (verified via Chrome devtools offline mode).",
-        "The app shows an offline banner and loads previously cached listing data, and the install prompt appears on Chrome when the user visits the site."
-      ],
-      "created_at": 1788783248.6240454,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-ssr-seo-boost",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Add Server‑Side Rendering (SSR) for SEO‑Critical Pages",
-      "description": "Implement SSR for the main public routes (home, listing detail, search results) using Vite's SSR plugin and Express. Create a new entry point (src/ssr.js) that renders the React app to a string, injects meta tags (title, description, OpenGraph) based on GraphQL data, and sends the HTML to the client. Modify server.js to route GET requests for these pages through the SSR handler, falling back to the existing static build for authenticated routes. Add a lightweight cache (NodeCache) keyed by URL to store rendered HTML for 5 minutes to reduce load. Ensure the client hydrates correctly and that the existing Vite dev server still works in development mode.",
-      "allowed_paths": [
-        "server.js",
-        "src/ssr.js",
-        "src/App.jsx",
-        "src/components/ListingDetail.jsx",
-        "src/lib/graphqlResolvers.js",
-        "src/lib/graphqlSchema.js",
-        "src/lib/db.js",
-        "vite.config.js"
-      ],
-      "acceptance": [
-        "Visiting /listing/:id returns HTML containing the listing title and description in <meta> tags without requiring client‑side JS execution.",
-        "Page source shows a fully rendered <div id=\"root\"> with the listing detail markup, and the browser console shows no hydration warnings.",
-        "Cache hit rate for repeated requests to the same URL is at least 80 % after the first request.",
-        "Performance audit (Lighthouse) shows > 90 % SEO score and a > 30 % reduction in Time‑to‑First‑Byte compared to the previous CSR‑only implementation."
-      ],
-      "created_at": 1788783867.507886,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-advanced-search-elasticsearch",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Advanced Full‑Text Search with Elasticsearch Integration",
-      "description": "Integrate Elasticsearch to provide fast, typo‑tolerant full‑text search across listings. Add a new module src/lib/searchEngine.js that creates an index, syncs CRUD operations from SQLite to Elasticsearch, and exposes a searchListings(query, filters) function. Extend the GraphQL schema (src/lib/graphqlSchema.js) with a `searchListings` query accepting a free‑text string and optional filter arguments (price range, city, amenities). Implement the resolver in src/lib/graphqlResolvers.js to call the search engine. Update server.js to initialize the Elasticsearch client on startup and to hook into existing listing mutation resolvers (insertListing, toggleListingStatus, quickUpdateListingPrice, deleteListing) so the index stays consistent. Add a simple health‑check endpoint `/api/search/health` returning 200 when Elasticsearch is reachable. Ensure input sanitization and rate limiting for the new endpoint.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/searchEngine.js",
-        "src/lib/graphqlSchema.js",
-        "src/lib/graphqlResolvers.js",
-        "src/lib/db.js"
-      ],
-      "acceptance": [
-        "A GraphQL `searchListings` query returns listings whose title or description contain the search term, respecting applied filters.",
-        "When a listing is created, updated, or deleted via existing mutations, the Elasticsearch index reflects the change within 2 seconds."
-      ],
-      "created_at": 1788784178.1844723,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "status": "todo"
     }
   ],
   "updated_at": 1788784178.184475
