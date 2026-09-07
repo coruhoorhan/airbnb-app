@@ -2389,7 +2389,33 @@
       ],
       "created_at": 1788787954.309079,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-16-multi-currency-checkout",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Multi‑Currency Checkout Support",
+      "description": "Implement end‑to‑end multi‑currency handling for booking payments. Extend the payment engine to accept a currency code, convert prices using a live FX service, and store amounts in both the booking currency and the host's preferred currency. Update GraphQL mutations for createBooking and processPayment to accept a `currency` argument. Add a UI selector in the CheckoutModal component, persist the chosen currency in user settings, and display formatted amounts throughout the UI. Modify src/lib/currencyEngine.js to expose `convertAmount(amount, from, to)` using an external rates API (e.g., exchangerate.host). Ensure all new fields (priceCurrency, convertedPrice, exchangeRate) are persisted in the SQLite bookings table via a migration in src/lib/db.js.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/currencyEngine.js",
+        "src/lib/iyzicoEngine.js",
+        "src/components/CheckoutModal.jsx",
+        "src/components/BookingWidget.jsx",
+        "src/lib/bookingEngine.js"
+      ],
+      "acceptance": [
+        "A new column `priceCurrency` and `convertedPrice` are added to the bookings table and populated on booking creation.",
+        "The CheckoutModal shows a dropdown of supported currencies (USD, EUR, TRY, GBP) and updates the displayed total price instantly after selection.",
+        "GraphQL mutation `createBooking(input: BookingInput!, currency: Currency!): Booking!` returns the booking with both original and converted amounts.",
+        "Payments processed through iyzico are sent in the selected currency and the transaction record stores the exchange rate used.",
+        "End‑to‑end test: create a booking in EUR, verify the SQLite row contains `priceCurrency='EUR'`, `convertedPrice` matches the host's currency after conversion, and the UI shows the correct formatted amount."
+      ],
+      "created_at": 1788788265.2340007,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788787954.309082
+  "updated_at": 1788788265.234004
 }
