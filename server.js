@@ -1,6 +1,7 @@
 import "express-async-errors";
 import { createHandler } from "graphql-http/lib/use/express";
 import DataLoader from "dataloader";
+import depthLimit from "graphql-depth-limit";
 import { schema } from "./src/lib/graphqlSchema.js";
 import { rootValue } from "./src/lib/graphqlResolvers.js";
 import { getUsersByIds, getReviewsForListings } from "./src/lib/db.js";
@@ -157,6 +158,7 @@ const authRateLimiter = createRateLimiter({
 app.use("/graphql", authRateLimiter, authMiddleware, createHandler({
   schema,
   rootValue,
+  validationRules: [depthLimit(8)],
   context: (req) => {
     return {
       user: req.raw.user,
@@ -177,10 +179,6 @@ app.use("/graphql", authRateLimiter, authMiddleware, createHandler({
     };
   },
   formatError: (err) => ({
-    message: err.message,
-    ...(process.env.NODE_ENV !== "production" && { stack: err.stack })
-  }),
-  errorFormatter: (err) => ({
     message: err.message,
     ...(process.env.NODE_ENV !== "production" && { stack: err.stack })
   })
