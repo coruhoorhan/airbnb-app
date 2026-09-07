@@ -489,7 +489,27 @@
       ],
       "created_at": 1788786056.2495499,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-11-ical-sync",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "iCal Calendar Sync for Listings",
+      "description": "Add iCal feed generation for each listing so hosts can subscribe to a calendar URL that reflects all confirmed bookings. Implement a new Express route GET /api/listings/:id/ical that returns a valid .ics file. Create src/lib/calendarSync.js with a function generateIcs(listingId) that queries confirmed bookings from the DB, formats them using the ical-generator package, and caches the result for 2 minutes. Update src/lib/db.js with a helper getConfirmedBookingsForListing(listingId). Secure the endpoint with a signed token (hostId + secret) passed as query param token, validated by authMiddleware. Ensure the iCal feed updates automatically when a booking status changes (hook into updateBookingStatus to invalidate cache).",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/calendarSync.js",
+        "src/lib/db.js",
+        "src/lib/bookingEngine.js"
+      ],
+      "acceptance": [
+        "GET /api/listings/:id/ical?token=validToken returns a 200 response with Content-Type text/calendar and contains VEVENT entries for each confirmed booking of that listing.",
+        "When a booking is created, cancelled, or its status changes, the iCal feed reflects the change within 2 minutes (cache invalidation works)."
+      ],
+      "created_at": 1788786370.1281226,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788786056.2495534
+  "updated_at": 1788786370.1281285
 }
