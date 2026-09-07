@@ -22,7 +22,7 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
 
-      - name: Check task queue and auto-resolve completed tasks
+      - name: Check task queue and select next task
         id: task_check
         run: |
           python3 - <<'PYEOF'
@@ -40,21 +40,17 @@ jobs:
           todos = [t for t in tasks if t.get("status") == "todo" and t.get("claimed_by") not in ("human", "veyyon")]
 
           print(f"Total tasks: {len(tasks)} | Active unblocked TODOs: {len(todos)}")
-          if len(todos) > 0:
-              next_t = todos[0]
-              print(f"Next task to assign to Jules: [{next_t.get('id')}] {next_t.get('title')}")
-              with open(os.environ["GITHUB_OUTPUT"], "a") as out:
-                  out.write("should_run=true
-")
-                  out.write(f"next_task_id={next_t.get('id')}
-")
-                  out.write(f"next_task_title={next_t.get('title')}
-")
-          else:
-              print("No remaining TODO tasks in queue. Jules is idle.")
-              with open(os.environ["GITHUB_OUTPUT"], "a") as out:
-                  out.write("should_run=false
-")
+          out_path = os.environ.get("GITHUB_OUTPUT", "/dev/null")
+          with open(out_path, "a", encoding="utf-8") as out:
+              if len(todos) > 0:
+                  next_t = todos[0]
+                  print(f"Next task to assign to Jules: [{next_t.get('id')}] {next_t.get('title')}")
+                  out.write("should_run=true\n")
+                  out.write("next_task_id=" + str(next_t.get("id")) + "\n")
+                  out.write("next_task_title=" + str(next_t.get("title")) + "\n")
+              else:
+                  print("No remaining TODO tasks in queue. Jules is idle.")
+                  out.write("should_run=false\n")
           PYEOF
 
       - name: Trigger Google Jules via Official API
