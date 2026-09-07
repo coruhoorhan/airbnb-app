@@ -246,7 +246,7 @@
     },
     {
       "id": "pr15-hardening-followups",
-      "status": "todo",
+      "status": "done",
       "area": "security",
       "risk": "low",
       "title": "PR #15 auditor polish follow-ups",
@@ -264,7 +264,7 @@
     },
     {
       "id": "pr16-hardening-followups",
-      "status": "todo",
+      "status": "done",
       "area": "security",
       "risk": "low",
       "title": "PR #16 auditor polish follow-ups",
@@ -283,7 +283,7 @@
     },
     {
       "id": "pr18-hardening-followups",
-      "status": "todo",
+      "status": "done",
       "area": "security",
       "risk": "low",
       "title": "PR #18 auditor polish follow-ups",
@@ -300,6 +300,280 @@
         "Repo test suite green",
         "No new BLOCKING findings"
       ]
+    },
+    {
+      "id": "pr19-hardening-followups",
+      "status": "done",
+      "area": "security",
+      "risk": "low",
+      "title": "PR #19 auditor polish follow-ups",
+      "description": "Address the non-blocking (MEDIUM/LOW) polish findings from the Magda AI auditor review on https://github.com/coruhoorhan/airbnb-app/pull/19. Read the latest auditor review on that PR and implement every MEDIUM/LOW item. Do NOT re-litigate BLOCKING items; those gate the original PR.",
+      "allowed_paths": [
+        "agent_tasks.json",
+        "package.json",
+        "server.js",
+        "src",
+        "tests"
+      ],
+      "acceptance": [
+        "All MEDIUM/LOW auditor findings on PR #19 addressed",
+        "Repo test suite green",
+        "No new BLOCKING findings"
+      ]
+    },
+    {
+      "id": "pr22-hardening-followups",
+      "status": "done",
+      "area": "security",
+      "risk": "low",
+      "title": "PR #22 auditor polish follow-ups",
+      "description": "Address the non-blocking (MEDIUM/LOW) polish findings from the Magda AI auditor review on https://github.com/coruhoorhan/airbnb-app/pull/22. Read the latest auditor review on that PR and implement every MEDIUM/LOW item. Do NOT re-litigate BLOCKING items; those gate the original PR.",
+      "allowed_paths": [
+        "agent_tasks.json",
+        "package-lock.json",
+        "package.json",
+        "server.js",
+        "tests"
+      ],
+      "acceptance": [
+        "All MEDIUM/LOW auditor findings on PR #22 addressed",
+        "Repo test suite green",
+        "No new BLOCKING findings"
+      ]
+    },
+    {
+      "id": "feat-interactive-map-clustering",
+      "status": "todo",
+      "area": "frontend",
+      "risk": "medium",
+      "title": "Interactive Map Clustering for Listings",
+      "description": "Add a clustering layer to the map view so that when many listings are displayed the markers are grouped into clusters. Use the Supercluster library to compute clusters client‑side based on the current map bounds and zoom level. Extend src/components/MapView.jsx to import the new clustering utility, render cluster markers with a count badge, and zoom into the cluster bounds on click. Create src/lib/mapClusterEngine.js that exposes a function `getClusters(listings, viewport, zoom)` returning GeoJSON features for both clusters and individual listings. Ensure the map updates efficiently on pan/zoom and that clicking a cluster smoothly animates to the appropriate zoom level. Update any related CSS for cluster marker styling.",
+      "allowed_paths": [
+        "src/components/MapView.jsx",
+        "src/lib/mapClusterEngine.js",
+        "src/components/ListingCard.jsx"
+      ],
+      "acceptance": [
+        "When the map is zoomed out, listings are displayed as cluster markers showing the number of listings in that area.",
+        "Clicking a cluster marker zooms the map to a level where the cluster expands into smaller clusters or individual listing markers.",
+        "Performance test with 1,000 listings shows map interactions (pan, zoom) remain smooth (no frame drops below 30 fps)."
+      ],
+      "created_at": 1788771812.1146426,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-real-time-chat-websocket",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Real‑time Chat Messaging via WebSocket",
+      "description": "Add a WebSocket layer to the existing chat system so that messages are delivered instantly to all participants. Implement a lightweight chat engine (src/lib/chatEngine.js) that persists messages in SQLite and emits events through socket.io. Extend server.js to initialize a Socket.io server, register connection handlers, and integrate with existing insertMessage / getMessagesForListing functions. Update the front‑end components ChatModal.jsx and InboxModal.jsx to open a socket connection, listen for incoming messages, and update the UI state without a page refresh. Ensure fallback to the existing REST/GraphQL API for initial load and for browsers without WebSocket support.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/chatEngine.js",
+        "src/components/ChatModal.jsx",
+        "src/components/InboxModal.jsx"
+      ],
+      "acceptance": [
+        "When a user sends a message in a listing chat, the other participant sees the new message instantly in the UI without reloading the page.",
+        "All sent messages are persisted in the SQLite database and are loaded correctly after a full page refresh."
+      ],
+      "created_at": 1788779796.2391877,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-push-notification-engine",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Push Notification Engine for Real‑time Guest & Host Alerts",
+      "description": "Implement a web‑push notification system that alerts guests and hosts about booking lifecycle events. Add a new module `src/lib/notifications.js` that wraps the `web-push` library, generates VAPID keys, and provides `saveSubscription(userId, subscription)`, `sendNotification(userId, payload)` helpers. Extend `src/lib/db.js` with a `notifications` table (id, userId, endpoint, keys, createdAt) and CRUD functions. Create a new Express route `POST /api/notifications/subscribe` in `server.js` that validates the JWT, stores the subscription, and returns success. Hook into the booking mutation (`addBooking` in `src/lib/graphqlResolvers.js`) to call `sendNotification` for the guest and host when a booking is confirmed, cancelled, or refunded. On the frontend, add `src/components/PushNotificationProvider.jsx` that requests Notification permission, registers the service worker, and posts the subscription to the new endpoint. Also add `src/components/NotificationToast.jsx` that listens for `push` events via the service worker and displays a toast using a UI library. Ensure the service worker file `public/sw.js` is served and can show notifications when the app is in background. Update the UI to include a bell icon in the Navbar that shows unread count and opens a list of recent notifications.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/notifications.js",
+        "src/lib/db.js",
+        "src/components/PushNotificationProvider.jsx",
+        "src/components/NotificationToast.jsx",
+        "public/sw.js"
+      ],
+      "acceptance": [
+        "Granting permission in the browser stores a subscription record in the `notifications` table and returns HTTP 200.",
+        "When a booking is confirmed, the guest receives a web‑push notification (visible in the browser) and a toast appears in the UI.",
+        "The bell icon in the Navbar updates its badge count after a new notification is received.",
+        "If the user revokes permission, the subscription endpoint returns a 403 and the stored subscription is removed."
+      ],
+      "created_at": 1788769969.1371365,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-host-payout-revenue-analytics",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Host Payout & Revenue Analytics Dashboard",
+      "description": "Implement a new analytics dashboard for hosts that shows payout history, upcoming payouts, and revenue breakdown per listing. Add a new GraphQL query `hostRevenueAnalytics(hostId: ID!): RevenueAnalytics!` returning total earnings, earnings by month, pending payouts, and average occupancy rate. Create resolver in `src/lib/graphqlResolvers.js` and data fetchers in `src/lib/db.js` using parameterized queries and aggregation. Add a new React component `src/components/HostPayoutAnalytics.jsx` that fetches the data via Apollo client, displays charts using a lightweight chart library (e.g., Chart.js), and integrates with existing `HostDashboard`. Secure the endpoint with auth middleware and ensure only the host can access their own data. Update `server.js` to register the new resolver and add rate limiting for the analytics query.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/db.js",
+        "src/components/HostPayoutAnalytics.jsx",
+        "src/components/HostDashboard.jsx"
+      ],
+      "acceptance": [
+        "Authenticated host can open the Host Dashboard and see a new 'Payout & Revenue' tab displaying a chart of monthly earnings and a table of pending payouts.",
+        "GraphQL query `hostRevenueAnalytics` returns correct aggregated values for a host with multiple listings, verified by comparing against raw DB data.",
+        "Unauthenticated or other‑host users receive an authorization error when attempting to query `hostRevenueAnalytics`.",
+        "Rate limiting middleware rejects requests exceeding 10 queries per minute per host IP."
+      ],
+      "created_at": 1788770889.6911442,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-instant-booking-approval-flow",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Instant Booking Approval Flow",
+      "description": "Add a host‑driven approval step for instant‑book listings. Extend the bookings table with a new `approvalStatus` column (pending, approved, rejected). Implement a GraphQL mutation `approveBooking(id: ID!, approve: Boolean!): Booking` that updates the column and triggers a notification. Update the booking engine to respect `approvalStatus` when calculating availability and generating payment intents. In the Host Dashboard UI, add a new \"Pending Approvals\" tab that lists pending instant‑book bookings with Approve/Reject buttons, calling the mutation. Ensure the BookingWidget disables the \"Book now\" button for listings with `instantBook = 0` or when the host has disabled auto‑approval. Add server‑side validation to prevent unauthorized users from approving bookings.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/bookingEngine.js",
+        "src/lib/graphqlResolvers.js",
+        "src/components/HostDashboard.jsx",
+        "src/components/BookingWidget.jsx"
+      ],
+      "acceptance": [
+        "A new `approvalStatus` column exists in the `bookings` table and defaults to 'pending' for instant‑book reservations.",
+        "The GraphQL schema includes a `approveBooking` mutation that updates the status and returns the updated booking object.",
+        "Host Dashboard shows a \"Pending Approvals\" section listing only bookings with `approvalStatus = 'pending'` and allows the host to approve or reject each.",
+        "When a booking is approved, the booking becomes visible to the guest and a payment request is generated; when rejected, the booking is cancelled and the guest receives a notification.",
+        "The BookingWidget prevents guests from booking a listing that is not instant‑book enabled or that requires host approval, displaying an appropriate message."
+      ],
+      "created_at": 1788771503.6338148,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-calendar-availability-ical-sync",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "iCal Calendar Availability Sync for Listings",
+      "description": "Add bi‑directional iCal synchronization for listing availability. Implement a new Express route GET /api/calendar/:listingId.ics that generates a valid iCal feed containing all booked dates for the given listing. Add a POST /api/calendar/:listingId/sync endpoint that accepts an external iCal URL, parses events, and creates corresponding blocked bookings in the DB. Extend the GraphQL schema with a `listingCalendarSync` field (status, externalUrl) and mutations `setCalendarSyncUrl` and `removeCalendarSync`. Create a new backend module src/lib/calendarSync.js handling iCal generation, parsing (using  node-ical library), and DB updates. Add a UI component src/components/CalendarSyncWidget.jsx that lets hosts view current sync status, set an external iCal URL, and download their own iCal feed. Update host dashboard to include the widget. Ensure proper validation, error handling, and caching of generated feeds for 5 minutes.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/calendarSync.js",
+        "src/lib/db.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js",
+        "src/components/CalendarSyncWidget.jsx",
+        "src/components/HostDashboard.jsx"
+      ],
+      "acceptance": [
+        "GET /api/calendar/:listingId.ics returns a 200 response with Content‑Type text/calendar and contains VEVENT entries for each confirmed booking of the listing.",
+        "POST /api/calendar/:listingId/sync with a valid iCal URL creates blocked bookings that prevent overlapping reservations, verified by attempting to book a conflicting date and receiving a conflict error.",
+        "The CalendarSyncWidget shows the current sync status, allows setting/removing an external iCal URL, and displays a download button that triggers the GET iCal endpoint.",
+        "GraphQL query listing(id: $id) { calendarSync { status externalUrl } } returns correct sync information after mutations."
+      ],
+      "created_at": 1788772426.815056,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-multi-currency-checkout",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Multi‑currency Checkout Support",
+      "description": "Implement end‑to‑end multi‑currency checkout. Add a currency selector UI component and persist the user’s preferred currency in a cookie. Extend src/lib/currencyEngine.js to fetch live FX rates from a public API (e.g., exchangerate.host) and cache them for 10 minutes. Update all price‑related calculations (bookingEngine, pricingEngine, couponEngine) to accept a currency argument and convert amounts using the cached rates. Modify the GraphQL schema to expose a `currency` field on Listing, Booking and Payment types and add resolvers that return prices in the user’s selected currency. Update the payment integration in src/lib/iyzicoEngine.js to send the correct `currency` parameter in the request payload. Adjust src/components/PaymentModal.jsx and src/components/BookingWidget.jsx to display prices in the selected currency and to pass the currency to the backend when creating a booking. Ensure that the server validates the currency code against an allowed list and sanitizes the input.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/currencyEngine.js",
+        "src/lib/iyzicoEngine.js",
+        "src/lib/bookingEngine.js",
+        "src/lib/pricingEngine.js",
+        "src/lib/couponEngine.js",
+        "src/components/PaymentModal.jsx",
+        "src/components/BookingWidget.jsx",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js"
+      ],
+      "acceptance": [
+        "A currency selector appears on the listing detail page; selecting EUR updates all displayed prices (nightly, fees, total) to EUR with correct conversion.",
+        "The GraphQL query for a booking returns a `currency` field and all monetary fields are converted to the requested currency.",
+        "When a user confirms a booking in EUR, the request to iyzico contains `currency: \"EUR\"` and the amount matches the converted total.",
+        "Invalid or unsupported currency codes are rejected with a 400 response and a clear error message."
+      ],
+      "created_at": 1788773969.5041046,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-guest-review-moderation",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Guest Review Moderation Dashboard",
+      "description": "Add a moderation workflow for guest reviews. Extend the SQLite schema with a `status` column (enum: pending, approved, rejected) and a `flagReason` text field in the `reviews` table. Update DB helper functions to create, fetch, and update review status. Add GraphQL types and mutations: `flagReview(id, reason)`, `moderateReview(id, action)` where action is APPROVE or REJECT. Implement a new React admin component `AdminReviewModeration` that lists reviews with status 'pending', shows the flag reason, and provides Approve/Reject buttons. The component should call the GraphQL mutations, refresh the list, and display success/error toasts. Secure the endpoint with `authMiddleware` ensuring only users with role `admin` can access. Add unit tests for the resolver and integration test for the UI flow.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js",
+        "src/components/AdminReviewModeration.jsx",
+        "src/lib/auth.js"
+      ],
+      "acceptance": [
+        "Admin user can view a list of pending reviews with flag reasons in the AdminReviewModeration UI.",
+        "Clicking Approve changes the review status to 'approved' and removes it from the pending list.",
+        "Clicking Reject changes the review status to 'rejected' and removes it from the pending list.",
+        "GraphQL mutations return the updated review object and appropriate error messages for unauthorized users.",
+        "All new DB columns are populated correctly and persisted across server restarts."
+      ],
+      "created_at": 1788772734.4202356,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-ai-powered-listing-recommendations",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "AI‑Powered Personalized Listing Recommendations",
+      "description": "Implement a recommendation engine that suggests listings to a guest based on their past bookings, search history, and similar user behavior. Add a new GraphQL query `recommendedListings(userId: ID!, limit: Int = 10): [Listing]` that returns a ranked list of listings. Create a server‑side module `src/lib/recommendationEngine.js` that uses SQLite queries and a simple collaborative‑filtering algorithm (e.g., user‑based similarity on booking categories). Extend `server.js` to register the resolver. Build a frontend carousel component `src/components/RecommendationCarousel.jsx` that fetches the data via the GraphQL query and displays cards with lazy‑loaded images. Insert the carousel into the home page (`src/App.jsx`) under the “Explore” section. Ensure the new endpoint is protected by existing auth middleware and respects rate limiting.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/recommendationEngine.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/graphqlSchema.js",
+        "src/components/RecommendationCarousel.jsx",
+        "src/App.jsx"
+      ],
+      "acceptance": [
+        "GraphQL query `recommendedListings` returns at most `limit` listings and includes fields `id`, `title`, `pricePerNight`, `images`.",
+        "When a logged‑in user opens the home page, the recommendation carousel appears with at least one listing card and scrolls horizontally.",
+        "Recommendations differ between two users with distinct booking histories, demonstrating personalization.",
+        "No new security warnings appear in the audit report; rate limiting headers are present on the GraphQL endpoint."
+      ],
+      "created_at": 1788776733.6427617,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "frontend-responsive-image-loading",
+      "status": "todo",
+      "area": "frontend",
+      "risk": "low",
+      "title": "Lazy‑load and serve responsive images",
+      "description": "Update all image components (e.g., ListingCard, ListingDetail, ExperienceCard) to use <img loading=\"lazy\" srcSet> with appropriate width descriptors. Add a fallback placeholder and ensure images adapt to device pixel ratio. Improves initial page load and mobile UX.",
+      "allowed_paths": [
+        "src/components/ListingCard.jsx",
+        "src/components/ListingDetail.jsx",
+        "src/components/ExperienceCard.jsx"
+      ],
+      "acceptance": [
+        "Images are not fetched until they enter the viewport (verified via network tab).",
+        "Different image sizes are served based on screen width and DPR (checked with srcset attribute).",
+        "Page load time (TTFB) improves by at least 15% on mobile devices."
+      ],
+      "created_at": 1788769387.162496,
+      "created_by": "Magda Fullstack LLM Watchdog"
     },
     {
       "id": "security-csrf-protection",
@@ -529,280 +803,6 @@
       ],
       "created_at": 1788769387.1609929,
       "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "frontend-responsive-image-loading",
-      "status": "todo",
-      "area": "frontend",
-      "risk": "low",
-      "title": "Lazy‑load and serve responsive images",
-      "description": "Update all image components (e.g., ListingCard, ListingDetail, ExperienceCard) to use <img loading=\"lazy\" srcSet> with appropriate width descriptors. Add a fallback placeholder and ensure images adapt to device pixel ratio. Improves initial page load and mobile UX.",
-      "allowed_paths": [
-        "src/components/ListingCard.jsx",
-        "src/components/ListingDetail.jsx",
-        "src/components/ExperienceCard.jsx"
-      ],
-      "acceptance": [
-        "Images are not fetched until they enter the viewport (verified via network tab).",
-        "Different image sizes are served based on screen width and DPR (checked with srcset attribute).",
-        "Page load time (TTFB) improves by at least 15% on mobile devices."
-      ],
-      "created_at": 1788769387.162496,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-push-notification-engine",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Push Notification Engine for Real‑time Guest & Host Alerts",
-      "description": "Implement a web‑push notification system that alerts guests and hosts about booking lifecycle events. Add a new module `src/lib/notifications.js` that wraps the `web-push` library, generates VAPID keys, and provides `saveSubscription(userId, subscription)`, `sendNotification(userId, payload)` helpers. Extend `src/lib/db.js` with a `notifications` table (id, userId, endpoint, keys, createdAt) and CRUD functions. Create a new Express route `POST /api/notifications/subscribe` in `server.js` that validates the JWT, stores the subscription, and returns success. Hook into the booking mutation (`addBooking` in `src/lib/graphqlResolvers.js`) to call `sendNotification` for the guest and host when a booking is confirmed, cancelled, or refunded. On the frontend, add `src/components/PushNotificationProvider.jsx` that requests Notification permission, registers the service worker, and posts the subscription to the new endpoint. Also add `src/components/NotificationToast.jsx` that listens for `push` events via the service worker and displays a toast using a UI library. Ensure the service worker file `public/sw.js` is served and can show notifications when the app is in background. Update the UI to include a bell icon in the Navbar that shows unread count and opens a list of recent notifications.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/notifications.js",
-        "src/lib/db.js",
-        "src/components/PushNotificationProvider.jsx",
-        "src/components/NotificationToast.jsx",
-        "public/sw.js"
-      ],
-      "acceptance": [
-        "Granting permission in the browser stores a subscription record in the `notifications` table and returns HTTP 200.",
-        "When a booking is confirmed, the guest receives a web‑push notification (visible in the browser) and a toast appears in the UI.",
-        "The bell icon in the Navbar updates its badge count after a new notification is received.",
-        "If the user revokes permission, the subscription endpoint returns a 403 and the stored subscription is removed."
-      ],
-      "created_at": 1788769969.1371365,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "pr19-hardening-followups",
-      "status": "todo",
-      "area": "security",
-      "risk": "low",
-      "title": "PR #19 auditor polish follow-ups",
-      "description": "Address the non-blocking (MEDIUM/LOW) polish findings from the Magda AI auditor review on https://github.com/coruhoorhan/airbnb-app/pull/19. Read the latest auditor review on that PR and implement every MEDIUM/LOW item. Do NOT re-litigate BLOCKING items; those gate the original PR.",
-      "allowed_paths": [
-        "agent_tasks.json",
-        "package.json",
-        "server.js",
-        "src",
-        "tests"
-      ],
-      "acceptance": [
-        "All MEDIUM/LOW auditor findings on PR #19 addressed",
-        "Repo test suite green",
-        "No new BLOCKING findings"
-      ]
-    },
-    {
-      "id": "feat-host-payout-revenue-analytics",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Host Payout & Revenue Analytics Dashboard",
-      "description": "Implement a new analytics dashboard for hosts that shows payout history, upcoming payouts, and revenue breakdown per listing. Add a new GraphQL query `hostRevenueAnalytics(hostId: ID!): RevenueAnalytics!` returning total earnings, earnings by month, pending payouts, and average occupancy rate. Create resolver in `src/lib/graphqlResolvers.js` and data fetchers in `src/lib/db.js` using parameterized queries and aggregation. Add a new React component `src/components/HostPayoutAnalytics.jsx` that fetches the data via Apollo client, displays charts using a lightweight chart library (e.g., Chart.js), and integrates with existing `HostDashboard`. Secure the endpoint with auth middleware and ensure only the host can access their own data. Update `server.js` to register the new resolver and add rate limiting for the analytics query.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/graphqlResolvers.js",
-        "src/lib/db.js",
-        "src/components/HostPayoutAnalytics.jsx",
-        "src/components/HostDashboard.jsx"
-      ],
-      "acceptance": [
-        "Authenticated host can open the Host Dashboard and see a new 'Payout & Revenue' tab displaying a chart of monthly earnings and a table of pending payouts.",
-        "GraphQL query `hostRevenueAnalytics` returns correct aggregated values for a host with multiple listings, verified by comparing against raw DB data.",
-        "Unauthenticated or other‑host users receive an authorization error when attempting to query `hostRevenueAnalytics`.",
-        "Rate limiting middleware rejects requests exceeding 10 queries per minute per host IP."
-      ],
-      "created_at": 1788770889.6911442,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-instant-booking-approval-flow",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Instant Booking Approval Flow",
-      "description": "Add a host‑driven approval step for instant‑book listings. Extend the bookings table with a new `approvalStatus` column (pending, approved, rejected). Implement a GraphQL mutation `approveBooking(id: ID!, approve: Boolean!): Booking` that updates the column and triggers a notification. Update the booking engine to respect `approvalStatus` when calculating availability and generating payment intents. In the Host Dashboard UI, add a new \"Pending Approvals\" tab that lists pending instant‑book bookings with Approve/Reject buttons, calling the mutation. Ensure the BookingWidget disables the \"Book now\" button for listings with `instantBook = 0` or when the host has disabled auto‑approval. Add server‑side validation to prevent unauthorized users from approving bookings.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/db.js",
-        "src/lib/bookingEngine.js",
-        "src/lib/graphqlResolvers.js",
-        "src/components/HostDashboard.jsx",
-        "src/components/BookingWidget.jsx"
-      ],
-      "acceptance": [
-        "A new `approvalStatus` column exists in the `bookings` table and defaults to 'pending' for instant‑book reservations.",
-        "The GraphQL schema includes a `approveBooking` mutation that updates the status and returns the updated booking object.",
-        "Host Dashboard shows a \"Pending Approvals\" section listing only bookings with `approvalStatus = 'pending'` and allows the host to approve or reject each.",
-        "When a booking is approved, the booking becomes visible to the guest and a payment request is generated; when rejected, the booking is cancelled and the guest receives a notification.",
-        "The BookingWidget prevents guests from booking a listing that is not instant‑book enabled or that requires host approval, displaying an appropriate message."
-      ],
-      "created_at": 1788771503.6338148,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-interactive-map-clustering",
-      "status": "todo",
-      "area": "frontend",
-      "risk": "medium",
-      "title": "Interactive Map Clustering for Listings",
-      "description": "Add a clustering layer to the map view so that when many listings are displayed the markers are grouped into clusters. Use the Supercluster library to compute clusters client‑side based on the current map bounds and zoom level. Extend src/components/MapView.jsx to import the new clustering utility, render cluster markers with a count badge, and zoom into the cluster bounds on click. Create src/lib/mapClusterEngine.js that exposes a function `getClusters(listings, viewport, zoom)` returning GeoJSON features for both clusters and individual listings. Ensure the map updates efficiently on pan/zoom and that clicking a cluster smoothly animates to the appropriate zoom level. Update any related CSS for cluster marker styling.",
-      "allowed_paths": [
-        "src/components/MapView.jsx",
-        "src/lib/mapClusterEngine.js",
-        "src/components/ListingCard.jsx"
-      ],
-      "acceptance": [
-        "When the map is zoomed out, listings are displayed as cluster markers showing the number of listings in that area.",
-        "Clicking a cluster marker zooms the map to a level where the cluster expands into smaller clusters or individual listing markers.",
-        "Performance test with 1,000 listings shows map interactions (pan, zoom) remain smooth (no frame drops below 30 fps)."
-      ],
-      "created_at": 1788771812.1146426,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-calendar-availability-ical-sync",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "iCal Calendar Availability Sync for Listings",
-      "description": "Add bi‑directional iCal synchronization for listing availability. Implement a new Express route GET /api/calendar/:listingId.ics that generates a valid iCal feed containing all booked dates for the given listing. Add a POST /api/calendar/:listingId/sync endpoint that accepts an external iCal URL, parses events, and creates corresponding blocked bookings in the DB. Extend the GraphQL schema with a `listingCalendarSync` field (status, externalUrl) and mutations `setCalendarSyncUrl` and `removeCalendarSync`. Create a new backend module src/lib/calendarSync.js handling iCal generation, parsing (using  node-ical library), and DB updates. Add a UI component src/components/CalendarSyncWidget.jsx that lets hosts view current sync status, set an external iCal URL, and download their own iCal feed. Update host dashboard to include the widget. Ensure proper validation, error handling, and caching of generated feeds for 5 minutes.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/calendarSync.js",
-        "src/lib/db.js",
-        "src/lib/graphqlSchema.js",
-        "src/lib/graphqlResolvers.js",
-        "src/components/CalendarSyncWidget.jsx",
-        "src/components/HostDashboard.jsx"
-      ],
-      "acceptance": [
-        "GET /api/calendar/:listingId.ics returns a 200 response with Content‑Type text/calendar and contains VEVENT entries for each confirmed booking of the listing.",
-        "POST /api/calendar/:listingId/sync with a valid iCal URL creates blocked bookings that prevent overlapping reservations, verified by attempting to book a conflicting date and receiving a conflict error.",
-        "The CalendarSyncWidget shows the current sync status, allows setting/removing an external iCal URL, and displays a download button that triggers the GET iCal endpoint.",
-        "GraphQL query listing(id: $id) { calendarSync { status externalUrl } } returns correct sync information after mutations."
-      ],
-      "created_at": 1788772426.815056,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-guest-review-moderation",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Guest Review Moderation Dashboard",
-      "description": "Add a moderation workflow for guest reviews. Extend the SQLite schema with a `status` column (enum: pending, approved, rejected) and a `flagReason` text field in the `reviews` table. Update DB helper functions to create, fetch, and update review status. Add GraphQL types and mutations: `flagReview(id, reason)`, `moderateReview(id, action)` where action is APPROVE or REJECT. Implement a new React admin component `AdminReviewModeration` that lists reviews with status 'pending', shows the flag reason, and provides Approve/Reject buttons. The component should call the GraphQL mutations, refresh the list, and display success/error toasts. Secure the endpoint with `authMiddleware` ensuring only users with role `admin` can access. Add unit tests for the resolver and integration test for the UI flow.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/db.js",
-        "src/lib/graphqlSchema.js",
-        "src/lib/graphqlResolvers.js",
-        "src/components/AdminReviewModeration.jsx",
-        "src/lib/auth.js"
-      ],
-      "acceptance": [
-        "Admin user can view a list of pending reviews with flag reasons in the AdminReviewModeration UI.",
-        "Clicking Approve changes the review status to 'approved' and removes it from the pending list.",
-        "Clicking Reject changes the review status to 'rejected' and removes it from the pending list.",
-        "GraphQL mutations return the updated review object and appropriate error messages for unauthorized users.",
-        "All new DB columns are populated correctly and persisted across server restarts."
-      ],
-      "created_at": 1788772734.4202356,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-multi-currency-checkout",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Multi‑currency Checkout Support",
-      "description": "Implement end‑to‑end multi‑currency checkout. Add a currency selector UI component and persist the user’s preferred currency in a cookie. Extend src/lib/currencyEngine.js to fetch live FX rates from a public API (e.g., exchangerate.host) and cache them for 10 minutes. Update all price‑related calculations (bookingEngine, pricingEngine, couponEngine) to accept a currency argument and convert amounts using the cached rates. Modify the GraphQL schema to expose a `currency` field on Listing, Booking and Payment types and add resolvers that return prices in the user’s selected currency. Update the payment integration in src/lib/iyzicoEngine.js to send the correct `currency` parameter in the request payload. Adjust src/components/PaymentModal.jsx and src/components/BookingWidget.jsx to display prices in the selected currency and to pass the currency to the backend when creating a booking. Ensure that the server validates the currency code against an allowed list and sanitizes the input.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/currencyEngine.js",
-        "src/lib/iyzicoEngine.js",
-        "src/lib/bookingEngine.js",
-        "src/lib/pricingEngine.js",
-        "src/lib/couponEngine.js",
-        "src/components/PaymentModal.jsx",
-        "src/components/BookingWidget.jsx",
-        "src/lib/graphqlSchema.js",
-        "src/lib/graphqlResolvers.js"
-      ],
-      "acceptance": [
-        "A currency selector appears on the listing detail page; selecting EUR updates all displayed prices (nightly, fees, total) to EUR with correct conversion.",
-        "The GraphQL query for a booking returns a `currency` field and all monetary fields are converted to the requested currency.",
-        "When a user confirms a booking in EUR, the request to iyzico contains `currency: \"EUR\"` and the amount matches the converted total.",
-        "Invalid or unsupported currency codes are rejected with a 400 response and a clear error message."
-      ],
-      "created_at": 1788773969.5041046,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-ai-powered-listing-recommendations",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "AI‑Powered Personalized Listing Recommendations",
-      "description": "Implement a recommendation engine that suggests listings to a guest based on their past bookings, search history, and similar user behavior. Add a new GraphQL query `recommendedListings(userId: ID!, limit: Int = 10): [Listing]` that returns a ranked list of listings. Create a server‑side module `src/lib/recommendationEngine.js` that uses SQLite queries and a simple collaborative‑filtering algorithm (e.g., user‑based similarity on booking categories). Extend `server.js` to register the resolver. Build a frontend carousel component `src/components/RecommendationCarousel.jsx` that fetches the data via the GraphQL query and displays cards with lazy‑loaded images. Insert the carousel into the home page (`src/App.jsx`) under the “Explore” section. Ensure the new endpoint is protected by existing auth middleware and respects rate limiting.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/recommendationEngine.js",
-        "src/lib/graphqlResolvers.js",
-        "src/lib/graphqlSchema.js",
-        "src/components/RecommendationCarousel.jsx",
-        "src/App.jsx"
-      ],
-      "acceptance": [
-        "GraphQL query `recommendedListings` returns at most `limit` listings and includes fields `id`, `title`, `pricePerNight`, `images`.",
-        "When a logged‑in user opens the home page, the recommendation carousel appears with at least one listing card and scrolls horizontally.",
-        "Recommendations differ between two users with distinct booking histories, demonstrating personalization.",
-        "No new security warnings appear in the audit report; rate limiting headers are present on the GraphQL endpoint."
-      ],
-      "created_at": 1788776733.6427617,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "feat-real-time-chat-websocket",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Real‑time Chat Messaging via WebSocket",
-      "description": "Add a WebSocket layer to the existing chat system so that messages are delivered instantly to all participants. Implement a lightweight chat engine (src/lib/chatEngine.js) that persists messages in SQLite and emits events through socket.io. Extend server.js to initialize a Socket.io server, register connection handlers, and integrate with existing insertMessage / getMessagesForListing functions. Update the front‑end components ChatModal.jsx and InboxModal.jsx to open a socket connection, listen for incoming messages, and update the UI state without a page refresh. Ensure fallback to the existing REST/GraphQL API for initial load and for browsers without WebSocket support.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/chatEngine.js",
-        "src/components/ChatModal.jsx",
-        "src/components/InboxModal.jsx"
-      ],
-      "acceptance": [
-        "When a user sends a message in a listing chat, the other participant sees the new message instantly in the UI without reloading the page.",
-        "All sent messages are persisted in the SQLite database and are loaded correctly after a full page refresh."
-      ],
-      "created_at": 1788779796.2391877,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "pr22-hardening-followups",
-      "status": "todo",
-      "area": "security",
-      "risk": "low",
-      "title": "PR #22 auditor polish follow-ups",
-      "description": "Address the non-blocking (MEDIUM/LOW) polish findings from the Magda AI auditor review on https://github.com/coruhoorhan/airbnb-app/pull/22. Read the latest auditor review on that PR and implement every MEDIUM/LOW item. Do NOT re-litigate BLOCKING items; those gate the original PR.",
-      "allowed_paths": [
-        "agent_tasks.json",
-        "package-lock.json",
-        "package.json",
-        "server.js",
-        "tests"
-      ],
-      "acceptance": [
-        "All MEDIUM/LOW auditor findings on PR #22 addressed",
-        "Repo test suite green",
-        "No new BLOCKING findings"
-      ]
     }
   ],
   "updated_at": 1788779796.2391944
