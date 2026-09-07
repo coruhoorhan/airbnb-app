@@ -373,28 +373,6 @@
       "status": "todo",
       "created_at": 1788786000,
       "created_by": "Magda Principal Architect"
-    },
-    {
-      "id": "feat-interactive-map-clustering",
-      "status": "todo",
-      "area": "fullstack",
-      "risk": "medium",
-      "title": "Interactive Map Clustering for Listings",
-      "description": "Implement a server‑side endpoint that returns nearby listings grouped into clusters based on zoom level and geographic bounds, and a frontend MapView component that renders these clusters using Leaflet (or Google Maps) with interactive zoom‑in/out behavior. Add a new file src/lib/mapClustering.js that computes clusters using a simple grid‑based algorithm, expose a GraphQL resolver `clustersInBounds(bounds, zoom)` in src/lib/graphqlResolvers.js, and update src/components/MapView.jsx to fetch clusters via the GraphQL API and render them with cluster markers that expand into individual listing pins when zoomed in. Ensure the endpoint respects existing rate limiting and auth middleware.",
-      "allowed_paths": [
-        "src/lib/mapClustering.js",
-        "src/lib/graphqlResolvers.js",
-        "src/components/MapView.jsx",
-        "server.js"
-      ],
-      "acceptance": [
-        "Visiting the MapView shows cluster markers at low zoom levels and individual listing markers at high zoom levels.",
-        "GraphQL query `clustersInBounds` returns a JSON array with cluster objects (latitude, longitude, count) and listing objects when zoom >= 15.",
-        "Rate limiter logs a warning if more than 100 cluster requests are made within a minute from the same IP.",
-        "All existing unit tests pass and a new integration test validates that a request for bounds covering 50 listings returns no more than 10 clusters at zoom 10."
-      ],
-      "created_at": 1788785484.006626,
-      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
   "updated_at": 1788785484.0066314
