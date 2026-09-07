@@ -380,7 +380,43 @@
       ],
       "created_at": 1788768497.6456192,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-csp-header",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Add Content Security Policy header",
+      "description": "Configure Helmet to include a strict Content Security Policy that allows scripts, styles, images and fonts only from trusted origins, blocks inline execution, and reports violations. This mitigates XSS and data injection attacks across the entire application.",
+      "allowed_paths": [
+        "server.js"
+      ],
+      "acceptance": [
+        "Response headers contain a CSP header with directives disallowing 'unsafe-inline' and restricting sources to self and approved CDNs",
+        "Automated security scan (e.g., npm audit, OWASP ZAP) reports no CSP-related vulnerabilities",
+        "Manual testing of a page with injected script tags results in the script being blocked"
+      ],
+      "created_at": 1788768565.3179116,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-hsts-header",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Enforce HTTP Strict Transport Security",
+      "description": "Add the Strict-Transport-Security header via Helmet to force browsers to use HTTPS for all future requests, include subdomains and the preload flag. This protects against protocol downgrade attacks and cookie hijacking.",
+      "allowed_paths": [
+        "server.js"
+      ],
+      "acceptance": [
+        "All HTTPS responses include the 'Strict-Transport-Security' header with max-age>=31536000, includeSubDomains, and preload",
+        "Curl request to https endpoint returns the HSTS header",
+        "Browser console shows no mixed‑content warnings after enabling HSTS"
+      ],
+      "created_at": 1788768565.3190005,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788768497.645621
+  "updated_at": 1788768565.319002
 }
