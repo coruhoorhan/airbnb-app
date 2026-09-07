@@ -5,7 +5,7 @@
   "tasks": [
     {
       "id": "feat-real-time-chat-websocket",
-      "status": "todo",
+      "status": "done",
       "area": "fullstack",
       "risk": "medium",
       "title": "Real‑time Chat Messaging via WebSocket",
@@ -21,7 +21,9 @@
         "All sent messages are persisted in the SQLite database and are loaded correctly after a full page refresh."
       ],
       "created_at": 1788779796.2391877,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "completed_at": 1788785061.3730235,
+      "completed_by": "Veyyon/Codex Subagent"
     },
     {
       "id": "feat-push-notification-engine",

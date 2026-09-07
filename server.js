@@ -1,3 +1,5 @@
+import http from "http";
+import { setupChatWebSocketServer, chatEngine } from "./src/lib/chatEngine.js";
 import "express-async-errors";
 import { createHandler } from "graphql-http/lib/use/express";
 import DataLoader from "dataloader";
@@ -269,6 +271,7 @@ const listingsRateLimiter = createRateLimiter({
 const sseClients = new Map(); // listingId → Set<res>
 
 function broadcastToListing(listingId, message) {
+  chatEngine.broadcast(listingId, { type: "NEW_MESSAGE", data: message });
   const clients = sseClients.get(listingId);
   if (!clients) return;
   const payload = `data: ${JSON.stringify(message)}\n\n`;
@@ -1418,9 +1421,12 @@ function startAutonomousGuardianLoop() {
   }, 900000);
 }
 
+const server = http.createServer(app);
+setupChatWebSocketServer(server);
+
 if (process.env.NODE_ENV !== "test") {
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[AIRBNB SQLITE & IYZICO ENGINE] Running on http://0.0.0.0:${PORT}`);
+  server.listen(PORT, "0.0.0.0", () => {
+    console.log(`[AIRBNB SQLITE & IYZICO ENGINE] Running on http://0.0.0.0:${PORT} (HTTP + WebSocket)`);
     startAutonomousGuardianLoop();
   });
 }
@@ -1445,4 +1451,4 @@ process.on("SIGINT", () => {
   process.exit(0);
 });
 
-export { app };
+export { app, server };
