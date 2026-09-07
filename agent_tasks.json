@@ -761,7 +761,27 @@
       ],
       "created_at": 1788776733.6427617,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-real-time-chat-websocket",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Real‑time Chat Messaging via WebSocket",
+      "description": "Add a WebSocket layer to the existing chat system so that messages are delivered instantly to all participants. Implement a lightweight chat engine (src/lib/chatEngine.js) that persists messages in SQLite and emits events through socket.io. Extend server.js to initialize a Socket.io server, register connection handlers, and integrate with existing insertMessage / getMessagesForListing functions. Update the front‑end components ChatModal.jsx and InboxModal.jsx to open a socket connection, listen for incoming messages, and update the UI state without a page refresh. Ensure fallback to the existing REST/GraphQL API for initial load and for browsers without WebSocket support.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/chatEngine.js",
+        "src/components/ChatModal.jsx",
+        "src/components/InboxModal.jsx"
+      ],
+      "acceptance": [
+        "When a user sends a message in a listing chat, the other participant sees the new message instantly in the UI without reloading the page.",
+        "All sent messages are persisted in the SQLite database and are loaded correctly after a full page refresh."
+      ],
+      "created_at": 1788779796.2391877,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788776733.6427643
+  "updated_at": 1788779796.2391944
 }
