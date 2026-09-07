@@ -664,7 +664,32 @@
       ],
       "created_at": 1788771812.1146426,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-calendar-availability-ical-sync",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "iCal Calendar Availability Sync for Listings",
+      "description": "Add bi‑directional iCal synchronization for listing availability. Implement a new Express route GET /api/calendar/:listingId.ics that generates a valid iCal feed containing all booked dates for the given listing. Add a POST /api/calendar/:listingId/sync endpoint that accepts an external iCal URL, parses events, and creates corresponding blocked bookings in the DB. Extend the GraphQL schema with a `listingCalendarSync` field (status, externalUrl) and mutations `setCalendarSyncUrl` and `removeCalendarSync`. Create a new backend module src/lib/calendarSync.js handling iCal generation, parsing (using  node-ical library), and DB updates. Add a UI component src/components/CalendarSyncWidget.jsx that lets hosts view current sync status, set an external iCal URL, and download their own iCal feed. Update host dashboard to include the widget. Ensure proper validation, error handling, and caching of generated feeds for 5 minutes.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/calendarSync.js",
+        "src/lib/db.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js",
+        "src/components/CalendarSyncWidget.jsx",
+        "src/components/HostDashboard.jsx"
+      ],
+      "acceptance": [
+        "GET /api/calendar/:listingId.ics returns a 200 response with Content‑Type text/calendar and contains VEVENT entries for each confirmed booking of the listing.",
+        "POST /api/calendar/:listingId/sync with a valid iCal URL creates blocked bookings that prevent overlapping reservations, verified by attempting to book a conflicting date and receiving a conflict error.",
+        "The CalendarSyncWidget shows the current sync status, allows setting/removing an external iCal URL, and displays a download button that triggers the GET iCal endpoint.",
+        "GraphQL query listing(id: $id) { calendarSync { status externalUrl } } returns correct sync information after mutations."
+      ],
+      "created_at": 1788772426.815056,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788771812.1146479
+  "updated_at": 1788772426.815059
 }
