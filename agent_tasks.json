@@ -4457,7 +4457,119 @@
       ],
       "created_at": 1788794009.1369183,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788794011445",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788794011445",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788794011445 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788794076.0256414,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788794011453",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788794011453",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788794011453 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788794076.0311317,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788794011470",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788794011470",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788794011470 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788794076.036577,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788794011445_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788794011445_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788794011445_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788794076.042408,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788794012580",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788794012580",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788794012580 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788794076.047692,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-25-fuzzy-search",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Fuzzy Full‑Text Search for Listings",
+      "description": "Add SQLite FTS5 virtual table for listings (title, description, location). Populate / sync it on insert/update/delete. Extend GraphQL schema with a `searchListings(query: String!, limit: Int = 20): [Listing]` query that performs a fuzzy match using the FTS5 `bm25` ranking. Implement resolver in `src/lib/graphqlResolvers.js` that calls a new `searchListings` function in `src/lib/db.js`. Update the React UI (e.g., `CategoryBar` or a new `SearchBar` component) to call this GraphQL query as the user types, debounce input, and display results ordered by relevance. Ensure the search works with partial words and typo tolerance.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js",
+        "src/components/CategoryBar.jsx",
+        "src/components/SearchModal.jsx"
+      ],
+      "acceptance": [
+        "Running `npm test` (or the project's test suite) passes a new test that verifies `searchListings('villa')` returns listings with 'villa' in title or description, ordered by relevance.",
+        "Manual verification: typing a misspelled term like 'vila' in the search UI returns relevant listings, and the results list updates after a 300 ms debounce."
+      ],
+      "created_at": 1788794094.116516,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788794009.13692
+  "updated_at": 1788794094.1165185
 }
