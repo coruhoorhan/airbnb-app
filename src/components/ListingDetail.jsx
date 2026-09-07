@@ -192,6 +192,9 @@ export function ListingDetail({
         <div className="md:col-span-2 h-full overflow-hidden bg-charcoal-bg">
           <img 
             src={primaryImage} 
+            loading="lazy"
+            srcSet={`${primaryImage}?w=400 400w, ${primaryImage}?w=800 800w, ${primaryImage}?w=1200 1200w`}
+            sizes="(max-width: 768px) 100vw, 50vw"
             alt="Ana Görsel" 
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer" 
             onClick={() => { setLightboxIndex(0); setLightboxOpen(true); }}
@@ -202,6 +205,9 @@ export function ListingDetail({
             <div key={idx} className="h-full overflow-hidden bg-charcoal-bg">
               <img 
                 src={img} 
+                loading="lazy"
+                srcSet={`${img}?w=300 300w, ${img}?w=600 600w`}
+                sizes="(max-width: 768px) 50vw, 25vw"
                 alt={`Detay ${idx + 1}`} 
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer" 
                 onClick={() => { setLightboxIndex(idx + 1); setLightboxOpen(true); }}

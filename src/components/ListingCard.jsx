@@ -78,6 +78,8 @@ export function ListingCard({ listing, onSelect, isFavorite, onToggleFavorite, c
           alt={listing.title}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-108"
           loading="lazy"
+          srcSet={`${images[currentImgIndex]}?w=300 300w, ${images[currentImgIndex]}?w=600 600w, ${images[currentImgIndex]}?w=1200 1200w`}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
 
         {/* Coastal Badges Overlay */}

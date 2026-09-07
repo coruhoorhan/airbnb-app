@@ -26,6 +26,7 @@ export function Navbar({
   const [notifOpen, setNotifOpen] = useState(false);
   const [currencyOpen, setCurrencyOpen] = useState(false);
 
+
   const unreadCount = notifications.filter((n) => !n.isRead).length;
   const currencies = getAvailableCurrencies();
   const currentCurrencyObj = currencies.find((c) => c.code === currency) || currencies[0];

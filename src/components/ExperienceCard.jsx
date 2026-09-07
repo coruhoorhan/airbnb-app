@@ -18,6 +18,8 @@ export function ExperienceCard({ experience, currency = "TRY", onSelect }) {
           src={experience.images?.[0]}
           alt={experience.title}
           loading="lazy"
+          srcSet={`${experience.images?.[0]}?w=300 300w, ${experience.images?.[0]}?w=600 600w, ${experience.images?.[0]}?w=1200 1200w`}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md text-charcoal px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold shadow-xs border border-charcoal-border/50">

@@ -8,6 +8,7 @@ import { ListingDetail } from "./components/ListingDetail.jsx";
 import { ListingGridSkeleton } from "./components/ListingSkeleton.jsx";
 import { SearchModal } from "./components/SearchModal.jsx";
 import { RentModal } from "./components/RentModal.jsx";
+import { RecommendationCarousel } from "./components/RecommendationCarousel.jsx";
 import { HostDashboard } from "./components/HostDashboard.jsx";
 import { TripsView } from "./components/TripsView.jsx";
 import { WishlistView } from "./components/WishlistView.jsx";
@@ -661,6 +662,11 @@ export function App() {
               selectedCategory={selectedCategory}
               onSelectCategory={handleCategorySelect}
             />
+
+            {/* Recommendation Carousel */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-0 w-full">
+              <RecommendationCarousel onSelectListing={handleOpenListing} />
+            </div>
 
             {/* Listings Grid or Map View */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">

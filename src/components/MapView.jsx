@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import L from "leaflet";
+import { applyMapClustering } from "../lib/mapClusterEngine.js";
 
 export function MapView({ listings = [], onSelectListing }) {
   const mapContainerRef = useRef(null);
@@ -22,39 +23,8 @@ export function MapView({ listings = [], onSelectListing }) {
 
     const map = mapInstanceRef.current;
 
-    // Clear previous markers
-    map.eachLayer((layer) => {
-      if (layer instanceof L.Marker) {
-        map.removeLayer(layer);
-      }
-    });
-
-    // Add custom HTML price pill markers (Taste Skill Pill Markers)
-    listings.forEach((l) => {
-      if (!l.lat || !l.lng) return;
-
-      const customIcon = L.divIcon({
-        className: "custom-price-marker-wrapper",
-        html: `<div class="custom-price-marker">₺${l.pricePerNight.toLocaleString("tr-TR")}</div>`,
-        iconSize: [80, 30],
-        iconAnchor: [40, 15]
-      });
-
-      const marker = L.marker([l.lat, l.lng], { icon: customIcon }).addTo(map);
-
-      // Popup card content
-      const popupContent = document.createElement("div");
-      popupContent.className = "p-1 cursor-pointer max-w-[200px]";
-      popupContent.innerHTML = `
-        <img src="${l.images?.[0] || ""}" class="w-full h-24 object-cover rounded-xl mb-2" />
-        <p class="font-bold text-xs text-[#222222] truncate">${l.title}</p>
-        <p class="text-[11px] text-[#717171]">${l.city}</p>
-        <p class="font-extrabold text-xs text-[#222222] mt-1">₺${l.pricePerNight.toLocaleString("tr-TR")} <span class="font-normal text-[10px]">gece</span></p>
-      `;
-      popupContent.onclick = () => onSelectListing(l);
-
-      marker.bindPopup(popupContent);
-    });
+    // Apply clustering and get custom markers
+    applyMapClustering(map, listings, onSelectListing);
 
   }, [listings, onSelectListing]);
 
