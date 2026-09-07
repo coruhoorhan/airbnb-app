@@ -474,7 +474,44 @@
       ],
       "created_at": 1788768697.3884633,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-csp-harden",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "CSP Header Hardened",
+      "description": "Replace the current Content‑Security‑Policy that allows 'unsafe-inline' and 'unsafe-eval' with a strict CSP that uses nonces or hashes for inline scripts and styles, disallows eval, and restricts sources to trusted origins only. Generate a per‑request nonce, attach it to the response header, and add the same nonce attribute to any inline <script> or <style> tags rendered by the server.",
+      "allowed_paths": [
+        "server.js"
+      ],
+      "acceptance": [
+        "Response headers contain a CSP without 'unsafe-inline' or 'unsafe-eval'.",
+        "All inline scripts/styles in server‑rendered pages include a matching nonce attribute.",
+        "Browser console shows no CSP violations for legitimate functionality."
+      ],
+      "created_at": 1788768762.4679308,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-graphql-complexity-limit",
+      "status": "todo",
+      "area": "backend",
+      "risk": "medium",
+      "title": "GraphQL Query Complexity Limiting",
+      "description": "Integrate graphql-query-complexity (or similar) into the GraphQL middleware to calculate a complexity score for each incoming query and reject queries that exceed a configurable threshold (e.g., 200). This prevents abuse via overly deep or wide queries that could degrade performance.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/graphqlSchema.js"
+      ],
+      "acceptance": [
+        "Complexity middleware is applied to the GraphQL endpoint.",
+        "Queries with complexity > 200 receive a 400 response with an error message.",
+        "Normal queries (e.g., fetching a listing with its reviews) succeed unchanged."
+      ],
+      "created_at": 1788768762.4691052,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788768697.388465
+  "updated_at": 1788768762.4691064
 }
