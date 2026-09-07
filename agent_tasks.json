@@ -915,7 +915,28 @@
       ],
       "created_at": 1788783867.507886,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-advanced-search-elasticsearch",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Advanced Full‑Text Search with Elasticsearch Integration",
+      "description": "Integrate Elasticsearch to provide fast, typo‑tolerant full‑text search across listings. Add a new module src/lib/searchEngine.js that creates an index, syncs CRUD operations from SQLite to Elasticsearch, and exposes a searchListings(query, filters) function. Extend the GraphQL schema (src/lib/graphqlSchema.js) with a `searchListings` query accepting a free‑text string and optional filter arguments (price range, city, amenities). Implement the resolver in src/lib/graphqlResolvers.js to call the search engine. Update server.js to initialize the Elasticsearch client on startup and to hook into existing listing mutation resolvers (insertListing, toggleListingStatus, quickUpdateListingPrice, deleteListing) so the index stays consistent. Add a simple health‑check endpoint `/api/search/health` returning 200 when Elasticsearch is reachable. Ensure input sanitization and rate limiting for the new endpoint.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/searchEngine.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/db.js"
+      ],
+      "acceptance": [
+        "A GraphQL `searchListings` query returns listings whose title or description contain the search term, respecting applied filters.",
+        "When a listing is created, updated, or deleted via existing mutations, the Elasticsearch index reflects the change within 2 seconds."
+      ],
+      "created_at": 1788784178.1844723,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788783867.5078876
+  "updated_at": 1788784178.184475
 }
