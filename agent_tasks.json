@@ -660,7 +660,46 @@
       ],
       "created_at": 1788769257.2307208,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-csrf-global-enforcement",
+      "status": "todo",
+      "area": "security",
+      "risk": "high",
+      "title": "Enforce CSRF protection on all state‑changing endpoints",
+      "description": "Apply the csrfMiddleware to every POST, PUT, PATCH, and DELETE route (including GraphQL mutations) and ensure that a valid X‑CSRF‑Token header or cookie is required. Reject requests missing or with an invalid token with HTTP 403. Update the middleware registration order so it runs after cookieParser and before any route handlers.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/auth.js"
+      ],
+      "acceptance": [
+        "All state‑changing HTTP methods return 403 when the X‑CSRF‑Token header is absent or does not match the cookie.",
+        "GraphQL mutation requests without a valid CSRF token are rejected with an error response.",
+        "Integration tests verify that a legitimate request with a correct token succeeds."
+      ],
+      "created_at": 1788769322.048851,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-auth-rate-limit-enforcement",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Apply rate limiting to authentication endpoints",
+      "description": "Use the existing authRateLimiter (10 requests per minute) on login, register, password‑reset, and token‑refresh routes. Ensure the limiter is attached before the auth handlers and that the response includes a clear retry‑after header. Log throttled attempts for monitoring.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/auth.js",
+        "src/lib/rateLimiter.js"
+      ],
+      "acceptance": [
+        "Login, register, password‑reset, and token‑refresh endpoints return 429 with a retry‑after header after exceeding 10 requests per minute from the same IP.",
+        "Successful authentication flows work normally when under the limit.",
+        "Log entries are created for each throttled request."
+      ],
+      "created_at": 1788769322.0503778,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788769257.230722
+  "updated_at": 1788769322.0503793
 }
