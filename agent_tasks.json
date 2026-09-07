@@ -2415,7 +2415,331 @@
       ],
       "created_at": 1788788265.2340007,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787115431-book_rec_1788788494866",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787115431 vs #book_rec_1788788494866",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787115431 ve #book_rec_1788788494866 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788511.5529943,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787120831-book_rec_1788788494866",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787120831 vs #book_rec_1788788494866",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787120831 ve #book_rec_1788788494866 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788511.5617259,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787141639-book_rec_1788788494866",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787141639 vs #book_rec_1788788494866",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787141639 ve #book_rec_1788788494866 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788511.5706546,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787186335-book_rec_1788788494866",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787186335 vs #book_rec_1788788494866",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787186335 ve #book_rec_1788788494866 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788511.578513,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787214722-book_rec_1788788494866",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787214722 vs #book_rec_1788788494866",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787214722 ve #book_rec_1788788494866 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788511.5867193,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787224849-book_rec_1788788494866",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787224849 vs #book_rec_1788788494866",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787224849 ve #book_rec_1788788494866 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788511.5945747,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787360438-book_rec_1788788494866",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787360438 vs #book_rec_1788788494866",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787360438 ve #book_rec_1788788494866 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788511.5999238,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787401334-book_rec_1788788494866",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787401334 vs #book_rec_1788788494866",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787401334 ve #book_rec_1788788494866 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788511.6045158,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787929177-book_rec_1788788494866",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787929177 vs #book_rec_1788788494866",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787929177 ve #book_rec_1788788494866 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788788511.6087573,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788788494061",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788788494061",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788788494061 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788788511.683566,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788788494084",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788788494084",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788788494084 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788788511.6877913,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788788494085",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788788494085",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788788494085 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788788511.691292,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788788494061_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788788494061_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788788494061_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788788511.6948118,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788788494866",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788788494866",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788788494866 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788788511.6985672,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788788511348",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788788511348",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788788511348 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788788511.7030735,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788788511351",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788788511351",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788788511351 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788788511.7099857,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788788511365",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788788511365",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788788511365 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788788511.7133758,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788788511351_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788788511351_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788788511351_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788788511.717607,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788788265.234004
+  "updated_at": 1788788511.7176085
 }
