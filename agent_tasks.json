@@ -477,7 +477,29 @@
       ],
       "created_at": 1788785109.1548665,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-host-payout-revenue-analytics",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Host Payout & Revenue Analytics Dashboard",
+      "description": "Add a complete payout and revenue analytics capability for hosts. Implement a new payout engine (src/lib/payoutEngine.js) that calculates host earnings, platform fees, taxes, and upcoming payout dates based on completed bookings. Extend the SQLite schema in src/lib/db.js with a `payouts` table and necessary indexes. Create GraphQL resolvers (src/lib/graphqlResolvers.js) and REST endpoints in server.js for fetching payout history, current balance, and earnings summary. Build a new React dashboard component (src/components/HostPayoutDashboard.jsx) that consumes the API, displays total earnings, pending payouts, and a line chart of earnings over the past 12 months using a chart library (e.g., Recharts). Add a helper chart component (src/components/RevenueChart.jsx) for rendering the earnings timeline. Ensure all new endpoints are protected by authMiddleware and rate‑limited via createRateLimiter.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/payoutEngine.js",
+        "src/lib/db.js",
+        "src/lib/graphqlResolvers.js",
+        "src/components/HostPayoutDashboard.jsx",
+        "src/components/RevenueChart.jsx"
+      ],
+      "acceptance": [
+        "GET /api/host/:hostId/payouts returns a JSON payload with totalEarned, pendingPayouts, and an array of monthlyEarnings objects matching the data shown in the dashboard.",
+        "The HostPayoutDashboard component renders the earnings summary and a line chart that updates when the API returns new data, and the chart matches the monthlyEarnings values."
+      ],
+      "created_at": 1788785418.9394362,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788785109.1548693
+  "updated_at": 1788785418.93944
 }
