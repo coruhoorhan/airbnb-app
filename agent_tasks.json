@@ -304,6 +304,45 @@
         "Repo test suite green",
         "No new BLOCKING findings"
       ]
+    },
+    {
+      "id": "security-csrf-protection",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Add CSRF protection to state‑changing endpoints",
+      "description": "Integrate the existing csrfMiddleware into the Express pipeline for all POST/PUT/DELETE routes (including /graphql). Generate a CSRF token on authentication, store it in an HttpOnly, SameSite=Strict cookie, and require the token in the 'x-csrf-token' header. Reject requests missing or with an invalid token with 403. Update authMiddleware to set the cookie flags (secure in production, httpOnly, sameSite).",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/auth.js"
+      ],
+      "acceptance": [
+        "A CSRF token is set as a cookie after login and can be read via generateCsrfToken()",
+        "POST/PUT/DELETE requests without the x-csrf-token header are responded with 403",
+        "Valid token requests succeed and the cookie has HttpOnly, SameSite=Strict, Secure (in prod) flags"
+      ],
+      "created_at": 1788768431.8239622,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-input-validation-sanitization",
+      "status": "todo",
+      "area": "backend",
+      "risk": "medium",
+      "title": "Enforce strict input validation and sanitization for listings and bookings",
+      "description": "Use the existing Joi schemas (listingSchema, bookingSchema) in the request handlers for creating/updating listings and bookings. Replace the simple HTML regex strip with a robust library (e.g., DOMPurify) to prevent XSS, and enforce length limits on strings. Return 400 with clear error messages on validation failure.",
+      "allowed_paths": [
+        "src/lib/db.js",
+        "server.js"
+      ],
+      "acceptance": [
+        "Creating or updating a listing with HTML tags results in stripped content, not stored raw",
+        "Requests with missing required fields or invalid types are rejected with 400 and a Joi error message",
+        "All mutation endpoints (e.g., insertListing, insertBooking) now validate payloads before DB insertion"
+      ],
+      "created_at": 1788768431.8251154,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
-  ]
+  ],
+  "updated_at": 1788768431.825117
 }
