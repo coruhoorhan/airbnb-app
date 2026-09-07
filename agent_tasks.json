@@ -1811,7 +1811,30 @@
       ],
       "created_at": 1788788691.7983985,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-18-pwa-enable",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Progressive Web App (PWA) Enablement for Airbnb Clone",
+      "description": "Add PWA capabilities to the Vite‑React frontend: create a web‑app manifest (public/manifest.json) with icons and display options, implement a service worker (src/service-worker.js) that caches static assets and API responses using Workbox, update vite.config.js to register the service worker and copy the manifest, add an InstallPrompt component (src/components/InstallPrompt.jsx) that shows the Chrome install banner and hook it into App.jsx, and adjust the HTML template to include the manifest link and meta tags. The build should produce a service‑worker‑enabled bundle that can be installed on mobile browsers and works offline for previously visited listings.",
+      "allowed_paths": [
+        "src/service-worker.js",
+        "public/manifest.json",
+        "vite.config.js",
+        "src/App.jsx",
+        "src/components/InstallPrompt.jsx"
+      ],
+      "acceptance": [
+        "Running `npm run build` generates a `service-worker.js` file and the `manifest.json` is linked in the generated `index.html`.",
+        "When the app is opened in Chrome, the InstallPrompt component appears and clicking it triggers the native PWA install flow.",
+        "After visiting a listing page, the page can be reloaded while offline and still displays the cached listing details and assets.",
+        "The service worker registers without errors in the browser devtools and shows a successful cache‑first strategy for static assets."
+      ],
+      "created_at": 1788789251.6610007,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788788691.7984004
+  "updated_at": 1788789251.6610036
 }
