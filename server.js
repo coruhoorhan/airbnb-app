@@ -235,10 +235,18 @@ app.post("/api/auth/login", authRateLimiter, async (req, res) => {
 });
 
 app.get("/api/auth/csrf", (req, res) => {
-  const token = generateCsrfToken();
-  res.cookie("_csrf_secret", token, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
-  res.setHeader("x-csrf-token", token);
-  res.json({ success: true, csrfToken: token });
+  const csrfToken = generateCsrfToken();
+  res.cookie("_csrf_secret", csrfToken, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  res.setHeader("x-csrf-token", csrfToken);
+  
+  // Auto-issue guest session token if user has no token cookie yet
+  if (!req.cookies?.token) {
+    const guestUser = { id: "usr_guest_01", email: "guest@fatsa.bel.tr", isHost: false };
+    const authToken = generateToken(guestUser);
+    res.cookie("token", authToken, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  }
+
+  res.json({ success: true, csrfToken: csrfToken });
 });
 
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
