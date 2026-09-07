@@ -303,8 +303,12 @@ export function Navbar({
 
                 <div className="border-t border-charcoal-border/50 dark:border-white/10 py-1">
                   <button
-                    onClick={() => {
+                    onClick={async () => {
+                      try {
+                        await fetch("/api/auth/logout", { method: "POST" });
+                      } catch(e) {}
                       document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname;
                       window.location.reload();
                     }}
                     className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 font-bold flex items-center gap-2.5 cursor-pointer"

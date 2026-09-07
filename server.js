@@ -210,6 +210,12 @@ app.post("/api/auth/oauth/callback", authRateLimiter, (req, res) => {
   res.json({ success: true, token, user });
 });
 
+app.post("/api/auth/logout", (req, res) => {
+  res.clearCookie("token", { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  res.clearCookie("_csrf_secret", { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  res.json({ success: true, message: "Çıkış yapıldı." });
+});
+
 app.post("/api/auth/login", authRateLimiter, async (req, res) => {
   const { email } = req.body;
   if (!email || !validator.isEmail(email)) {
