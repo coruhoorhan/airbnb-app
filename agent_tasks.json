@@ -373,7 +373,28 @@
       "status": "todo",
       "created_at": 1788786000,
       "created_by": "Magda Principal Architect"
+    },
+    {
+      "id": "feat-06-push-notification-engine",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Web Push Notification Engine for Real‑time Guest/Host Alerts",
+      "description": "Implement a fullstack push notification system. Add a new SQLite table `push_subscriptions` with columns `id`, `userId`, `endpoint`, `keysP`, `keysAuth`. Create `src/lib/pushNotificationEngine.js` exposing `saveSubscription(userId, subscription)`, `removeSubscription(userId)`, and `sendNotification(userId, payload)` using the `web-push` library with VAPID keys. Extend `server.js` with two REST endpoints: POST /api/notifications/subscribe (auth‑protected, stores subscription) and POST /api/notifications/unsubscribe (removes subscription). Update booking and chat logic (e.g., after `insertMessage` and after `insertBooking` status change) to call `sendNotification` with appropriate payloads. On the frontend, add `src/components/PushNotificationProvider.jsx` that registers a service worker (`src/service-worker.js`), requests Notification permission, and posts the subscription to the backend. The service worker listens for `push` events and displays a notification with title/body from the payload. Update `App.jsx` to wrap the app with `<PushNotificationProvider>` and display a UI toggle in the user settings menu.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/pushNotificationEngine.js",
+        "src/components/PushNotificationProvider.jsx",
+        "src/service-worker.js"
+      ],
+      "acceptance": [
+        "A logged‑in user can enable notifications in the UI, the browser shows the permission prompt, and the subscription is persisted in the SQLite `push_subscriptions` table.",
+        "When a new chat message is inserted for that user, a push notification appears on the device even if the browser tab is closed."
+      ],
+      "created_at": 1788785549.5191903,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788785484.0066314
+  "updated_at": 1788785549.5191965
 }
