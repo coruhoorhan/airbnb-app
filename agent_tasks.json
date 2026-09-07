@@ -27631,7 +27631,119 @@
       ],
       "created_at": 1788812344.9934447,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788812347392",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788812347392",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788812347392 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788812422.6240313,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788812347409",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788812347409",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788812347409 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788812422.6483922,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788812347424",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788812347424",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788812347424 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788812422.6748052,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788812347409_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788812347409_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788812347409_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788812422.7027245,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788812348380",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788812348380",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788812348380 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788812422.7301497,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-35-video-chat-integration",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Video Chat Integration for Host‑Guest Communication",
+      "description": "Add a WebRTC‑based video chat feature that lets a host and a guest start a live video call from the listing detail page. Implement a signaling server using Socket.io in server.js, create a lightweight wrapper in src/lib/videoChat.js for peer connection handling, and build a React modal component src/components/VideoChatModal.jsx that displays local and remote video streams. Extend the existing ChatModal UI to include a \"Start Video Call\" button that opens VideoChatModal. Ensure proper cleanup of streams on modal close and handle ICE candidate exchange via the Socket.io channel.",
+      "allowed_paths": [
+        "server.js",
+        "src/components/VideoChatModal.jsx",
+        "src/lib/videoChat.js",
+        "src/components/ChatModal.jsx"
+      ],
+      "acceptance": [
+        "From a listing detail view, clicking \"Start Video Call\" opens a modal with two video elements (local and remote).",
+        "When both parties accept, video streams are displayed with <2 seconds latency and no console errors.",
+        "Closing the modal stops the MediaStream and removes the Socket.io listeners.",
+        "The feature works across different browsers (Chrome, Firefox) and network configurations (NAT traversal)."
+      ],
+      "created_at": 1788812427.8294327,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788812344.9934464
+  "updated_at": 1788812427.829436
 }
