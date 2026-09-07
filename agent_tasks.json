@@ -32625,7 +32625,121 @@
       ],
       "created_at": 1788816770.7654054,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788816773048",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788816773048",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788816773048 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788816851.9607146,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788816773048_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788816773048_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788816773048_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788816851.9899776,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788816773072",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788816773072",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788816773072 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788816852.0185306,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788816773110",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788816773110",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788816773110 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788816852.0481422,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788816773937",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788816773937",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788816773937 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788816852.07796,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-08-instant-booking-approval-flow",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Instant Booking Approval Flow",
+      "description": "Add support for hosts to enable instant booking on a per‑listing basis and automatically confirm guest bookings when the flag is set. Update the DB schema to add a boolean `instantApproval` column to the `listings` table. Extend `src/lib/db.js` with a migration and helper `setInstantApproval(listingId, enabled)`. Modify `src/lib/bookingEngine.js` to check the listing's `instantApproval` flag during booking creation and set the booking status to `confirmed` automatically. Add a toggle UI in `src/components/HostDashboard.jsx` (or a new `InstantBookingToggle` component) that calls a new POST `/api/listings/:id/instant-approval` endpoint. Implement the endpoint in `server.js` with proper validation and auth middleware. Update `src/lib/notifications.js` to send a real‑time notification to the host and a confirmation email to the guest when an instant booking occurs. Ensure the frontend reflects the new status in `BookingWidget.jsx` (show \"Instantly confirmed\" badge).",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "src/lib/bookingEngine.js",
+        "src/lib/notifications.js",
+        "src/components/BookingWidget.jsx",
+        "src/components/HostDashboard.jsx"
+      ],
+      "acceptance": [
+        "Host can toggle instant booking on a listing in the dashboard and the DB column `instantBooking` is updated accordingly.",
+        "When a guest books a listing with instant booking enabled, the booking is created with status `confirmed` without manual approval.",
+        "Host receives a notification about the new instant booking and the guest receives a confirmation email.",
+        "The booking widget displays an \"Instantly confirmed\" badge for bookings approved via instant booking."
+      ],
+      "created_at": 1788816855.5139031,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788816770.7654078
+  "updated_at": 1788816855.5139058
 }
