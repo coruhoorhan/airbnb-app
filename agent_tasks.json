@@ -3984,7 +3984,120 @@
       ],
       "created_at": 1788793670.8320098,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788793673089",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788793673089",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788793673089 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788793738.5698264,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788793673085",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788793673085",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788793673085 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788793738.5749075,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788793673099",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788793673099",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788793673099 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788793738.579982,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788793673089_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788793673089_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788793673089_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788793738.5846384,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788793674065",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788793674065",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788793674065 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788793738.5891728,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-24-host-performance-dashboard",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Host Performance Dashboard",
+      "description": "Create a new host‑focused performance dashboard. Add GraphQL types, queries and resolvers to expose metrics such as response time, acceptance rate, booking conversion, average rating and total earnings. Implement DB helper functions to calculate these aggregates efficiently (using indexes and cached reads). Build a React component (HostPerformanceDashboard.jsx) that fetches the data via GraphQL and renders interactive charts using Recharts. Update navigation to include a \"Performance\" tab in the host dashboard and protect the route with existing auth middleware.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/db.js",
+        "src/lib/metricsEngine.js",
+        "src/components/HostPerformanceDashboard.jsx",
+        "src/components/Charts.jsx"
+      ],
+      "acceptance": [
+        "Visiting the host dashboard shows a \"Performance\" tab that renders charts with correct numeric values matching the data in the SQLite DB.",
+        "The GraphQL endpoint returns a \"hostPerformance\" object with fields responseTimeMs, acceptanceRate, conversionRate, averageRating, totalEarnings for the authenticated host."
+      ],
+      "created_at": 1788793742.4200928,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788793670.8320112
+  "updated_at": 1788793742.4200952
 }
