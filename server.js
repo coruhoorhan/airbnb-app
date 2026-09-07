@@ -112,6 +112,7 @@ import { createRateLimiter } from "./src/lib/rateLimiter.js";
 import cookieParser from "cookie-parser";
 import validator from "validator";
 import { authMiddleware, csrfMiddleware, generateToken, generateCsrfToken } from "./src/lib/auth.js";
+import { saveSubscription as savePushSub, removeSubscription as removePushSub, sendNotification as sendPushNotification, getPublicKey as getPushPublicKey } from "./src/lib/pushNotificationEngine.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -911,6 +912,16 @@ app.post("/api/bookings", authMiddleware, csrfMiddleware, (req, res) => {
     Date.now()
   );
 
+  try {
+    sendPushNotification(listing.hostId, {
+      title: "New Booking Request",
+      body: `You have a new booking request for ${checkIn} to ${checkOut}.`,
+      url: `/host`
+    });
+  } catch (pushErr) {
+    console.error("Push Notification Error for New Booking:", pushErr.message);
+  }
+
   // Award loyalty points to the guest when the booking is instantly confirmed
   if (listing.instantBook) {
     awardLoyaltyPoints(guestId || "usr_guest_01", newBooking.id, Math.max(0, afterCouponPrice - listing.serviceFee));
@@ -945,6 +956,18 @@ app.put("/api/bookings/:id/status", authMiddleware, csrfMiddleware, (req, res) =
     }
   }
 
+  if (updated && updated.guestId) {
+    try {
+      sendPushNotification(updated.guestId, {
+        title: "Booking Status Update",
+        body: `Your booking status is now: ${status}`,
+        url: `/trips`
+      });
+    } catch (err) {
+      console.error("Push Notification Error for Booking Status:", err.message);
+    }
+  }
+
   res.json({ success: true, data: updated });
 });
 
@@ -967,6 +990,16 @@ app.post("/api/bookings/:id/cancel", authMiddleware, csrfMiddleware, (req, res) 
 
     db.prepare(`INSERT INTO notifications (id, userId, type, title, body, isRead, createdAt) VALUES (?, ?, 'cancelled', 'Rezervasyon İptal Edildi', ?, 0, ?)`)
       .run(`notif_${Date.now()}`, booking.guestId, `${refund.description} İade: ₺${refund.refundAmount}`, Date.now());
+
+    try {
+      sendPushNotification(booking.guestId, {
+        title: "Booking Cancelled",
+        body: `${refund.description} Refund: ₺${refund.refundAmount}`,
+        url: `/trips`
+      });
+    } catch (pushErr) {
+      console.error("Push Notification error on cancellation:", pushErr.message);
+    }
 
     res.json({ success: true, data: { ...refund, bookingId: req.params.id, status: "cancelled" } });
   } catch (err) {
@@ -1134,7 +1167,7 @@ app.post('/api/notifications/subscribe', (req, res) => {
   if (!userId || !subscription) {
     return res.status(400).json({ success: false, error: "userId ve subscription alanları zorunludur." });
   }
-  const result = saveSubscription(userId, subscription);
+  const result = savePushSub(userId, subscription);
   res.json({ success: true, data: result });
 });
 
@@ -1143,8 +1176,12 @@ app.post('/api/notifications/unsubscribe', (req, res) => {
   if (!userId) {
     return res.status(400).json({ success: false, error: "userId zorunludur." });
   }
-  const result = removeSubscription(userId, endpoint);
+  const result = removePushSub(userId, endpoint);
   res.json({ success: true, data: result });
+});
+
+app.get('/api/notifications/vapid-public-key', (req, res) => {
+  res.json({ success: true, data: getPushPublicKey() });
 });
 
 
@@ -1234,6 +1271,39 @@ app.post("/api/messages", authMiddleware, csrfMiddleware, messageRateLimiter, (r
     }
     const msg = insertMessage({ listingId, senderId, senderName: user.name, text });
     broadcastToListing(listingId, msg);
+
+    // Send push notification to the other participant (host or guest)
+    try {
+      const listing = getListingById(listingId);
+      if (listing) {
+        // Find a recent booking for this listing by this user to determine who to notify?
+        // Actually, the receiver is likely the listing host if the sender is not the host, and vice-versa.
+        // But since this is a general chat tied to listingId, we can notify the host if sender is guest,
+        // or notify recent guests if sender is host.
+        // Wait, standard Airbnb clone logic usually maps listingId chat to "Host vs Guest".
+        // Let's find the other person from the messages or bookings.
+        let receiverId = null;
+        if (listing.hostId === senderId) {
+          // If sender is host, find the most recent guest who messaged here
+          const lastMsg = db.prepare("SELECT senderId FROM messages WHERE listingId = ? AND senderId != ? ORDER BY createdAt DESC LIMIT 1").get(listingId, senderId);
+          if (lastMsg) receiverId = lastMsg.senderId;
+        } else {
+          // If sender is guest, notify host
+          receiverId = listing.hostId;
+        }
+
+        if (receiverId) {
+          sendPushNotification(receiverId, {
+            title: `New message from ${user.name}`,
+            body: text,
+            url: `/messages`
+          });
+        }
+      }
+    } catch (e) {
+      console.error("Push Notification Failed in chat:", e.message);
+    }
+
     res.status(201).json({ success: true, data: msg });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
