@@ -220,7 +220,7 @@ def main():
     gh_token = os.getenv("GH_PAT") or os.getenv("GITHUB_TOKEN", "")
     target_titles = [t.strip().lower()
                    for t in os.getenv("TARGET_TITLE", "Autonomous Airbnb").split(",")]
-    max_age = float(os.getenv("MAX_AGE_HOURS", "2"))
+    max_age = float(os.getenv("MAX_AGE_HOURS", "72"))
     max_answers = int(os.getenv("MAX_ANSWERS", "3"))
 
     if not api_key:
@@ -242,10 +242,10 @@ def main():
 
         if not any(tt in (title or "").lower() for tt in target_titles):
             continue
-        if age_h > max_age:
-            print("  skip: stale session."); continue
         if state not in ("AWAITING_USER_FEEDBACK", "AWAITING_PLAN_APPROVAL"):
             continue
+        if age_h > max_age:
+            print(f"  session age {age_h:.1f}h exceeds max {max_age}h, but state is {state}. Proceeding to auto-respond.")
 
         if state == "AWAITING_PLAN_APPROVAL":
             print("  plan approval needed.")
