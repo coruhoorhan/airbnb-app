@@ -551,7 +551,31 @@
       ],
       "created_at": 1788769387.162496,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-push-notification-engine",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Push Notification Engine for Real‑time Guest & Host Alerts",
+      "description": "Implement a web‑push notification system that alerts guests and hosts about booking lifecycle events. Add a new module `src/lib/notifications.js` that wraps the `web-push` library, generates VAPID keys, and provides `saveSubscription(userId, subscription)`, `sendNotification(userId, payload)` helpers. Extend `src/lib/db.js` with a `notifications` table (id, userId, endpoint, keys, createdAt) and CRUD functions. Create a new Express route `POST /api/notifications/subscribe` in `server.js` that validates the JWT, stores the subscription, and returns success. Hook into the booking mutation (`addBooking` in `src/lib/graphqlResolvers.js`) to call `sendNotification` for the guest and host when a booking is confirmed, cancelled, or refunded. On the frontend, add `src/components/PushNotificationProvider.jsx` that requests Notification permission, registers the service worker, and posts the subscription to the new endpoint. Also add `src/components/NotificationToast.jsx` that listens for `push` events via the service worker and displays a toast using a UI library. Ensure the service worker file `public/sw.js` is served and can show notifications when the app is in background. Update the UI to include a bell icon in the Navbar that shows unread count and opens a list of recent notifications.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/notifications.js",
+        "src/lib/db.js",
+        "src/components/PushNotificationProvider.jsx",
+        "src/components/NotificationToast.jsx",
+        "public/sw.js"
+      ],
+      "acceptance": [
+        "Granting permission in the browser stores a subscription record in the `notifications` table and returns HTTP 200.",
+        "When a booking is confirmed, the guest receives a web‑push notification (visible in the browser) and a toast appears in the UI.",
+        "The bell icon in the Navbar updates its badge count after a new notification is received.",
+        "If the user revokes permission, the subscription endpoint returns a 403 and the stored subscription is removed."
+      ],
+      "created_at": 1788769969.1371365,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788769387.1624973
+  "updated_at": 1788769969.1371405
 }
