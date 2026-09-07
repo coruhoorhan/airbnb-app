@@ -246,7 +246,7 @@
     },
     {
       "id": "pr15-hardening-followups",
-      "status": "todo",
+      "status": "done",
       "area": "security",
       "risk": "low",
       "title": "PR #15 auditor polish follow-ups",
@@ -260,7 +260,9 @@
         "All MEDIUM/LOW auditor findings on PR #15 addressed",
         "Repo test suite green",
         "No new BLOCKING findings"
-      ]
+      ],
+      "claimed_by": "jules",
+      "claimed_at": "2026-09-07T11:35:18.591078+00:00"
     },
     {
       "id": "pr16-hardening-followups",

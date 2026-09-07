@@ -60,3 +60,14 @@ merge onayı.
    CLI binary'si her zaman çalışır.
 4. **Archcore sync:** `.archcore/` zaten Git'te; `archcore sync` bulut push'u
    henüz "coming soon" durumunda.
+
+## Responsive UI Implementations & Breakpoints
+
+To ensure optimal layout across various screen sizes, this project uses specific Tailwind responsive breakpoints and utilities:
+- **Mobile (`<640px`)**: Uses standard base classes. Width constraints like `w-[calc(100vw-2rem)]` are used to prevent overflow.
+- **Tablet (`sm`, `md` breakpoints)**: Adjusts layout elements (e.g. `sm:w-[380px]`, `md:w-[420px]`).
+- **Desktop (`lg`, `xl` breakpoints)**: Restores expansive views, like `lg:flex` for the navbar search pill to avoid clutter on smaller screens.
+
+### Recent Accessibility Adjustments
+- Dynamic focus management and ARIA standard roles/labels have been added to Modals (e.g., `ChatModal`, `MagdaConciergeWidget`).
+- Adjusted gradient backgrounds to meet the 4.5:1 contrast ratio (`from-rose-600 via-pink-600 to-rose-700`).

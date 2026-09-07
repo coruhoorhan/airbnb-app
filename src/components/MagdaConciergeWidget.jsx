@@ -2,6 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import { Sparkles, X, Send, Bot, Star, MapPin, RefreshCw } from "lucide-react";
 
 export function MagdaConciergeWidget({ onSelectListing }) {
+
+
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
@@ -14,6 +17,55 @@ export function MagdaConciergeWidget({ onSelectListing }) {
   const [inputQuery, setInputQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        const focusableElements = modalRef.current?.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusableElements || focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            e.preventDefault();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    setTimeout(() => {
+        const focusableElements = modalRef.current?.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements && focusableElements.length > 0) {
+            focusableElements[0].focus();
+        }
+    }, 10);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -77,7 +129,7 @@ export function MagdaConciergeWidget({ onSelectListing }) {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="flex items-center gap-2.5 px-5 py-3.5 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 text-white font-medium rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20"
+          className="flex items-center gap-2.5 px-5 py-3.5 bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 text-white font-medium rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20"
         >
           <div className="relative">
             <Sparkles className="w-5 h-5 text-amber-200 animate-pulse" />
@@ -92,17 +144,22 @@ export function MagdaConciergeWidget({ onSelectListing }) {
 
       {/* Clean Guest Chat Window */}
       {isOpen && (
-        <div className="w-[calc(100vw-2rem)] sm:w-[380px] md:w-[420px] h-[calc(100vh-8rem)] max-h-[560px] bg-white rounded-3xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div
+          className="w-[calc(100vw-2rem)] sm:w-[380px] md:w-[420px] h-[calc(100vh-8rem)] max-h-[560px] bg-white rounded-3xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200"
+          role="dialog" ref={modalRef}
+          aria-modal="true"
+          aria-labelledby="magda-modal-title"
+        >
           
           {/* Header */}
-          <div className="px-5 py-4 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 text-white flex items-center justify-between shadow-md">
+          <div className="px-5 py-4 bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 text-white flex items-center justify-between shadow-md">
             <div className="flex items-center gap-2.5">
               <div className="p-2 bg-white/15 rounded-xl backdrop-blur-sm border border-white/20">
                 <Bot className="w-5 h-5 text-white" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h3 className="text-sm font-bold tracking-tight leading-none">Fatsa Escapes Concierge</h3>
+                  <h3 id="magda-modal-title" className="text-sm font-bold tracking-tight leading-none">Fatsa Escapes Concierge</h3>
                   <span className="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
                 </div>
                 <p className="text-[11px] text-white/80 font-normal mt-0.5">Magda-Agent AI Canlı</p>

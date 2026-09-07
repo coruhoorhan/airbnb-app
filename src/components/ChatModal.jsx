@@ -1,7 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { X, Send } from "lucide-react";
 
 export function ChatModal({ isOpen, onClose, listing, currentUser, messages = [], onSendMessage, host, sendError = "" }) {
+
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        const focusableElements = modalRef.current?.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusableElements || focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            e.preventDefault();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    // Focus the first element on open
+    setTimeout(() => {
+        const focusableElements = modalRef.current?.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements && focusableElements.length > 0) {
+            focusableElements[0].focus();
+        }
+    }, 10);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+
   const [inputText, setInputText] = useState("");
 
   if (!isOpen || !listing) return null;
@@ -24,7 +76,10 @@ export function ChatModal({ isOpen, onClose, listing, currentUser, messages = []
   const hostRole = host ? (host.isHost ? "Ev Sahibi" : "Misafir") : "Ev Sahibi";
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in"
+         role="dialog" ref={modalRef}
+         aria-modal="true"
+         aria-labelledby="chat-modal-title">
       <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl flex flex-col h-[520px] overflow-hidden">
         {/* Chat Header */}
         <div className="p-4 border-b border-charcoal-border flex items-center justify-between bg-charcoal-bg">
@@ -35,7 +90,7 @@ export function ChatModal({ isOpen, onClose, listing, currentUser, messages = []
               className="w-10 h-10 rounded-full object-cover ring-1 ring-charcoal-border" 
             />
             <div>
-              <h3 className="font-bold text-sm text-charcoal flex items-center gap-2">
+              <h3 id="chat-modal-title" className="font-bold text-sm text-charcoal flex items-center gap-2">
                 {hostName}
                 <span className="text-[9px] font-mono font-bold text-airbnb bg-airbnb/10 px-1.5 py-0.5 rounded-full">
                   {hostRole}

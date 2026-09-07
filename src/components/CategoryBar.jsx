@@ -14,7 +14,7 @@ export const CATEGORIES = [
 
 export function CategoryBar({ selectedCategory, onSelectCategory }) {
   return (
-    <div className="bg-white/80 backdrop-blur-xs border-b border-charcoal-border/40 py-3 shadow-xs">
+    <div className="bg-white/80 backdrop-blur-xs border-b border-charcoal-border/40 py-3 shadow-xs overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
         {/* Scrollable Coastal Category Bar */}
         <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar py-1 flex-1">
