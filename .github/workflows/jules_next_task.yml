@@ -10,9 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     if: >
       github.event_name == 'workflow_dispatch' ||
-      (github.event.pull_request.merged == true &&
-       (github.event.pull_request.user.login == 'google-jules[bot]' ||
-        github.event.pull_request.user.login == 'coruhoorhan'))
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
