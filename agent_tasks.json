@@ -511,7 +511,44 @@
       ],
       "created_at": 1788768762.4691052,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "security-csp-tightening",
+      "status": "todo",
+      "area": "security",
+      "risk": "medium",
+      "title": "Content Security Policy Tightening",
+      "description": "Replace the current CSP that allows 'unsafe-inline' and 'unsafe-eval' with a strict policy that only permits scripts and styles from trusted sources. Generate a per‑request nonce for inline scripts and add it to the CSP header. Remove the 'unsafe-inline' and 'unsafe-eval' directives from scriptSrc and styleSrc. Update helmet configuration accordingly.",
+      "allowed_paths": [
+        "server.js"
+      ],
+      "acceptance": [
+        "CSP header no longer contains 'unsafe-inline' or 'unsafe-eval'.",
+        "Inline scripts in the frontend are executed only when a valid nonce is present.",
+        "Browser console shows no CSP violations after loading any page."
+      ],
+      "created_at": 1788768797.421127,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "backend-auth-rate-limit",
+      "status": "todo",
+      "area": "backend",
+      "risk": "medium",
+      "title": "Authentication Endpoint Rate Limiting & Lockout",
+      "description": "Add a dedicated rate limiter for login, registration, and token refresh endpoints. Limit to 5 attempts per IP per minute and lock the user account for 15 minutes after 10 failed attempts. Store attempt counters in memory or a fast cache (e.g., Redis) and reset on successful login. Return appropriate 429 responses with a clear message.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/auth.js"
+      ],
+      "acceptance": [
+        "More than 5 login attempts from the same IP within a minute receive HTTP 429.",
+        "A user with 10 consecutive failed logins receives a lockout response and cannot log in for 15 minutes.",
+        "Successful login resets the failure counter."
+      ],
+      "created_at": 1788768797.422528,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788768762.4691064
+  "updated_at": 1788768797.4225297
 }
