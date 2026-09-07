@@ -1924,7 +1924,29 @@
       ],
       "created_at": 1788789314.01565,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-19-loyalty-tier-dashboard",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Guest Loyalty Tier Dashboard & Redemption Flow",
+      "description": "Add a REST endpoint and GraphQL query to expose a guest's loyalty tier, current points, and points needed for the next tier. Extend the existing loyalty engine to compute tier thresholds. Create/extend the React component LoyaltyDashboard to display a tier badge, a progress bar toward the next tier, and a Redeem button that calls a new GraphQL mutation to deduct points and award a reward. Update server.js to register the new route and GraphQL resolver, and ensure the UI fetches data on mount and refreshes after redemption.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/loyaltyEngine.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/graphqlSchema.js",
+        "src/components/LoyaltyDashboard.jsx"
+      ],
+      "acceptance": [
+        "GET /api/loyalty/:userId returns JSON with fields tier, points, nextTierPoints, and rewardOptions.",
+        "LoyaltyDashboard component renders the tier badge, a progress bar reflecting points/nextTierPoints, and a Redeem button that is enabled only when points meet the redemption threshold.",
+        "Clicking Redeem triggers a GraphQL mutation that deducts points, updates the user's loyalty balance, and the UI refreshes to show the new balance and tier."
+      ],
+      "created_at": 1788790214.16839,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788789314.0156522
+  "updated_at": 1788790214.168395
 }
