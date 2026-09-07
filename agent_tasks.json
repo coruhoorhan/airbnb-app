@@ -6729,7 +6729,119 @@
       ],
       "created_at": 1788795716.7725637,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788795719067",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788795719067",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788795719067 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788795784.698477,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788795719070",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788795719070",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788795719070 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788795784.705557,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788795719085",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788795719085",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788795719085 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788795784.7124553,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788795719085_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788795719085_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788795719085_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788795784.7196922,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788795720188",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788795720188",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788795720188 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788795784.7268472,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-26-secure-photo-upload",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Secure Photo Upload with Virus Scanning and Image Optimization",
+      "description": "Add a new multipart/form-data endpoint (/api/listings/:id/photos) in server.js that uses multer for file handling. Pipe each uploaded file through a ClamAV scan (via node-clam) and reject the request if a virus is detected. On successful scan, process the image with sharp to create a 200x200 thumbnail and a web‑optimized JPEG (quality 80). Store the original and thumbnail in a public/uploads directory and record their URLs in the listings table (new columns photoUrl and thumbnailUrl). Expose a helper in src/lib/photoUpload.js for the upload, scan, and resize pipeline. Create a React component src/components/PhotoUpload.jsx that allows drag‑and‑drop or file‑picker selection, shows preview thumbnails, validates file type/size client‑side, and calls the new endpoint via fetch with the auth token. Update the HostDashboard and ListingDetail pages to include this component for creating/editing listings.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/photoUpload.js",
+        "src/components/PhotoUpload.jsx",
+        "src/components/HostDashboard.jsx",
+        "src/components/ListingDetail.jsx"
+      ],
+      "acceptance": [
+        "Uploading a valid JPEG/PNG results in a new DB row with photoUrl and thumbnailUrl, files saved on disk, and the UI displays the thumbnail preview.",
+        "Uploading a file that fails the ClamAV scan returns a 400 response with an error message, no files are stored, and the DB is unchanged.",
+        "The PhotoUpload component rejects files >5 MB or non‑image MIME types before sending, and shows an appropriate validation message."
+      ],
+      "created_at": 1788795789.4630253,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788795716.7725658
+  "updated_at": 1788795789.4630284
 }
