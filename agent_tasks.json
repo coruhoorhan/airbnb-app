@@ -742,7 +742,30 @@
       ],
       "created_at": 1788790584.236904,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-20-ssr-implementation",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Add Server‑Side Rendering (SSR) for SEO and First‑Paint Performance",
+      "description": "Configure Vite for SSR and integrate it with the existing Express server. Create an entry‑server.jsx that renders the React App to a string, injects the initial Redux/Context state, and returns a full HTML document. Update server.js to use Vite's middleware in production mode, serve the rendered HTML for all GET routes (/, /listing/:id, /search, /host-dashboard, etc.) and fall back to the client bundle for static assets. Add a minimal HTML template (src/index.html) with placeholders for rendered content and meta tags. Implement a simple in‑memory cache (NodeCache) for rendered pages to keep response time low, and set appropriate Cache‑Control headers. Ensure hydration works without errors and that SEO‑critical data (listing title, description, Open Graph tags) is present in the server‑rendered markup.",
+      "allowed_paths": [
+        "server.js",
+        "src/App.jsx",
+        "src/entry-server.jsx",
+        "src/entry-client.jsx",
+        "vite.config.ts",
+        "src/index.html"
+      ],
+      "acceptance": [
+        "Visiting a listing detail URL returns HTML where the listing title and price are present in the raw source (no client‑side rendering required).",
+        "Open Graph meta tags for the listing are populated in the server‑rendered <head> section.",
+        "After the page loads, the React app hydrates without console errors and client‑side navigation continues to work."
+      ],
+      "created_at": 1788791082.693189,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788790584.236908
+  "updated_at": 1788791082.6931922
 }
