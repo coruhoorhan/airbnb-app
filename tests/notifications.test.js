@@ -2,21 +2,35 @@ import { describe, it, expect, beforeAll } from "vitest";
 import request from "supertest";
 import { app } from "../server.js";
 import * as db from "../src/lib/db.js";
+import { generateToken } from "../src/lib/auth.js";
 
 describe("Push Notification Engine API", () => {
-  const testUserId = `test_notif_user_${Date.now()}`;
+  const testUserId = "test_notif_user_" + Date.now();
+  let bearerToken = "";
 
-  beforeAll(() => {
+  beforeAll(async () => {
     db.insertUser({
       id: testUserId,
       name: "Notification Test User",
-      email: `notif_${Date.now()}@test.com`,
+      email: "notif_" + Date.now() + "@test.com",
       isHost: false
     });
+
+    // We will use Bearer token which bypasses the CSRF check per csrfMiddleware logic
+    bearerToken = "Bearer " + generateToken({ id: testUserId, email: "notif_" + Date.now() + "@test.com", isHost: false });
   });
 
-  it("should reject subscription requests without userId or subscription", async () => {
-    const res = await request(app).post("/api/notifications/subscribe").send({});
+  it("should get vapid public key", async () => {
+    const res = await request(app).get("/api/notifications/vapidPublicKey");
+    expect(res.status).toBe(200);
+    expect(res.body.publicKey).toBeDefined();
+  });
+
+  it("should reject subscription requests without subscription", async () => {
+    const res = await request(app)
+      .post("/api/notifications/subscribe")
+      .set("Authorization", bearerToken)
+      .send({});
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
   });
@@ -29,14 +43,15 @@ describe("Push Notification Engine API", () => {
 
     const res = await request(app)
       .post("/api/notifications/subscribe")
-      .send({ userId: testUserId, subscription: mockSubscription });
+      .set("Authorization", bearerToken)
+      .send({ subscription: mockSubscription });
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
   });
 
   it("should list notifications for a user", async () => {
-    const res = await request(app).get(`/api/notifications?userId=${testUserId}`);
+    const res = await request(app).get("/api/notifications?userId=" + testUserId);
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(Array.isArray(res.body.data)).toBe(true);
@@ -45,7 +60,8 @@ describe("Push Notification Engine API", () => {
   it("should unsubscribe from push notifications", async () => {
     const res = await request(app)
       .post("/api/notifications/unsubscribe")
-      .send({ userId: testUserId, endpoint: "https://fcm.googleapis.com" });
+      .set("Authorization", bearerToken)
+      .send({});
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);

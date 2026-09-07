@@ -1,6 +1,7 @@
 import fs from "fs";
 import { generateIcsFeed, syncExternalIcal } from "./src/lib/calendarSync.js";
-import { saveSubscription, removeSubscription, getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
+import { getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
+import { saveSubscription, removeSubscription, sendNotification, getVapidPublicKey } from "./src/lib/pushNotificationEngine.js";
 import http from "http";
 import { setupChatWebSocketServer, chatEngine } from "./src/lib/chatEngine.js";
 import "express-async-errors";
@@ -933,6 +934,15 @@ app.put("/api/bookings/:id/status", authMiddleware, csrfMiddleware, (req, res) =
   const updated = updateBookingStatus(req.params.id, status, cancelReason);
   if (!updated) return res.status(404).json({ error: "Rezervasyon bulunamadı" });
 
+  sendNotification(updated.guestId, {
+    title: "Rezervasyon Durumu",
+    body: `Durum güncellendi: ${status}`
+  }).catch(err => console.error(err));
+  sendNotification(updated.hostId, {
+    title: "Rezervasyon Durumu",
+    body: `Durum güncellendi: ${status}`
+  }).catch(err => console.error(err));
+
   // Loyalty: award points when a pending booking is confirmed by the host
   if (status === "confirmed" && updated && updated.guestId) {
     try {
@@ -1129,21 +1139,25 @@ app.put("/api/listings/:id/last-minute", (req, res) => {
 
 
 // --- Push Notification Endpoints ---
-app.post('/api/notifications/subscribe', (req, res) => {
-  const { userId, subscription } = req.body;
+app.get('/api/notifications/vapidPublicKey', (req, res) => {
+  res.json({ publicKey: getVapidPublicKey() });
+});
+app.post('/api/notifications/subscribe', authMiddleware, csrfMiddleware, (req, res) => {
+  const { subscription } = req.body;
+  const userId = req.user.id;
   if (!userId || !subscription) {
-    return res.status(400).json({ success: false, error: "userId ve subscription alanları zorunludur." });
+    return res.status(400).json({ success: false, error: "subscription alanı zorunludur." });
   }
   const result = saveSubscription(userId, subscription);
   res.json({ success: true, data: result });
 });
 
-app.post('/api/notifications/unsubscribe', (req, res) => {
-  const { userId, endpoint } = req.body;
+app.post('/api/notifications/unsubscribe', authMiddleware, csrfMiddleware, (req, res) => {
+  const userId = req.user.id;
   if (!userId) {
     return res.status(400).json({ success: false, error: "userId zorunludur." });
   }
-  const result = removeSubscription(userId, endpoint);
+  const result = removeSubscription(userId);
   res.json({ success: true, data: result });
 });
 
@@ -1234,6 +1248,25 @@ app.post("/api/messages", authMiddleware, csrfMiddleware, messageRateLimiter, (r
     }
     const msg = insertMessage({ listingId, senderId, senderName: user.name, text });
     broadcastToListing(listingId, msg);
+
+    let receiverId = null;
+    const listing = getListingById(listingId);
+    if (listing) {
+      if (listing.hostId === senderId) {
+        const counterpartRow = db.prepare("SELECT senderId FROM messages WHERE listingId = ? AND senderId != ? ORDER BY createdAt DESC LIMIT 1").get(listingId, senderId);
+        receiverId = counterpartRow ? counterpartRow.senderId : null;
+      } else {
+        receiverId = listing.hostId;
+      }
+    }
+
+    if (receiverId) {
+      sendNotification(receiverId, {
+        title: "Yeni Mesaj",
+        body: `${user.name}: ${text}`
+      }).catch(err => console.error(err));
+    }
+
     res.status(201).json({ success: true, data: msg });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
