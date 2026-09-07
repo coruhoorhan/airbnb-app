@@ -2114,7 +2114,28 @@
       ],
       "created_at": 1788787446.7046275,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-14-ai-concierge-chat",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "AI‑Powered Concierge Chat Integration",
+      "description": "Add a real‑time AI concierge service that answers guest and host questions. Implement a new GraphQL mutation `requestAiResponse(message: String!): AiMessage!` in `server.js` that forwards the prompt to the diffusion‑LLM endpoint (via a new helper `src/lib/aiConcierge.js`). Store each exchange in the existing chat engine tables (`messages` table) using `insertMessage` and retrieve history with `getMessagesForListing`. Extend `src/lib/chatEngine.js` to expose `requestAiResponse` and a DataLoader for chat history. Update the UI component `src/components/MagdaConciergeWidget.jsx` to call the mutation, display a loading spinner, and render the AI response in the chat window. Ensure the widget shows the full conversation on open and persists across page reloads. Add basic input sanitization and rate‑limit the mutation using the existing rate‑limiter.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/chatEngine.js",
+        "src/lib/aiConcierge.js",
+        "src/components/MagdaConciergeWidget.jsx"
+      ],
+      "acceptance": [
+        "When a user types a query in the Magda Concierge widget and presses send, the UI shows a loading indicator and then displays an AI‑generated answer within 2 seconds.",
+        "All sent and received messages appear in the chat window and are persisted; re‑opening the widget after a page reload shows the full conversation history.",
+        "The GraphQL mutation `requestAiResponse` returns a non‑empty `AiMessage` object and respects the global rate‑limit (max 10 requests per minute per user)."
+      ],
+      "created_at": 1788787637.4706907,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788787446.7046287
+  "updated_at": 1788787637.470693
 }
