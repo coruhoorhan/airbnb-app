@@ -803,7 +803,27 @@
       ],
       "created_at": 1788769387.1609929,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-graphql-subscriptions-realtime-updates",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Real‑time Booking Updates via GraphQL Subscriptions",
+      "description": "Add GraphQL subscription support so hosts and guests receive live updates when a booking status changes. Install graphql-ws, create a WebSocket server in server.js, extend the GraphQL schema with a `bookingUpdated` subscription, implement resolver that publishes to a PubSub instance when `updateBookingStatus` is called. Update the client side (e.g., src/components/BookingWidget.jsx) to open a subscription using @apollo/client's `useSubscription` hook and display a toast notification. Ensure authentication middleware validates the token for subscription connections.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js",
+        "src/components/BookingWidget.jsx"
+      ],
+      "acceptance": [
+        "When a booking status is changed via the existing mutation, a `bookingUpdated` event is published and the subscribed client receives the new status within 2 seconds.",
+        "The UI shows a toast notification in the host dashboard and guest view without a page reload."
+      ],
+      "created_at": 1788781033.77983,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788779796.2391944
+  "updated_at": 1788781033.7798378
 }
