@@ -2135,7 +2135,261 @@
       ],
       "created_at": 1788787637.4706907,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787115431-book_rec_1788787929177",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787115431 vs #book_rec_1788787929177",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787115431 ve #book_rec_1788787929177 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788787946.0184317,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787120831-book_rec_1788787929177",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787120831 vs #book_rec_1788787929177",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787120831 ve #book_rec_1788787929177 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788787946.026617,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787141639-book_rec_1788787929177",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787141639 vs #book_rec_1788787929177",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787141639 ve #book_rec_1788787929177 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788787946.0334415,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787186335-book_rec_1788787929177",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787186335 vs #book_rec_1788787929177",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787186335 ve #book_rec_1788787929177 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788787946.0400054,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787214722-book_rec_1788787929177",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787214722 vs #book_rec_1788787929177",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787214722 ve #book_rec_1788787929177 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788787946.045393,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787224849-book_rec_1788787929177",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787224849 vs #book_rec_1788787929177",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787224849 ve #book_rec_1788787929177 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788787946.0506828,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787360438-book_rec_1788787929177",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787360438 vs #book_rec_1788787929177",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787360438 ve #book_rec_1788787929177 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788787946.0544581,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "fix-booking-conflict-book_rec_1788787401334-book_rec_1788787929177",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Resolve Booking Conflict #book_rec_1788787401334 vs #book_rec_1788787929177",
+      "description": "Çakışan rezervasyon tespit edildi: #book_rec_1788787401334 ve #book_rec_1788787929177 (İlan #list_01). Tarihler: 2026-09-01 - 2026-09-04",
+      "allowed_paths": [
+        "src/lib/bookingEngine.js",
+        "server.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Booking conflict is resolved and overlapping booking refunded or rescheduled."
+      ],
+      "created_at": 1788787946.0572355,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788787928325",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788787928325",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788787928325 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788787946.1039853,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788787928333",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788787928333",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788787928333 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788787946.1076148,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788787928341",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788787928341",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788787928341 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788787946.1108973,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788787928333_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788787928333_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788787928333_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788787946.1140218,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788787929177",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788787929177",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788787929177 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788787946.1171064,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-15-graphql-subscriptions",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Add GraphQL Subscriptions for Real‑time Booking & Notification Updates",
+      "description": "Extend the GraphQL API to support WebSocket‑based subscriptions so that clients receive immediate updates when a booking status changes or a new notification is created. Implement a new Subscription type in src/lib/graphqlSchema.js, resolver logic in src/lib/graphqlResolvers.js, and a WebSocket server in server.js using the graphql‑ws library. Hook the subscription publish calls into existing booking status updates (updateBookingStatus) and notification creation (saveNotification) in src/lib/notifications.js. Ensure the server upgrades HTTP requests to WS on the same endpoint and that authentication middleware validates the JWT on the WS connection.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/notifications.js"
+      ],
+      "acceptance": [
+        "A client can open a subscription to bookingUpdates and receives a payload with the updated booking object immediately after updateBookingStatus is called.",
+        "A client can subscribe to userNotifications and receives a new notification object instantly when saveNotification is invoked."
+      ],
+      "created_at": 1788787954.309079,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788787637.470693
+  "updated_at": 1788787954.309082
 }
