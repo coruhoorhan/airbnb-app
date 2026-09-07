@@ -468,7 +468,28 @@
       ],
       "created_at": 1788785745.4533908,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-10-push-notification-engine",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Web Push Notification Engine for Real‑time Guest/Host Alerts",
+      "description": "Add a complete Web Push workflow: generate VAPID keys, create src/lib/pushEngine.js that uses the web-push library to send notifications, store subscriptions in a new SQLite table via db.js, expose POST /api/push/subscribe in server.js to receive the browser subscription, and add a React context component (src/components/PushNotificationProvider.jsx) that registers the service worker, requests permission, and subscribes the user. Also add a NotificationBell UI component (src/components/NotificationBell.jsx) that shows an unread badge and opens a toast when a push payload arrives. Hook the push trigger into existing booking and chat events (e.g., after insertMessage and after booking confirmation) so hosts and guests receive instant alerts.",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/pushEngine.js",
+        "src/components/PushNotificationProvider.jsx",
+        "src/components/NotificationBell.jsx"
+      ],
+      "acceptance": [
+        "POST /api/push/subscribe stores the subscription in the SQLite subscriptions table and returns HTTP 200",
+        "When a new chat message is inserted, the server calls pushEngine.sendNotification and the subscribed client receives a push event that displays a toast and increments the NotificationBell badge",
+        "Service worker (public/sw.js) correctly handles the push event and shows a notification with the provided title and body"
+      ],
+      "created_at": 1788786056.2495499,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788785745.4533968
+  "updated_at": 1788786056.2495534
 }
