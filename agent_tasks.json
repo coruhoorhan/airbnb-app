@@ -868,7 +868,28 @@
       ],
       "created_at": 1788781965.5760226,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-pwa-offline-support",
+      "status": "todo",
+      "area": "frontend",
+      "risk": "medium",
+      "title": "Progressive Web App Offline Support and Installable Experience",
+      "description": "Implement full PWA capabilities: add a web app manifest, register a service worker that caches core assets and API responses, configure Vite to output the service worker, and create an offline fallback UI. Update src/App.jsx to detect online/offline status and display a banner when offline. Add a manifest.json in the public folder with icons and start_url. Ensure the service worker is registered in index.html and that the app prompts the install banner on supported browsers. Modify vite.config.js to copy the manifest and service worker into the build output.",
+      "allowed_paths": [
+        "src/App.jsx",
+        "src/service-worker.js",
+        "vite.config.js",
+        "public/manifest.json",
+        "public/index.html"
+      ],
+      "acceptance": [
+        "Service worker registers on page load, caches static assets, and serves them when the network is unavailable (verified via Chrome devtools offline mode).",
+        "The app shows an offline banner and loads previously cached listing data, and the install prompt appears on Chrome when the user visits the site."
+      ],
+      "created_at": 1788783248.6240454,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788781965.5760248
+  "updated_at": 1788783248.6240485
 }
