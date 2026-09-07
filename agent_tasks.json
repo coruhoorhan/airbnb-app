@@ -205,7 +205,7 @@
     },
     {
       "id": "pr10-hardening-followups",
-      "status": "todo",
+      "status": "done",
       "area": "security",
       "risk": "low",
       "title": "PR #10 auditor polish follow-ups",
