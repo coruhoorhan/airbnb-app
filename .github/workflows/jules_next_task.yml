@@ -62,7 +62,7 @@ jobs:
           You are building and enhancing the Airbnb Fatsa Clone full-stack application (React, Node.js, Express, SQLite, Magda-Agent Cognitive System).
 
           TASK:
-          1. Read AGENTS.md, MASTER_ROADMAP.md, and open agent_tasks.json in the repo root (the ONLY task manifest).
+          1. Open agent_tasks.json in the repository root (the single source of truth task manifest).
           2. STRICT RULE: Look ONLY at the "tasks" array. Find the FIRST task where status is "todo" OR "in_progress" (resume an in_progress task first, never start a second one in parallel).
           3. The moment you start work, set that task status to "in_progress" in agent_tasks.json. Set "done" ONLY when the complete PR is ready to open.
           4. Implement the ENTIRE task as described (backend API / frontend components / database operations).

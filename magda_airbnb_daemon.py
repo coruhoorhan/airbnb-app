@@ -488,21 +488,9 @@ class MagdaAutonomousWatchdog:
         self._llm_scan_counter += 1
         llm_proposed_count = 0
 
-        logger.info("Triggering Inception Labs Mercury-2 Fullstack AI Code Reviewer...")
-        new_llm_tasks = await self.llm_reviewer.analyze_and_propose_improvements(existing_ids)
-        for nt in new_llm_tasks:
-            success = self.manifest_mgr.add_task(
-                task_id=nt["id"],
-                title=nt["title"],
-                description=nt["description"],
-                area=nt.get("area", "backend"),
-                risk=nt.get("risk", "medium"),
-                allowed_paths=nt.get("allowed_paths"),
-                acceptance=nt.get("acceptance"),
-            )
-            if success:
-                llm_proposed_count += 1
-                logger.info(f"✨ LLM Reviewer added new task: [{nt['id']}] {nt['title']}")
+        # LLM Auto-generation disabled to prevent queue spam
+        # Tasks are defined only by human/Veyyon in agent_tasks.json
+        new_llm_tasks = []
 
         manifest_data = self.manifest_mgr.load_manifest()
         tasks = manifest_data.get("tasks", [])

@@ -2,9 +2,7 @@
   "schema_version": 1,
   "project": "airbnb-fatsa-clone",
   "task_source_priority": [
-    "agent_tasks.json",
-    "AGENTS.md",
-    "MASTER_ROADMAP.md"
+    "agent_tasks.json"
   ],
   "risk_levels": [
     "low",
@@ -363,43 +361,6 @@
       "created_by": "Magda Fullstack LLM Watchdog"
     },
     {
-      "id": "security-csrf-protection-all-routes",
-      "status": "todo",
-      "area": "security",
-      "risk": "medium",
-      "title": "Enforce CSRF token validation on all state‑changing endpoints",
-      "description": "Apply the csrfMiddleware to every POST, PUT, PATCH, DELETE route (including GraphQL mutations) and ensure a token is generated and sent via the X‑CSRF‑Token header. Update the client to read the token from the response header and include it in subsequent mutating requests.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/auth.js"
-      ],
-      "acceptance": [
-        "Missing or invalid X‑CSRF‑Token header results in 403 response",
-        "Successful mutating request includes a valid token and returns 200/201 as expected",
-        "Integration test verifies that a POST request without the token is rejected"
-      ],
-      "created_at": 1788768497.6456192,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "security-csp-header",
-      "status": "todo",
-      "area": "security",
-      "risk": "medium",
-      "title": "Add Content Security Policy header",
-      "description": "Configure Helmet to include a strict Content Security Policy that allows scripts, styles, images and fonts only from trusted origins, blocks inline execution, and reports violations. This mitigates XSS and data injection attacks across the entire application.",
-      "allowed_paths": [
-        "server.js"
-      ],
-      "acceptance": [
-        "Response headers contain a CSP header with directives disallowing 'unsafe-inline' and restricting sources to self and approved CDNs",
-        "Automated security scan (e.g., npm audit, OWASP ZAP) reports no CSP-related vulnerabilities",
-        "Manual testing of a page with injected script tags results in the script being blocked"
-      ],
-      "created_at": 1788768565.3179116,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
       "id": "security-hsts-header",
       "status": "todo",
       "area": "security",
@@ -476,24 +437,6 @@
       "created_by": "Magda Fullstack LLM Watchdog"
     },
     {
-      "id": "security-csp-harden",
-      "status": "todo",
-      "area": "security",
-      "risk": "medium",
-      "title": "CSP Header Hardened",
-      "description": "Replace the current Content‑Security‑Policy that allows 'unsafe-inline' and 'unsafe-eval' with a strict CSP that uses nonces or hashes for inline scripts and styles, disallows eval, and restricts sources to trusted origins only. Generate a per‑request nonce, attach it to the response header, and add the same nonce attribute to any inline <script> or <style> tags rendered by the server.",
-      "allowed_paths": [
-        "server.js"
-      ],
-      "acceptance": [
-        "Response headers contain a CSP without 'unsafe-inline' or 'unsafe-eval'.",
-        "All inline scripts/styles in server‑rendered pages include a matching nonce attribute.",
-        "Browser console shows no CSP violations for legitimate functionality."
-      ],
-      "created_at": 1788768762.4679308,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
       "id": "backend-graphql-complexity-limit",
       "status": "todo",
       "area": "backend",
@@ -513,24 +456,6 @@
       "created_by": "Magda Fullstack LLM Watchdog"
     },
     {
-      "id": "security-csp-tightening",
-      "status": "todo",
-      "area": "security",
-      "risk": "medium",
-      "title": "Content Security Policy Tightening",
-      "description": "Replace the current CSP that allows 'unsafe-inline' and 'unsafe-eval' with a strict policy that only permits scripts and styles from trusted sources. Generate a per‑request nonce for inline scripts and add it to the CSP header. Remove the 'unsafe-inline' and 'unsafe-eval' directives from scriptSrc and styleSrc. Update helmet configuration accordingly.",
-      "allowed_paths": [
-        "server.js"
-      ],
-      "acceptance": [
-        "CSP header no longer contains 'unsafe-inline' or 'unsafe-eval'.",
-        "Inline scripts in the frontend are executed only when a valid nonce is present.",
-        "Browser console shows no CSP violations after loading any page."
-      ],
-      "created_at": 1788768797.421127,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
       "id": "backend-auth-rate-limit",
       "status": "todo",
       "area": "backend",
@@ -547,25 +472,6 @@
         "Successful login resets the failure counter."
       ],
       "created_at": 1788768797.422528,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "security-auth-cookie-flags",
-      "status": "todo",
-      "area": "security",
-      "risk": "medium",
-      "title": "Set Secure, HttpOnly, SameSite flags on auth cookies",
-      "description": "Update the authentication flow to set the JWT/session cookie with Secure, HttpOnly and SameSite=Strict attributes. Ensure cookies are only sent over HTTPS, inaccessible to client‑side scripts, and not sent on cross‑site requests. Add tests to verify the Set‑Cookie header contains these flags.",
-      "allowed_paths": [
-        "src/lib/auth.js",
-        "server.js"
-      ],
-      "acceptance": [
-        "Login endpoint returns Set‑Cookie header with Secure; HttpOnly; SameSite=Strict",
-        "Cookie is not sent over HTTP (checked via integration test)",
-        "No client‑side JavaScript can read the cookie (document.cookie does not contain it)"
-      ],
-      "created_at": 1788768926.493419,
       "created_by": "Magda Fullstack LLM Watchdog"
     },
     {
@@ -589,60 +495,6 @@
       "created_by": "Magda Fullstack LLM Watchdog"
     },
     {
-      "id": "security-csp-strongening",
-      "status": "todo",
-      "area": "security",
-      "risk": "medium",
-      "title": "CSP Güçlendirme ve Inline Script Engelleme",
-      "description": "Helmet CSP konfigürasyonundan 'unsafe-inline' ve 'unsafe-eval' direktiflerini kaldırın. Tüm inline scriptler için nonce veya hash kullanarak güvenli bir CSP oluşturun. Bu, XSS saldırılarını önlemek için kritik bir adımdır.",
-      "allowed_paths": [
-        "server.js"
-      ],
-      "acceptance": [
-        "CSP header içinde 'script-src' ve 'style-src' değerleri 'unsafe-inline' ve 'unsafe-eval' içermez.",
-        "Tarayıcı güvenlik test araçları (ör. securityheaders.com) CSP'nin 'script-src' ve 'style-src' kısmının uygun şekilde kısıtlandığını raporlar."
-      ],
-      "created_at": 1788769058.5360692,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "security-csrf-middleware-enforcement",
-      "status": "todo",
-      "area": "security",
-      "risk": "medium",
-      "title": "CSRF Koruma Middleware'ının Tüm State-Change Rotlerine Uygulanması",
-      "description": "src/lib/auth.js içinde tanımlı csrfMiddleware'i tüm POST, PUT, DELETE ve PATCH isteklerine global olarak ekleyin. Token'ı çerezde HttpOnly ve SameSite=Strict olarak ayarlayın ve istemciden token header'ı (x-csrf-token) doğrulayın.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/auth.js"
-      ],
-      "acceptance": [
-        "POST/PUT/PATCH/DELETE isteklerinde eksik ya da geçersiz CSRF token gönderildiğinde 403 yanıtı alınır.",
-        "Tarayıcı geliştirici araçları ile gönderilen isteklerde 'x-csrf-token' header'ı çerezdeki token ile eşleşir."
-      ],
-      "created_at": 1788769058.5375605,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "security-csrf-enforce-all-routes",
-      "status": "todo",
-      "area": "security",
-      "risk": "medium",
-      "title": "Enforce CSRF protection on all state‑changing routes",
-      "description": "Integrate the existing csrfMiddleware into the Express middleware chain for every POST, PUT, PATCH, DELETE endpoint (including GraphQL mutations). Ensure the CSRF token is generated on GET requests, sent via the 'x-csrf-token' header, and validated on subsequent state‑changing requests. Reject requests with missing or invalid tokens with HTTP 403.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/auth.js"
-      ],
-      "acceptance": [
-        "CSRF token is set as a cookie on initial GET request and also returned in the response header 'x-csrf-token'",
-        "All POST/PUT/PATCH/DELETE routes (REST and GraphQL) return 403 when the 'x-csrf-token' header is absent or does not match the cookie",
-        "Successful state‑changing requests succeed when a valid token is provided"
-      ],
-      "created_at": 1788769257.2290196,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
       "id": "security-rate-limit-booking-payment",
       "status": "todo",
       "area": "security",
@@ -659,45 +511,6 @@
         "Rate limiting logs are emitted for monitoring and debugging"
       ],
       "created_at": 1788769257.2307208,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "security-csrf-global-enforcement",
-      "status": "todo",
-      "area": "security",
-      "risk": "high",
-      "title": "Enforce CSRF protection on all state‑changing endpoints",
-      "description": "Apply the csrfMiddleware to every POST, PUT, PATCH, and DELETE route (including GraphQL mutations) and ensure that a valid X‑CSRF‑Token header or cookie is required. Reject requests missing or with an invalid token with HTTP 403. Update the middleware registration order so it runs after cookieParser and before any route handlers.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/auth.js"
-      ],
-      "acceptance": [
-        "All state‑changing HTTP methods return 403 when the X‑CSRF‑Token header is absent or does not match the cookie.",
-        "GraphQL mutation requests without a valid CSRF token are rejected with an error response.",
-        "Integration tests verify that a legitimate request with a correct token succeeds."
-      ],
-      "created_at": 1788769322.048851,
-      "created_by": "Magda Fullstack LLM Watchdog"
-    },
-    {
-      "id": "backend-auth-rate-limit-enforcement",
-      "status": "todo",
-      "area": "backend",
-      "risk": "high",
-      "title": "Apply rate limiting to authentication endpoints",
-      "description": "Use the existing authRateLimiter (10 requests per minute) on login, register, password‑reset, and token‑refresh routes. Ensure the limiter is attached before the auth handlers and that the response includes a clear retry‑after header. Log throttled attempts for monitoring.",
-      "allowed_paths": [
-        "server.js",
-        "src/lib/auth.js",
-        "src/lib/rateLimiter.js"
-      ],
-      "acceptance": [
-        "Login, register, password‑reset, and token‑refresh endpoints return 429 with a retry‑after header after exceeding 10 requests per minute from the same IP.",
-        "Successful authentication flows work normally when under the limit.",
-        "Log entries are created for each throttled request."
-      ],
-      "created_at": 1788769322.0503778,
       "created_by": "Magda Fullstack LLM Watchdog"
     },
     {
