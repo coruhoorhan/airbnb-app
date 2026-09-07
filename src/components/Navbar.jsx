@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { Search, Menu, Heart, Briefcase, PlusCircle, Home, Bell, Check, Sparkles, Globe, Compass, Waves, MessageCircle, Sun, Moon, Gift, Star } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Search, Menu, Heart, Briefcase, PlusCircle, Home, Bell, Check, Sparkles, Globe, Compass, Waves, MessageCircle, Sun, Moon, Gift, Star, BellRing, BellOff } from "lucide-react";
 import { getAvailableCurrencies } from "../lib/currencyEngine.js";
+import { usePushNotification } from "./PushNotificationProvider.jsx";
 
 export function Navbar({ 
   currentUser, 
@@ -40,6 +41,11 @@ export function Navbar({
 
   const [notifOpen, setNotifOpen] = useState(false);
   const [currencyOpen, setCurrencyOpen] = useState(false);
+
+  const pushNotification = usePushNotification();
+  const pushSupported = pushNotification?.isSupported;
+  const isPushSubscribed = pushNotification?.isSubscribed;
+  const togglePush = pushNotification?.toggleSubscription;
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
   const currencies = getAvailableCurrencies();
@@ -255,6 +261,24 @@ export function Navbar({
                     {currentUser?.isHost ? "★ Ev Sahibi Modu" : "Misafir Hesabı"}
                   </span>
                 </div>
+
+                {pushSupported && (
+                  <div className="px-4 py-2 border-b border-charcoal-border/50 dark:border-white/10 flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
+                    <span className="text-sm font-medium text-charcoal dark:text-gray-300">Anlık Bildirimler</span>
+                    <button
+                      onClick={togglePush}
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                        isPushSubscribed ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-600"
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                          isPushSubscribed ? "translate-x-4" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                )}
 
                 <div className="py-1">
                   <button 

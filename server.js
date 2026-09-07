@@ -112,7 +112,7 @@ import { createRateLimiter } from "./src/lib/rateLimiter.js";
 import cookieParser from "cookie-parser";
 import validator from "validator";
 import { authMiddleware, csrfMiddleware, generateToken, generateCsrfToken } from "./src/lib/auth.js";
-
+import { saveSubscription as savePushSubscription, removeSubscription as removePushSubscription, sendNotification, publicVapidKey } from "./src/lib/pushNotificationEngine.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -341,6 +341,10 @@ app.get("/api/admin/analytics", (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
+});
+
+app.get("/api/notifications/vapid-key", (req, res) => {
+  res.json({ publicVapidKey });
 });
 
 // --- 5. 🤖 7/24 AI Guardian / Watchdog Endpoints ---
@@ -945,8 +949,32 @@ app.put("/api/bookings/:id/status", authMiddleware, csrfMiddleware, (req, res) =
     }
   }
 
+  // Push notification logic
+  if (updated) {
+    try {
+      // Determine if caller is host or guest.
+      // req.user might be set by authMiddleware, but let's notify both if their status changed
+      // The task says "call sendNotification for the guest when status changes"
+      if (updated.guestId) {
+         sendNotification(updated.guestId, {
+            title: 'Rezervasyon Durumu Güncellendi',
+            body: `Rezervasyonunuzun durumu ${status} olarak güncellendi.`
+         }).catch(err => console.error("Push notify error:", err));
+      }
+      if (updated.hostId) {
+         sendNotification(updated.hostId, {
+            title: 'Rezervasyon Durumu Güncellendi',
+            body: `Rezervasyon durumu ${status} olarak güncellendi.`
+         }).catch(err => console.error("Push notify error:", err));
+      }
+    } catch (e) {
+      console.error("Failed to send push notification for booking status", e);
+    }
+  }
+
   res.json({ success: true, data: updated });
 });
+
 
 // --- 11a. Rezervasyon İptal & İade API ---
 app.post("/api/bookings/:id/cancel", authMiddleware, csrfMiddleware, (req, res) => {
@@ -1134,8 +1162,10 @@ app.post('/api/notifications/subscribe', (req, res) => {
   if (!userId || !subscription) {
     return res.status(400).json({ success: false, error: "userId ve subscription alanları zorunludur." });
   }
-  const result = saveSubscription(userId, subscription);
-  res.json({ success: true, data: result });
+  // Store both in web push notifications and in app notifications
+  saveSubscription(userId, subscription);
+  savePushSubscription(userId, subscription);
+  res.json({ success: true });
 });
 
 app.post('/api/notifications/unsubscribe', (req, res) => {
@@ -1143,8 +1173,9 @@ app.post('/api/notifications/unsubscribe', (req, res) => {
   if (!userId) {
     return res.status(400).json({ success: false, error: "userId zorunludur." });
   }
-  const result = removeSubscription(userId, endpoint);
-  res.json({ success: true, data: result });
+  removeSubscription(userId, endpoint);
+  removePushSubscription(userId);
+  res.json({ success: true });
 });
 
 
@@ -1234,6 +1265,37 @@ app.post("/api/messages", authMiddleware, csrfMiddleware, messageRateLimiter, (r
     }
     const msg = insertMessage({ listingId, senderId, senderName: user.name, text });
     broadcastToListing(listingId, msg);
+
+    // Push notification logic
+    try {
+      const listing = db.prepare("SELECT hostId FROM listings WHERE id = ?").get(listingId);
+      if (listing) {
+        // Try to find the other party in this conversation by checking bookings
+        // Simplification: if sender is host, notify guest(s). If sender is guest, notify host.
+        // A listing can have multiple guests, but we typically notify the host if a guest sends,
+        // or notify all guests in active chat. The system's chat is tied to listingId.
+        // Let's notify the host if sender != hostId. If sender == hostId, we need to notify guests.
+        // We will notify the host if senderId !== listing.hostId.
+        // If senderId === listing.hostId, we notify guests who sent messages to this listing.
+        let receivers = new Set();
+        if (senderId !== listing.hostId) {
+          receivers.add(listing.hostId);
+        } else {
+          const guests = db.prepare("SELECT DISTINCT senderId FROM messages WHERE listingId = ? AND senderId != ?").all(listingId, listing.hostId);
+          guests.forEach(g => receivers.add(g.senderId));
+        }
+
+        for (const receiverId of receivers) {
+          sendNotification(receiverId, {
+            title: `Yeni Mesaj: ${listing.title || 'Fatsa Escapes'}`,
+            body: `${user.name}: ${text}`
+          }).catch(err => console.error("Push notify error:", err));
+        }
+      }
+    } catch (e) {
+      console.error("Failed to send push notification for message", e);
+    }
+
     res.status(201).json({ success: true, data: msg });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });

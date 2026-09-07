@@ -9,3 +9,4 @@ dist/
 .harness/plans/
 .harness/sessions/
 .harness/backup/
+.vapid_keys.json
