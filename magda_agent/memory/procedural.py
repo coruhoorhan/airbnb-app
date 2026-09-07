@@ -213,7 +213,12 @@ class ProceduralMemory:
         elif chromadb is not None and persist_directory == ":memory:":
             try:
                 self.client = chromadb.EphemeralClient()
-                self.collection = self.client.get_or_create_collection(name="procedural_memory")
+                # Unique collection per instance: EphemeralClients in one
+                # process share the same in-memory backend, so a fixed name
+                # leaks procedures across instances (and across tests).
+                self.collection = self.client.get_or_create_collection(
+                    name=f"procedural_memory_{uuid.uuid4().hex[:8]}"
+                )
                 logger.info("Initialized ProceduralMemory with EphemeralClient")
             except Exception as e:
                 logger.warning(f"Failed to initialize ChromaDB EphemeralClient: {e}. Using fallback.")

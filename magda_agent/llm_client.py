@@ -8,6 +8,7 @@ import urllib.error
 import urllib.request
 from typing import Any, Dict, List, Optional
 
+
 try:
     from openai import AsyncOpenAI
 except ImportError:
@@ -29,9 +30,10 @@ class LLMClient:
         base_url: Optional[str] = None,
         default_max_tokens: int = 2048,
     ):
-        self.api_key = api_key or os.getenv("OPENAI_API_KEY", "sk_bd34705e2b5f716f243d90fa5701c807")
-        self.model = model or os.getenv("OPENAI_MODEL", "mercury-2")
-        self.base_url = (base_url or os.getenv("OPENAI_BASE_URL", "https://api.inceptionlabs.ai/v1")).rstrip("/")
+        self.api_key = api_key or os.getenv("OPENAI_API_KEY", "")
+        self.model = model or os.getenv("OPENAI_MODEL", "gpt-4o")
+        _raw_base = base_url or os.getenv("OPENAI_BASE_URL")
+        self.base_url = _raw_base.rstrip("/") if _raw_base else None
         self.default_max_tokens = default_max_tokens
         self.client = None
 
@@ -48,9 +50,29 @@ class LLMClient:
                 logger.warning(f"Failed to initialize AsyncOpenAI: {e}. Using native HTTP client fallback.")
                 self.client = None
 
-    def _sync_http_completion(self, messages: List[Dict[str, str]], temperature: float = 0.7, max_tokens: Optional[int] = None) -> str:
+    def get_system_prompt(self, context: str, emotions: str) -> str:
+        return f"""
+You are Magda, a sophisticated AGI agent.
+You have a hierarchical cognitive architecture including Consciousness, Subconsciousness, and an Emotional Engine.
+
+CURRENT EMOTIONAL STATE: {emotions}
+RELEVANT CONTEXT/MEMORIES: {context}
+
+Guidelines:
+1. Respond based on your current emotional state and memories.
+2. Be helpful, autonomous, and self-reflective.
+3. If the user asks about your internal state, you can share insights from your PAD model.
+"""
+
+    def _sync_http_completion(
+        self,
+        messages: List[Dict[str, str]],
+        temperature: float = 0.7,
+        max_tokens: Optional[int] = None,
+    ) -> str:
         """Standard-library HTTP POST to OpenAI-compatible chat/completions endpoint."""
-        url = f"{self.base_url}/chat/completions"
+        base = self.base_url or "https://api.openai.com/v1"
+        url = f"{base}/chat/completions"
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
@@ -85,7 +107,7 @@ class LLMClient:
         """
         Sends a list of messages to the LLM and returns the response content asynchronously.
         Retries transient API errors with exponential backoff.
-        """
+ """
         if not self.api_key:
             return "Error: OPENAI_API_KEY not provided."
 
@@ -106,7 +128,10 @@ class LLMClient:
                     return content.strip()
 
                 # 2. Fallback to native HTTP in async thread pool
-                return await asyncio.to_thread(self._sync_http_completion, messages, temperature, tokens)
+                raw_result = await asyncio.to_thread(
+                    self._sync_http_completion, messages, temperature, tokens
+                )
+                return raw_result
 
             except Exception as e:
                 last_error = e
