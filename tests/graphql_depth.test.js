@@ -15,7 +15,81 @@ describe("GraphQL Depth Limit", () => {
     testUserToken = generateToken(mockUser);
   });
 
-  it("rejects queries exceeding depth limit 8", async () => {
+  it("allows queries within depth limit (depth 1 to 4)", async () => {
+    const query = `
+      query {
+        bookings {
+          id
+          totalPrice
+          listing {
+            id
+            title
+            pricePerNight
+            host {
+              id
+              name
+            }
+            reviews {
+              id
+              rating
+              comment
+            }
+          }
+          guest {
+            id
+            name
+          }
+        }
+      }
+    `;
+    const res = await request(app)
+      .post("/graphql")
+      .set("Content-Type", "application/json")
+      .set("Authorization", "Bearer " + testUserToken)
+      .send({ query });
+
+    expect(res.status).toBe(200);
+    const result = res.body;
+    expect(result.errors).toBeUndefined();
+    expect(result.data).toBeDefined();
+    expect(Array.isArray(result.data.bookings)).toBe(true);
+  });
+
+  it("allows queries using fragments within depth limit", async () => {
+    const query = `
+      query {
+        listings {
+          ...ListingFields
+        }
+      }
+      fragment ListingFields on Listing {
+        id
+        title
+        pricePerNight
+        host {
+          id
+          name
+        }
+        reviews {
+          id
+          rating
+        }
+      }
+    `;
+    const res = await request(app)
+      .post("/graphql")
+      .set("Content-Type", "application/json")
+      .set("Authorization", "Bearer " + testUserToken)
+      .send({ query });
+
+    expect(res.status).toBe(200);
+    const result = res.body;
+    expect(result.errors).toBeUndefined();
+    expect(result.data).toBeDefined();
+    expect(Array.isArray(result.data.listings)).toBe(true);
+  });
+
+  it("rejects queries exceeding depth limit 8 (depth 9)", async () => {
     const query = `
       query {
         listings { #1
@@ -45,9 +119,48 @@ describe("GraphQL Depth Limit", () => {
       .set("Authorization", "Bearer " + testUserToken)
       .send({ query });
 
-    expect(res.status).toBe(200); // Or 400 depending on library error response format
+    expect(res.status).toBe(200);
     const result = res.body;
     expect(result.errors).toBeDefined();
-    expect(result.errors[0].message).toContain("exceeds maximum operation depth");
+    expect(result.errors.some(err => err.message.includes("exceeds maximum operation depth of 8"))).toBe(true);
+  });
+
+  it("rejects queries using fragments exceeding depth limit 8", async () => {
+    const query = `
+      query {
+        listings {
+          ...DeepFragment
+        }
+      }
+      fragment DeepFragment on Listing {
+        host {
+          listings {
+            host {
+              listings {
+                host {
+                  listings {
+                    host {
+                      listings {
+                        id
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `;
+    const res = await request(app)
+      .post("/graphql")
+      .set("Content-Type", "application/json")
+      .set("Authorization", "Bearer " + testUserToken)
+      .send({ query });
+
+    expect(res.status).toBe(200);
+    const result = res.body;
+    expect(result.errors).toBeDefined();
+    expect(result.errors.some(err => err.message.includes("exceeds maximum operation depth of 8"))).toBe(true);
   });
 });
