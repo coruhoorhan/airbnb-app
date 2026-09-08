@@ -241,7 +241,7 @@
     },
     {
       "id": "security-csrf-protection",
-      "status": "todo",
+      "status": "in_progress",
       "area": "security",
       "risk": "medium",
       "title": "Add CSRF protection to state‑changing endpoints",
@@ -256,7 +256,9 @@
         "Valid token requests succeed and the cookie has HttpOnly, SameSite=Strict, Secure (in prod) flags"
       ],
       "created_at": 1788768431.8239622,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "claimed_by": "jules",
+      "claimed_at": "2026-09-08T05:37:52.990Z"
     },
     {
       "id": "backend-input-validation-sanitization",
