@@ -306,7 +306,7 @@
     },
     {
       "id": "security-hsts-header",
-      "status": "in_progress",
+      "status": "done",
       "area": "security",
       "risk": "medium",
       "title": "Enforce HTTP Strict Transport Security",
@@ -320,7 +320,11 @@
         "Browser console shows no mixed‑content warnings after enabling HSTS"
       ],
       "created_at": 1788768565.3190005,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "claimed_by": "jules",
+      "claimed_at": "2026-09-08T13:42:00.000Z",
+      "completed_by": "jules",
+      "completed_at": 1788874920.0
     },
     {
       "id": "backend-parameterized-queries",
