@@ -1,6 +1,7 @@
 import fs from "fs";
 import { generateIcsFeed, syncExternalIcal } from "./src/lib/calendarSync.js";
-import { saveSubscription, removeSubscription, getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
+import { saveSubscription as saveSubOld, removeSubscription as removeSubOld, getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
+import { saveSubscription, removeSubscription, sendNotification } from "./src/lib/pushNotificationEngine.js";
 import http from "http";
 import { setupChatWebSocketServer, chatEngine } from "./src/lib/chatEngine.js";
 import "express-async-errors";
@@ -719,6 +720,16 @@ app.post("/api/payments/iyzico/direct-pay", paymentRateLimiter, async (req, res)
       Date.now()
     );
 
+    sendNotification(listing.hostId, {
+      title: 'Ödeme Alındı & Rezervasyon Onaylandı 💳',
+      body: `${checkIn} - ${checkOut} tarihleri için ₺${finalTotalPrice} tutarında iyzico ödemesi başarıyla alındı. Rezervasyon anında onaylandı.`
+    });
+
+  sendNotification(listing.hostId, {
+    title: 'Yeni Rezervasyon Talebi 🔔',
+    body: `${checkIn} - ${checkOut} tarihleri için rezervasyon talebi alındı. Tutar: ₺${finalTotalPrice}${discountAmount > 0 ? ` (₺${discountAmount} Kupon İndirimi)` : ''}`
+  });
+
     res.status(201).json({
       success: true,
       message: "Ödeme ve rezervasyon başarıyla tamamlandı.",
@@ -911,6 +922,11 @@ app.post("/api/bookings", authMiddleware, csrfMiddleware, (req, res) => {
     Date.now()
   );
 
+  sendNotification(listing.hostId, {
+    title: 'Yeni Rezervasyon Talebi 🔔',
+    body: `${checkIn} - ${checkOut} tarihleri için rezervasyon talebi alındı. Tutar: ₺${finalTotalPrice}${discountAmount > 0 ? ` (₺${discountAmount} Kupon İndirimi)` : ''}`
+  });
+
   // Award loyalty points to the guest when the booking is instantly confirmed
   if (listing.instantBook) {
     awardLoyaltyPoints(guestId || "usr_guest_01", newBooking.id, Math.max(0, afterCouponPrice - listing.serviceFee));
@@ -967,6 +983,11 @@ app.post("/api/bookings/:id/cancel", authMiddleware, csrfMiddleware, (req, res) 
 
     db.prepare(`INSERT INTO notifications (id, userId, type, title, body, isRead, createdAt) VALUES (?, ?, 'cancelled', 'Rezervasyon İptal Edildi', ?, 0, ?)`)
       .run(`notif_${Date.now()}`, booking.guestId, `${refund.description} İade: ₺${refund.refundAmount}`, Date.now());
+
+    sendNotification(booking.guestId, {
+      title: 'Rezervasyon İptal Edildi',
+      body: `${refund.description} İade: ₺${refund.refundAmount}`
+    });
 
     res.json({ success: true, data: { ...refund, bookingId: req.params.id, status: "cancelled" } });
   } catch (err) {
@@ -1129,22 +1150,20 @@ app.put("/api/listings/:id/last-minute", (req, res) => {
 
 
 // --- Push Notification Endpoints ---
-app.post('/api/notifications/subscribe', (req, res) => {
-  const { userId, subscription } = req.body;
-  if (!userId || !subscription) {
-    return res.status(400).json({ success: false, error: "userId ve subscription alanları zorunludur." });
+app.post('/api/notifications/subscribe', authMiddleware, csrfMiddleware, (req, res) => {
+  const { subscription } = req.body;
+  const userId = req.user.id;
+  if (!subscription) {
+    return res.status(400).json({ success: false, error: "subscription alanı zorunludur." });
   }
-  const result = saveSubscription(userId, subscription);
-  res.json({ success: true, data: result });
+  saveSubscription(userId, subscription);
+  res.json({ success: true });
 });
 
-app.post('/api/notifications/unsubscribe', (req, res) => {
-  const { userId, endpoint } = req.body;
-  if (!userId) {
-    return res.status(400).json({ success: false, error: "userId zorunludur." });
-  }
-  const result = removeSubscription(userId, endpoint);
-  res.json({ success: true, data: result });
+app.post('/api/notifications/unsubscribe', authMiddleware, csrfMiddleware, (req, res) => {
+  const userId = req.user.id;
+  removeSubscription(userId);
+  res.json({ success: true });
 });
 
 
@@ -1234,6 +1253,30 @@ app.post("/api/messages", authMiddleware, csrfMiddleware, messageRateLimiter, (r
     }
     const msg = insertMessage({ listingId, senderId, senderName: user.name, text });
     broadcastToListing(listingId, msg);
+
+    // Find the receiver (if sender is guest, receiver is host, else receiver is guest)
+    const listing = getListingById(listingId);
+    if (listing) {
+      const isSenderHost = senderId === listing.hostId;
+      // In our basic model, guest is the one who initiated the conversation or booked.
+      // If we don't have explicit guestId in messages table, we can assume the host gets notified if sender is not host.
+      if (!isSenderHost) {
+        sendNotification(listing.hostId, {
+          title: `Yeni Mesaj: ${user.name}`,
+          body: text
+        });
+      } else {
+        // Find guest in the thread...
+        const guestMsgs = getMessagesForListing(listingId).filter(m => m.senderId !== listing.hostId);
+        if (guestMsgs.length > 0) {
+          sendNotification(guestMsgs[0].senderId, {
+            title: `Yeni Mesaj: ${user.name}`,
+            body: text
+          });
+        }
+      }
+    }
+
     res.status(201).json({ success: true, data: msg });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
