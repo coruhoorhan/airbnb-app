@@ -131,10 +131,22 @@ jobs:
                   if today_count >= 20:
                       halt(f"Daily hard quota limit reached ({today_count} sessions). Cooling down until tomorrow.")
 
-                  active_states = {"QUEUED", "PLANNING", "IN_PROGRESS", "AWAITING_USER_FEEDBACK", "AWAITING_PLAN_APPROVAL"}
-                  running = [s for s in raw_s if s.get("state") in active_states]
-                  if len(running) >= 1:
-                      halt(f"Concurrency Guard: An active Jules session ({len(running)}) is already running.")
+                  active_states = {"QUEUED", "PLANNING", "IN_PROGRESS"}
+                  now_utc = datetime.now(timezone.utc)
+                  running = []
+                  for s in raw_s:
+                      if s.get("state") in active_states:
+                          ctime_str = s.get("createTime") or ""
+                          try:
+                              dt = datetime.fromisoformat(ctime_str.replace("Z", "+00:00"))
+                              age_minutes = (now_utc - dt).total_seconds() / 60.0
+                              if age_minutes < 120:  # Only count sessions created within last 2 hours
+                                  running.append(s)
+                          except Exception:
+                              pass
+
+                  if len(running) >= 1 and not force:
+                      halt(f"Concurrency Guard: An active Jules session ({len(running)}) was started in the last 2 hours.")
               except Exception as e:
                   print(f"Warning checking Jules quota: {e}")
 
