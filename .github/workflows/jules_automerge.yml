@@ -59,9 +59,10 @@ jobs:
           npm ci || npm install
           npm run build
 
-      - name: Run Vitest Suite
-        run: npm test
-
+      - name: Run Vitest Suite & Synthetic E2E User Journeys
+        run: |
+          npm test
+          npx vitest run tests/synthetic_e2e_journey.test.js
       - name: AST Smoke Check
         run: |
           python3 -c "

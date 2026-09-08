@@ -1,5 +1,6 @@
 import fs from "fs";
 import { generateIcsFeed, syncExternalIcal } from "./src/lib/calendarSync.js";
+import { getAvailableCurrencies, convertCurrency } from "./src/lib/currencyEngine.js";
 import { saveSubscription as saveSubOld, removeSubscription as removeSubOld, getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
 import { saveSubscription, removeSubscription, sendNotification } from "./src/lib/pushNotificationEngine.js";
 import http from "http";
