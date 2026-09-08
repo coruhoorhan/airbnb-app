@@ -189,33 +189,9 @@ def draft_answer(openai_key, base, model, session_title, agent_text):
 
 
 def open_escalation_issue(repo, token, session_id, session_url, answers_sent):
-    title = f"[magda] Jules session needs human: {session_id}"
-    try:
-        check_req = urllib.request.Request(
-            f"https://api.github.com/repos/{repo}/issues?state=open&per_page=50",
-            headers={"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"}
-        )
-        with urllib.request.urlopen(check_req, timeout=15) as resp:
-            existing = json.load(resp)
-            if any(title in iss.get("title", "") for iss in existing):
-                print(f"Escalation issue already exists for session {session_id}; skipping duplicate.")
-                return
-    except Exception as e:
-        print(f"Warning checking existing issues: {e}")
-
-    url = f"https://api.github.com/repos/{repo}/issues"
-    body = (
-        f"Jules session `{session_id}` ({session_url}) is still waiting for input "
-        f"after {answers_sent} autonomous answers. The responder circuit breaker tripped. "
-        "A human should take a look."
-    )
-    payload = {"title": title, "body": body, "labels": ["needs-human-review", "jules"]}
-    req = urllib.request.Request(
-        url, data=json.dumps(payload).encode("utf-8"),
-        headers={"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json",
-                 "Content-Type": "application/json"}, method="POST")
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        print(f"Escalation issue opened (HTTP {resp.status}).")
+    # Deliberately disabled: Opening GitHub issues causes Google Jules to spawn duplicate task sessions.
+    print(f"Circuit breaker tripped for session {session_id} after {answers_sent} answers. Issue creation disabled.")
+    return
 
 def parse_age_hours(ts):
     try:
