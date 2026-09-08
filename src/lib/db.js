@@ -333,6 +333,14 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_exp_reservations_experience ON experience_reservations(experienceId);
   CREATE INDEX IF NOT EXISTS idx_exp_reservations_user ON experience_reservations(userId);
 
+  CREATE TABLE IF NOT EXISTS push_subscriptions (
+    id TEXT PRIMARY KEY,
+    userId TEXT,
+    endpoint TEXT,
+    keysP TEXT,
+    keysAuth TEXT
+  );
+
   CREATE INDEX IF NOT EXISTS idx_loyalty_tx_user ON loyalty_transactions(userId);
   CREATE INDEX IF NOT EXISTS idx_gift_cards_buyer ON gift_cards(buyerId);
   CREATE INDEX IF NOT EXISTS idx_price_watches_user ON price_watches(userId);

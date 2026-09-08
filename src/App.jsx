@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { PushNotificationProvider, usePushNotifications } from "./components/PushNotificationProvider.jsx";
 import { Navbar } from "./components/Navbar.jsx";
 import { CategoryBar } from "./components/CategoryBar.jsx";
 import { ListingCard } from "./components/ListingCard.jsx";
@@ -26,6 +27,27 @@ import { INITIAL_LISTINGS } from "./data/listings.js";
 import { recomputeAverageRating } from "./lib/bookingEngine.js";
 import { formatCurrency, SUPPORTED_CURRENCIES } from "./lib/currencyEngine.js";
 import { Map, List, Globe, Shield, Sparkles, Waves, ArrowRight, Compass, Anchor, ShieldCheck, Sun, Star, Cloud, CloudSun, CloudRain, Droplets, Clock, Bell, Gift } from "lucide-react";
+
+
+const PushNotificationToggle = () => {
+  const { isSupported, permission, isSubscribed, toggleSubscription } = usePushNotifications();
+  if (!isSupported) return null;
+
+  return (
+    <div className="flex items-center justify-between p-4 bg-white dark:bg-charcoal-light rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mt-4">
+      <div>
+        <p className="text-sm font-bold text-charcoal dark:text-white">Anlık Bildirimler</p>
+        <p className="text-xs text-charcoal-light dark:text-gray-400">Yeni mesajlar ve rezervasyon güncellemeleri</p>
+      </div>
+      <button
+        onClick={toggleSubscription}
+        className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${isSubscribed ? 'bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400' : 'bg-charcoal text-white hover:bg-black dark:bg-white dark:text-charcoal'}`}
+      >
+        {isSubscribed ? 'Devre Dışı Bırak' : 'Aktifleştir'}
+      </button>
+    </div>
+  );
+};
 
 export function App() {
   const [isMagdaDashboardOpen, setIsMagdaDashboardOpen] = useState(false);
@@ -478,8 +500,10 @@ export function App() {
   };
 
   return (
+    <PushNotificationProvider currentUserId={currentUserId}>
     <div className="min-h-[100dvh] flex flex-col bg-white dark:bg-charcoal-dark">
       {/* Coastal Navbar */}
+      <PushNotificationToggle />
       <Navbar
         currentUser={currentUser}
         onSwitchUser={handleSwitchUser}
@@ -942,5 +966,6 @@ export function App() {
       <MagdaConciergeWidget onSelectListing={(id) => setSelectedListing(id)} />
 
     </div>
+    </PushNotificationProvider>
   );
 }
