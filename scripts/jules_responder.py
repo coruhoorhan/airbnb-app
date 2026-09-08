@@ -218,8 +218,8 @@ def main():
     model = os.getenv("OPENAI_MODEL", "mercury-2")
     repo = os.getenv("TARGET_REPO", "coruhoorhan/airbnb-app")
     gh_token = os.getenv("GH_PAT") or os.getenv("GITHUB_TOKEN", "")
-    target_titles = [t.strip().lower()
-                   for t in os.getenv("TARGET_TITLE", "Autonomous Airbnb").split(",")]
+    raw_target = os.getenv("TARGET_TITLE", "Autonomous Airbnb,Airbnb,Revise,Feature,Brain Module,agent_tasks").strip()
+    target_titles = [t.strip().lower() for t in raw_target.split(",") if t.strip()]
     max_age = float(os.getenv("MAX_AGE_HOURS", "72"))
     max_answers = int(os.getenv("MAX_ANSWERS", "3"))
 
@@ -240,7 +240,8 @@ def main():
         age_h = parse_age_hours(update_time)
         print(f"- {sid} | {title[:60]} | state={state} | age={age_h:.1f}h")
 
-        if not any(tt in (title or "").lower() for tt in target_titles):
+        if target_titles and not any(tt == "*" or tt in (title or "").lower() for tt in target_titles):
+            print(f"  skipping title '{title}' (not in target titles: {target_titles})")
             continue
         if state not in ("AWAITING_USER_FEEDBACK", "AWAITING_PLAN_APPROVAL"):
             continue
@@ -275,10 +276,11 @@ def main():
         try:
             answer = draft_answer(openai_key, base, model, title, agent_text)
         except Exception as e:
-            print(f"  LLM draft failed ({e}); using canned policy reply.")
-            answer = ("Yes — proceed autonomously per policy. Do not wait for human input. "
-                      "Complete the task and open ONE complete PR immediately.")
-
+            answer = (
+                "Yes — proceed autonomously per policy. Pick the first task with status 'todo' in agent_tasks.json, "
+                "implement all backend and frontend changes fully in ONE complete PR, update the task status in "
+                "agent_tasks.json to 'done', and open the PR immediately. Do not wait for human confirmation."
+            )
         final = f"{MARKER}\n{answer}"
         print(f"  reply: {answer[:300]}")
         if dry_run:
