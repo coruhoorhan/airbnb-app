@@ -402,7 +402,7 @@ const userCount = db.prepare("SELECT COUNT(*) as c FROM users").get().c;
 if (userCount === 0) {
   console.log("[DB] Seeding initial users...");
   const insertUser = db.prepare(`
-    INSERT INTO users (id, name, email, avatarUrl, isHost, bio, phone, createdAt)
+    INSERT OR IGNORE INTO users (id, name, email, avatarUrl, isHost, bio, phone, createdAt)
     VALUES (@id, @name, @email, @avatarUrl, @isHost, @bio, @phone, @createdAt)
   `);
   const insertManyUsers = db.transaction((users) => {
@@ -422,7 +422,7 @@ const listingCount = db.prepare("SELECT COUNT(*) as c FROM listings").get().c;
 if (listingCount === 0) {
   console.log("[DB] Seeding initial listings...");
   const insertListingStmt = db.prepare(`
-    INSERT INTO listings (
+    INSERT OR IGNORE INTO listings (
       id, hostId, title, description, category, propertyType,
       pricePerNight, cleaningFee, serviceFee, maxGuests, bedrooms, beds, baths,
       address, city, country, lat, lng, amenities, images, instantBook, isPublished,
@@ -493,7 +493,7 @@ const experienceCount = db.prepare("SELECT COUNT(*) as c FROM experiences").get(
 if (experienceCount === 0) {
   console.log("[DB] Seeding initial experiences...");
   const insertExperienceStmt = db.prepare(`
-    INSERT INTO experiences (
+    INSERT OR IGNORE INTO experiences (
       id, hostId, title, description, category, duration, pricePerPerson,
       maxParticipants, location, city, lat, lng, images, includes,
       avgRating, reviewCount, isActive, createdAt
