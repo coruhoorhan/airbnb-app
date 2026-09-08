@@ -63,12 +63,26 @@ def jules_request(method, path, api_key, payload=None):
         return json.loads(raw) if raw.strip() else {}
 
 
-def list_sessions(api_key, page_size=20):
-    data = jules_request("GET", f"/sessions?pageSize={page_size}", api_key)
-    if isinstance(data, dict):
-        return data.get("sessions", [])
-    return data if isinstance(data, list) else []
-
+def list_sessions(api_key, page_size=100):
+    all_sessions = []
+    page_token = ""
+    while True:
+        url = f"/sessions?pageSize={page_size}"
+        if page_token:
+            url += f"&pageToken={page_token}"
+        data = jules_request("GET", url, api_key)
+        if isinstance(data, dict):
+            sessions = data.get("sessions", [])
+            all_sessions.extend(sessions)
+            page_token = data.get("nextPageToken")
+            if not page_token or not sessions:
+                break
+        elif isinstance(data, list):
+            all_sessions.extend(data)
+            break
+        else:
+            break
+    return all_sessions
 
 def get_activities(api_key, session_id, page_size=30):
     data = jules_request(
