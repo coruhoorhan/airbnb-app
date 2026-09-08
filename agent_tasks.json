@@ -346,7 +346,7 @@
     },
     {
       "id": "backend-graphql-depth-limit",
-      "status": "todo",
+      "status": "done",
       "area": "backend",
       "risk": "medium",
       "title": "Add GraphQL query depth limiting",
@@ -362,7 +362,11 @@
         "Performance tests show no noticeable latency increase for valid queries."
       ],
       "created_at": 1788768697.3870652,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "claimed_by": "jules",
+      "claimed_at": "2026-09-08T16:00:25.504142Z",
+      "completed_by": "jules",
+      "completed_at": "2026-09-08T16:00:25.504272Z"
     },
     {
       "id": "security-refresh-token-rotation",

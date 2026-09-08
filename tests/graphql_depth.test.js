@@ -15,6 +15,27 @@ describe("GraphQL Depth Limit", () => {
     testUserToken = generateToken(mockUser);
   });
 
+  it("allows queries within depth limit", async () => {
+    const query = `
+      query {
+        listings { #1
+          host { #2
+            id
+          }
+        }
+      }
+    `;
+    const res = await request(app)
+      .post("/graphql")
+      .set("Content-Type", "application/json")
+      .set("Authorization", "Bearer " + testUserToken)
+      .send({ query });
+
+    expect(res.status).toBe(200);
+    expect(res.body.errors).toBeUndefined();
+    expect(res.body.data.listings).toBeDefined();
+  });
+
   it("rejects queries exceeding depth limit 8", async () => {
     const query = `
       query {

@@ -11,6 +11,7 @@ export const schema = buildSchema(`
     createdAt: Float
     status: String
     moderationReason: String
+    listings: [Listing]
   }
 
   

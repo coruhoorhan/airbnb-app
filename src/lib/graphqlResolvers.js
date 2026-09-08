@@ -25,12 +25,14 @@ export const rootValue = {
       delete user.email;
       delete user.phone;
     }
+    user.listings = () => db.getAllListings({}).filter(l => l.hostId === id).map(l => hydrateListing(l, context));
     return user;
   },
-  users: () => {
+  users: (_, context) => {
     return db.getAllUsers().map(user => {
       delete user.email;
       delete user.phone;
+      user.listings = () => db.getAllListings({}).filter(l => l.hostId === user.id).map(l => hydrateListing(l, context));
       return user;
     });
   },
