@@ -51404,7 +51404,119 @@
       ],
       "created_at": 1788835732.344485,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788835734585",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788835734585",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788835734585 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788835835.9056504,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788835734628",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788835734628",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788835734628 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788835835.953196,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788835734619",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788835734619",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788835734619 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788835835.997568,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788835734628_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788835734628_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788835734628_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788835836.0431888,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788835735507",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788835735507",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788835735507 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788835836.0881648,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-31-host-availability-dashboard",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Host Real‑Time Availability Dashboard",
+      "description": "Add a new dashboard page under src/components/HostAvailabilityDashboard.jsx that displays a calendar view of a host's listings with real‑time booking status. Extend the GraphQL schema (src/lib/graphqlSchema.js) with a new query getHostAvailability(hostId) returning dates and booking IDs. Implement a resolver in src/lib/graphqlResolvers.js that aggregates bookings from the SQLite DB using existing getBookingsForListing and filters by host. Add a REST endpoint in server.js (/api/host/:hostId/availability) that proxies the GraphQL query for legacy clients. Update the UI navigation in src/App.jsx to include a link to the dashboard, and protect the route with the auth middleware. Ensure the dashboard refreshes every minute via a setInterval calling the new endpoint, updating the calendar UI.",
+      "allowed_paths": [
+        "server.js",
+        "src/components/HostAvailabilityDashboard.jsx",
+        "src/App.jsx",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/db.js"
+      ],
+      "acceptance": [
+        "Visiting /host/:hostId/availability loads a calendar showing all bookings for that host's listings, with booked dates highlighted.",
+        "The dashboard updates automatically within 60 seconds after a new booking is created via the existing booking flow."
+      ],
+      "created_at": 1788835839.5470548,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788835732.3444877
+  "updated_at": 1788835839.5470593
 }
