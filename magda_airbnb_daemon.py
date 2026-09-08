@@ -13,7 +13,8 @@ import shutil
 from magda_agent.guardian.guardian_runner import MagdaGuardianEngine
 from magda_agent.guardian.auto_healer import AutoHealer
 from magda_agent.guardian.commit_guardian import CommitGuardian
-
+from magda_agent.autonomous.live_engine import AutonomousLiveEngine
+from magda_agent.autonomous.task_executor import HeadlessTaskExecutor
 import ast
 import asyncio
 from datetime import datetime, timezone
@@ -282,6 +283,8 @@ class MagdaAutonomousWatchdog:
             db_path=self.db_path,
             tasks_manifest_path=self.manifest_mgr.manifest_path
         )
+        self.live_engine = AutonomousLiveEngine(app_root=self.app_root, db_path=self.db_path)
+        self.task_executor = HeadlessTaskExecutor(app_root=self.app_root, manifest_path=self.manifest_mgr.manifest_path)
         self._last_scan_result: Dict[str, Any] = {}
         self._llm_scan_counter = 0
         self._scan_count = 0
@@ -517,8 +520,35 @@ class MagdaAutonomousWatchdog:
                                 conn.close()
         else:
             logger.info(f"✅ Autonomous Synthetic QA: All {probe_report.get('passed_journeys')}/{probe_report.get('total_journeys')} Journeys Passed (100% Healthy).")
+    def poll_and_answer_jules_sessions(self) -> int:
+        """Polls for pending Jules sessions and auto-answers immediately to bypass cron delays."""
+        script_path = os.path.join(self.app_root, "scripts", "jules_responder.py")
+        if not os.path.exists(script_path):
+            return 0
+        try:
+            res = subprocess.run(
+                [sys.executable, script_path],
+                cwd=self.app_root,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            if "Done. Sessions acted on:" in res.stdout:
+                for line in res.stdout.splitlines():
+                    if "Sessions acted on:" in line:
+                        count_str = line.split(":")[-1].strip()
+                        try:
+                            c = int(count_str)
+                            if c > 0:
+                                logger.info(f"⚡ Auto-answered {c} waiting Jules session(s) in <30s!")
+                            return c
+                        except ValueError:
+                            pass
+            return 0
+        except Exception as e:
+            logger.debug(f"Jules auto-responder check: {e}")
+            return 0
 
-        return probe_report, tasks_added
     def _git_commit_and_push(self, message: str) -> bool:
         """Commits agent_tasks.json changes and pushes to origin/main with debounce protection."""
         auto_push = os.getenv("MAGDA_DAEMON_AUTO_GIT_PUSH", "false").lower() in ("true", "1", "yes")
@@ -633,7 +663,7 @@ class MagdaAutonomousWatchdog:
         db_issues, healed_count, db_tasks_added = self.scan_database_and_payments()
         syntax_errors = self.scan_codebase_syntax()
         qa_report, qa_tasks_added = self.run_synthetic_qa_scan()
-        manifest_data = self.manifest_mgr.load_manifest()
+        jules_answered = self.poll_and_answer_jules_sessions()
         tasks = manifest_data.get("tasks", [])
         archived = manifest_data.get("archived_tasks", [])
         existing_ids = {t["id"] for t in tasks}.union({t["id"] for t in archived})
