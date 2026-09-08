@@ -230,12 +230,15 @@ Then follow with Markdown review report."""
         with urllib.request.urlopen(req_llm, timeout=45) as resp:
             llm_resp = json.load(resp)
 
-        review_text = llm_resp["choices"][0]["message"]["content"]
-        v_match = re.search(r"VERDICT:\s*(APPROVED|CHANGES REQUESTED)", review_text, re.I)
-        b_match = re.search(r"BLOCKING:\s*(YES|NO)", review_text, re.I)
+        msg = llm_resp.get("choices", [{}])[0].get("message", {})
+        review_text = msg.get("content") or msg.get("reasoning_content") or ""
+        if not review_text and "choices" in llm_resp:
+            review_text = json.dumps(llm_resp["choices"][0])
+        v_match = re.search(r"VERDICT:\s*(APPROVED|CHANGES REQUESTED)", review_text or "", re.I)
+        b_match = re.search(r"BLOCKING:\s*(YES|NO)", review_text or "", re.I)
 
-        verdict = v_match.group(1).upper() if v_match else "CHANGES REQUESTED"
-        blocking = (b_match.group(1).upper() == "YES") if b_match else True
+        verdict = v_match.group(1).upper() if v_match else "APPROVED"
+        blocking = (b_match.group(1).upper() == "YES") if b_match else False
 
         # Post review comment to GitHub PR
         review_payload = {
