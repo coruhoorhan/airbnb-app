@@ -48618,7 +48618,119 @@
       ],
       "created_at": 1788832661.9882429,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788832664376",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788832664376",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788832664376 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788832761.7075896,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788832664380",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788832664380",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788832664380 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788832761.7535381,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788832664396",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788832664396",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788832664396 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788832761.7983062,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788832664376_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788832664376_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788832664376_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788832761.8415549,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788832665397",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788832665397",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788832665397 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788832761.8857365,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-12-interactive-map-clustering",
+      "status": "todo",
+      "area": "frontend",
+      "risk": "low",
+      "title": "Implement interactive map clustering for listings",
+      "description": "Add a clustering layer to the map component that groups nearby listings into clusters when zoomed out and expands them on zoom in. Create a new MapClustering component under src/components/MapClustering.jsx that uses the Supercluster library to compute clusters from the listings data. Update src/components/MapView.jsx to import and render MapClustering, passing the listings array from the GraphQL query. Ensure each cluster displays a count badge and clicking a cluster zooms to its bounds. Add unit tests for the clustering logic and visual snapshot tests for the MapView with clusters.",
+      "allowed_paths": [
+        "src/components/MapClustering.jsx",
+        "src/components/MapView.jsx",
+        "src/lib/clusterEngine.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Map view shows clusters with numeric badges at low zoom levels",
+        "Clicking a cluster zooms into the cluster bounds and displays individual markers",
+        "All existing map interactions (click, hover, marker popup) work unchanged",
+        "Unit tests for MapClustering pass and visual snapshot test for MapView matches expected layout"
+      ],
+      "created_at": 1788832767.1284945,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788832661.9882455
+  "updated_at": 1788832767.128499
 }
