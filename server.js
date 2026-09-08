@@ -171,16 +171,16 @@ const authRateLimiter = createRateLimiter({
 app.use("/graphql", authRateLimiter, authMiddleware, csrfMiddleware, createHandler({
   schema,
   rootValue,
-  validationRules: [
+  validationRules: (req, args) => [
     depthLimit(8),
-    (context) => createComplexityRule({
+    createComplexityRule({
       maximumComplexity: 200,
-      variables: context.variableValues || {},
+      variables: args && args.variableValues ? args.variableValues : (req.body ? req.body.variables : {}),
       estimators: [
         fieldExtensionsEstimator(),
         simpleEstimator({ defaultComplexity: 1 })
       ]
-    })(context)
+    })
   ],
   context: (req) => {
     return {
