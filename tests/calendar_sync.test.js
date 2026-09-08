@@ -115,6 +115,7 @@ END:VCALENDAR`;
 
     const res = await request(app)
       .post(`/api/calendar/${listingId}/sync`)
+      .set("Authorization", `Bearer ${hostToken}`)
       .send({ icalData: mockIcalData });
 
     expect(res.status).toBe(200);

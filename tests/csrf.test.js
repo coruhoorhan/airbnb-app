@@ -18,15 +18,19 @@ describe("CSRF Protection", () => {
     testUserToken = res.body.token;
 
     const setCookie = res.headers['set-cookie'];
-    const csrfCookieHeader = setCookie.find(c => c.startsWith('_csrf_secret='));
+    if (setCookie) {
+        const csrfCookieHeader = setCookie.find(c => c.startsWith('_csrf_secret='));
+        if (csrfCookieHeader) {
+            csrfCookie = csrfCookieHeader.split(';')[0];
+        }
+    }
     csrfToken = res.headers['x-csrf-token'];
-    csrfCookie = csrfCookieHeader.split(';')[0];
   });
 
   it("should reject POST requests without CSRF token", async () => {
     const res = await request(app)
       .post("/api/admin/guardian/scan")
-      .set("Authorization", `Bearer ${testUserToken}`)
+      .set("Cookie", `token=${testUserToken}`)
       .send({});
 
     expect(res.status).toBe(403);
@@ -35,8 +39,7 @@ describe("CSRF Protection", () => {
   it("should reject POST requests with invalid CSRF token", async () => {
     const res = await request(app)
       .post("/api/admin/guardian/scan")
-      .set("Authorization", `Bearer ${testUserToken}`)
-      .set("Cookie", csrfCookie)
+      .set("Cookie", [`token=${testUserToken}`, csrfCookie])
       .set("x-csrf-token", "invalid_token")
       .send({});
 

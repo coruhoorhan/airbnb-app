@@ -161,7 +161,7 @@ const authRateLimiter = createRateLimiter({
 
 
 
-app.use("/graphql", authRateLimiter, authMiddleware, createHandler({
+app.use("/graphql", authRateLimiter, authMiddleware, csrfMiddleware, createHandler({
   schema,
   rootValue,
   validationRules: [depthLimit(8)],
@@ -213,10 +213,13 @@ app.post("/api/auth/oauth/callback", authRateLimiter, (req, res) => {
 
   const token = generateToken(user);
   res.cookie("token", token, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  const csrfToken = generateCsrfToken();
+  res.cookie("_csrf_secret", csrfToken, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  res.setHeader("x-csrf-token", csrfToken);
   res.json({ success: true, token, user });
 });
 
-app.post("/api/auth/logout", (req, res) => {
+app.post("/api/auth/logout", csrfMiddleware, (req, res) => {
   res.clearCookie("token", { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
   res.clearCookie("_csrf_secret", { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
   res.json({ success: true, message: "Çıkış yapıldı." });
@@ -361,7 +364,7 @@ app.get("/api/admin/guardian/issues", (req, res) => {
   }
 });
 
-app.post("/api/admin/guardian/scan", (req, res) => {
+app.post("/api/admin/guardian/scan", csrfMiddleware, (req, res) => {
   try {
     const scanResult = executeFullWatchdogScan();
     res.json({ success: true, data: scanResult });
@@ -370,7 +373,7 @@ app.post("/api/admin/guardian/scan", (req, res) => {
   }
 });
 
-app.post("/api/admin/guardian/heal/:id", (req, res) => {
+app.post("/api/admin/guardian/heal/:id", csrfMiddleware, (req, res) => {
   try {
     const healResult = autoHealGuardianIssue(req.params.id);
     res.json({ success: true, data: healResult });
@@ -379,7 +382,7 @@ app.post("/api/admin/guardian/heal/:id", (req, res) => {
   }
 });
 
-app.post("/api/admin/guardian/dismiss/:id", (req, res) => {
+app.post("/api/admin/guardian/dismiss/:id", csrfMiddleware, (req, res) => {
   try {
     const dismissed = dismissGuardianIssue(req.params.id);
     res.json({ success: true, data: dismissed });
@@ -518,7 +521,7 @@ app.get("/api/coupons", (req, res) => {
   res.json({ success: true, count: coupons.length, data: coupons });
 });
 
-app.post("/api/coupons", (req, res) => {
+app.post("/api/coupons", csrfMiddleware, (req, res) => {
   try {
     const created = insertCoupon(req.body);
     if (!created) return res.status(400).json({ success: false, error: "Geçersiz kupon verisi." });
@@ -528,19 +531,19 @@ app.post("/api/coupons", (req, res) => {
   }
 });
 
-app.put("/api/coupons/:code/toggle", (req, res) => {
+app.put("/api/coupons/:code/toggle", csrfMiddleware, (req, res) => {
   const updated = toggleCouponStatus(req.params.code);
   if (!updated) return res.status(404).json({ success: false, error: "Kupon bulunamadı." });
   res.json({ success: true, data: updated });
 });
 
-app.delete("/api/coupons/:code", (req, res) => {
+app.delete("/api/coupons/:code", csrfMiddleware, (req, res) => {
   const success = deleteCoupon(req.params.code);
   if (!success) return res.status(404).json({ success: false, error: "Kupon bulunamadı." });
   res.json({ success: true, message: "Kupon silindi." });
 });
 
-app.post("/api/coupons/validate", couponRateLimiter, (req, res) => {
+app.post("/api/coupons/validate", couponRateLimiter, csrfMiddleware,  (req, res) => {
   try {
     const { code, basePrice, checkIn } = req.body;
     if (!code) {
@@ -573,7 +576,7 @@ app.get("/api/users", (req, res) => {
   res.json({ success: true, count: users.length, data: users });
 });
 
-app.put("/api/users/:id/role", (req, res) => {
+app.put("/api/users/:id/role", csrfMiddleware, (req, res) => {
   const { isHost } = req.body;
   const updated = updateUserRole(req.params.id, isHost);
   if (!updated) return res.status(404).json({ success: false, error: "Kullanıcı bulunamadı." });
@@ -581,7 +584,7 @@ app.put("/api/users/:id/role", (req, res) => {
 });
 
 // --- 9. iyzico Payment Endpoints ---
-app.post("/api/payments/iyzico/direct-pay", paymentRateLimiter, async (req, res) => {
+app.post("/api/payments/iyzico/direct-pay", paymentRateLimiter, csrfMiddleware, async (req, res) => {
   try {
     const { listingId, guestId, checkIn, checkOut, numGuests, couponCode, giftCardCode, installmentMonths, card, buyer } = req.body;
 
@@ -752,7 +755,7 @@ app.post("/api/payments/iyzico/direct-pay", paymentRateLimiter, async (req, res)
   }
 });
 
-app.post("/api/payments/iyzico/init-checkout", async (req, res) => {
+app.post("/api/payments/iyzico/init-checkout", csrfMiddleware, async (req, res) => {
   try {
     const { listingId, guestId, checkIn, checkOut, numGuests, couponCode, buyer, callbackUrl } = req.body;
 
@@ -1010,7 +1013,7 @@ app.get("/api/weather", async (req, res) => {
 });
 
 // --- 11c. Taksit Planları API ---
-app.post("/api/payments/installments", (req, res) => {
+app.post("/api/payments/installments", csrfMiddleware, (req, res) => {
   try {
     const { totalPrice } = req.body;
     if (totalPrice === undefined || Number(totalPrice) <= 0) {
@@ -1036,7 +1039,7 @@ app.get("/api/loyalty/:userId", (req, res) => {
   }
 });
 
-app.post("/api/loyalty/redeem", (req, res) => {
+app.post("/api/loyalty/redeem", csrfMiddleware, (req, res) => {
   try {
     const { userId, points } = req.body;
     if (!userId || !points) return res.status(400).json({ success: false, error: "userId ve points gerekli." });
@@ -1049,7 +1052,7 @@ app.post("/api/loyalty/redeem", (req, res) => {
 });
 
 // --- 11e. Hediye Kartı API ---
-app.post("/api/gift-cards", (req, res) => {
+app.post("/api/gift-cards", csrfMiddleware, (req, res) => {
   try {
     const { buyerId, recipientName, amount, message } = req.body;
     if (!buyerId || !amount) return res.status(400).json({ success: false, error: "buyerId ve amount gerekli." });
@@ -1081,7 +1084,7 @@ app.get("/api/gift-cards", (req, res) => {
   }
 });
 
-app.post("/api/gift-cards/redeem", (req, res) => {
+app.post("/api/gift-cards/redeem", csrfMiddleware, (req, res) => {
   try {
     const { code, amountToApply } = req.body;
     if (!code) return res.status(400).json({ success: false, error: "Kod gerekli." });
@@ -1094,7 +1097,7 @@ app.post("/api/gift-cards/redeem", (req, res) => {
 });
 
 // --- 11f. Fiyat Takibi API ---
-app.post("/api/price-watches", (req, res) => {
+app.post("/api/price-watches", csrfMiddleware, (req, res) => {
   try {
     const { userId, listingId } = req.body;
     if (!userId || !listingId) return res.status(400).json({ success: false, error: "userId ve listingId gerekli." });
@@ -1105,7 +1108,7 @@ app.post("/api/price-watches", (req, res) => {
   }
 });
 
-app.delete("/api/price-watches/:listingId", (req, res) => {
+app.delete("/api/price-watches/:listingId", csrfMiddleware, (req, res) => {
   try {
     const { userId } = req.query;
     if (!userId) return res.status(400).json({ success: false, error: "userId gerekli." });
@@ -1137,7 +1140,7 @@ app.get("/api/last-minute", (req, res) => {
   }
 });
 
-app.put("/api/listings/:id/last-minute", (req, res) => {
+app.put("/api/listings/:id/last-minute", csrfMiddleware, (req, res) => {
   try {
     const { discountPercent } = req.body;
     const updated = toggleLastMinuteDeal(req.params.id, discountPercent);
@@ -1179,7 +1182,7 @@ app.get("/api/calendar/:listingId.ics", (req, res) => {
   res.send(feed);
 });
 
-app.post("/api/calendar/:listingId/sync", async (req, res) => {
+app.post("/api/calendar/:listingId/sync", csrfMiddleware, async (req, res) => {
   try {
     const { listingId } = req.params;
     const { icalUrl, icalData } = req.body;
@@ -1283,7 +1286,7 @@ app.post("/api/messages", authMiddleware, csrfMiddleware, messageRateLimiter, (r
   }
 });
 
-app.post("/api/messages/read", (req, res) => {
+app.post("/api/messages/read", csrfMiddleware, (req, res) => {
   try {
     const { listingId, userId } = req.body;
     if (!listingId || !userId) {
@@ -1404,7 +1407,7 @@ app.post("/api/experiences/reservations/:id/cancel", authMiddleware, csrfMiddlew
 });
 
 // --- 12.5. Magda-Agent Cognitive AI Engine Integration ---
-app.post("/api/magda/concierge", (req, res) => {
+app.post("/api/magda/concierge", csrfMiddleware, (req, res) => {
   const query = req.body?.query || req.body?.prompt || "Fatsa merkezde kiralık ev";
   execFile("python3", ["/opt/airbnb-app/magda_airbnb_bridge.py", "chat", query], (error, stdout, stderr) => {
     if (error) {
@@ -1473,7 +1476,7 @@ app.get("/api/magda/tasks", (req, res) => {
   });
 });
 
-app.post("/api/magda/tasks/create", (req, res) => {
+app.post("/api/magda/tasks/create", csrfMiddleware, (req, res) => {
   const { title, description, area, risk } = req.body || {};
   if (!title) return res.status(400).json({ success: false, error: "Title is required" });
   

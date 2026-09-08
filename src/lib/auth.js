@@ -67,7 +67,7 @@ export function csrfMiddleware(req, res, next) {
 
   // Token rotation after successful state-changing request
   const newToken = generateCsrfToken();
-  res.cookie("_csrf_secret", newToken, { httpOnly: true, sameSite: "lax", secure: false });
+  res.cookie("_csrf_secret", newToken, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
   res.setHeader("x-csrf-token", newToken);
   next();
 }
