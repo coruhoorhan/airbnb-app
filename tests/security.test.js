@@ -65,4 +65,14 @@ describe("Security - Rate Limiter & Input Sanitization", () => {
     }
     expect(lastStatus).toBe(429);
   });
+
+  it("should set Strict-Transport-Security header on requests", async () => {
+    const res = await request(app)
+      .get("/api/health")
+      .set("x-forwarded-proto", "https");
+
+    expect(res.headers["strict-transport-security"]).toBe(
+      "max-age=31536000; includeSubDomains; preload"
+    );
+  });
 });
