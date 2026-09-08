@@ -61,8 +61,7 @@ jobs:
 
       - name: Run Vitest Suite & Synthetic E2E User Journeys
         run: |
-          npm test -- --fileParallelism=false
-          npx vitest run tests/synthetic_e2e_journey.test.js
+          npm test
       - name: AST Smoke Check
         run: |
           python3 -c "
