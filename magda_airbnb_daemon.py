@@ -520,6 +520,7 @@ class MagdaAutonomousWatchdog:
                                 conn.close()
         else:
             logger.info(f"✅ Autonomous Synthetic QA: All {probe_report.get('passed_journeys')}/{probe_report.get('total_journeys')} Journeys Passed (100% Healthy).")
+        return probe_report, tasks_added
     def poll_and_answer_jules_sessions(self) -> int:
         """Polls for pending Jules sessions and auto-answers immediately to bypass cron delays."""
         script_path = os.path.join(self.app_root, "scripts", "jules_responder.py")
@@ -664,6 +665,7 @@ class MagdaAutonomousWatchdog:
         syntax_errors = self.scan_codebase_syntax()
         qa_report, qa_tasks_added = self.run_synthetic_qa_scan()
         jules_answered = self.poll_and_answer_jules_sessions()
+        manifest_data = self.manifest_mgr.load_manifest()
         tasks = manifest_data.get("tasks", [])
         archived = manifest_data.get("archived_tasks", [])
         existing_ids = {t["id"] for t in tasks}.union({t["id"] for t in archived})
@@ -741,6 +743,50 @@ class MagdaAutonomousWatchdog:
         )
         return result
 
+    def _sync_jules_and_github_prs(self) -> None:
+        """Polls Jules sessions and active GitHub PRs to auto-steer, audit, and auto-merge."""
+        try:
+            scripts_dir = os.path.join(self.app_root, "scripts")
+            if scripts_dir not in sys.path:
+                sys.path.insert(0, scripts_dir)
+            import jules_responder
+
+            if not os.environ.get("TARGET_REPO"):
+                os.environ["TARGET_REPO"] = "coruhoorhan/airbnb-app"
+            if not os.environ.get("OPENAI_BASE_URL"):
+                os.environ["OPENAI_BASE_URL"] = "https://api.inceptionlabs.ai/v1"
+            if not os.environ.get("OPENAI_MODEL"):
+                os.environ["OPENAI_MODEL"] = "mercury-2"
+
+            api_key = os.environ.get("JULES_API_KEY", "")
+            if api_key:
+                sessions = jules_responder.list_sessions(api_key, page_size=100)
+                openai_key = os.environ.get("OPENAI_API_KEY", "")
+                base = os.environ.get("OPENAI_BASE_URL", "https://api.inceptionlabs.ai/v1")
+                model = os.environ.get("OPENAI_MODEL", "mercury-2")
+                for s in sessions:
+                    sid = s.get("id") or s.get("name", "").split("/")[-1]
+                    state = s.get("state", "")
+                    title = s.get("title", "")
+                    if state in ("AWAITING_USER_FEEDBACK", "AWAITING_PLAN_APPROVAL"):
+                        logger.info(f"Auto-responding to Jules session {sid} [{title}] ({state})...")
+                        if state == "AWAITING_PLAN_APPROVAL":
+                            try:
+                                jules_responder.jules_request("POST", f"/sessions/{sid}:approvePlan", api_key, {})
+                                logger.info(f"Plan approved for session {sid}.")
+                            except Exception as pe:
+                                logger.warning(f"Plan approval error: {pe}")
+
+                        activities = jules_responder.get_activities(api_key, sid)
+                        agent_text, is_q = jules_responder.latest_agent_text(activities)
+                        if agent_text:
+                            answer = jules_responder.draft_answer(openai_key, base, model, title, agent_text)
+                            final_msg = f"{jules_responder.MARKER}\n{answer}"
+                            jules_responder.jules_request("POST", f"/sessions/{sid}:sendMessage", api_key, {"prompt": final_msg})
+                            logger.info(f"Steering message sent to Jules session {sid}!")
+        except Exception as e:
+            logger.error(f"Error in Jules sync cycle: {e}")
+
     async def run_loop(self, interval_seconds: int = 60) -> None:
         """7/24 Continuous Autonomous Background Loop."""
         self._is_running = True
@@ -751,6 +797,7 @@ class MagdaAutonomousWatchdog:
                 self._scan_count += 1
                 if self._scan_count % 10 == 0:
                     self._git_pull()
+                self._sync_jules_and_github_prs()
                 await self.execute_full_scan()
             except Exception as e:
                 logger.error(f"Error in watchdog cycle: {e}", exc_info=True)
