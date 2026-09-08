@@ -45828,7 +45828,118 @@
       ],
       "created_at": 1788829662.7372015,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788829665250",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788829665250",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788829665250 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788829758.7761438,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788829665282",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788829665282",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788829665282 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788829758.8153958,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788829665250_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788829665250_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788829665250_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788829758.8554454,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788829665290",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788829665290",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788829665290 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788829758.8943129,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788829666304",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788829666304",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788829666304 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788829758.934034,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-42-interactive-map-clustering",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Interactive Map Clustering for Listings",
+      "description": "Implement a server‑side clustering endpoint that returns listings grouped by geographic proximity using a quadtree algorithm. Add a new GraphQL query `clusteredListings(bbox: BoundingBox!, zoom: Int!): [Cluster]` in `src/lib/graphqlSchema.js` and resolver logic in `src/lib/graphqlResolvers.js`. Extend the Express server (`server.js`) to expose a `/api/map/cluster` REST endpoint that proxies the GraphQL query for legacy clients. On the frontend, create a new component `src/components/MapCluster.jsx` that fetches clusters, renders them with Leaflet markers, and expands a cluster into individual listings on click. Update `src/App.jsx` to import and display the component on the map view. Ensure the clustering respects the current map bounds and zoom level, and falls back to returning raw listings when zoom > 15.",
+      "allowed_paths": [
+        "server.js",
+        "src/components/MapCluster.jsx",
+        "src/App.jsx",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js"
+      ],
+      "acceptance": [
+        "GET /api/map/cluster returns a JSON array of clusters with `lat`, `lng`, and `count` fields for zoom levels < 15 and individual listings for zoom >= 15.",
+        "MapCluster component renders markers that display the correct count and expands to show listing cards when a cluster marker is clicked."
+      ],
+      "created_at": 1788829764.9563866,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788829662.7372036
+  "updated_at": 1788829764.95639
 }
