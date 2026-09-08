@@ -241,7 +241,7 @@
     },
     {
       "id": "security-csrf-protection",
-      "status": "in_progress",
+      "status": "done",
       "area": "security",
       "risk": "medium",
       "title": "Add CSRF protection to state\u2011changing endpoints",

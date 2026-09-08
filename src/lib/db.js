@@ -1,21 +1,3 @@
-
-
-try {
-  db.exec("ALTER TABLE listings ADD COLUMN calendarSyncUrl TEXT");
-  db.exec("ALTER TABLE listings ADD COLUMN calendarSyncStatus TEXT DEFAULT 'idle'");
-  db.exec("ALTER TABLE listings ADD COLUMN lastSyncedAt INTEGER");
-} catch (e) {}
-
-
-try {
-  db.exec("ALTER TABLE reviews ADD COLUMN status TEXT DEFAULT 'published'");
-  db.exec("ALTER TABLE reviews ADD COLUMN moderationReason TEXT");
-} catch (e) {}
-
-try {
-  db.exec("ALTER TABLE bookings ADD COLUMN approvalStatus TEXT DEFAULT 'pending'");
-} catch (e) {}
-
 import Database from "better-sqlite3";
 import path from "path";
 import fs from "fs";
