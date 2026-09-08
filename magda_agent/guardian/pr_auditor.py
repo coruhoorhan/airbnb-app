@@ -1,52 +1,144 @@
+#!/usr/bin/env python3
 """
 Magda-Agent PR Code Auditor & Quality Gate.
-Standardized module location under magda_agent.guardian.pr_auditor.
+Comprehensive CLI for PR code reviews, queue status diagnostics, and automated duplicate cleanup.
 """
 
-from __future__ import annotations
-
-import json
 import os
-import re
 import sys
-import urllib.error
+import json
+import re
 import urllib.request
-from typing import Any, Dict, Tuple
+import urllib.error
+from typing import Tuple, Dict, Any, List, Optional
+
+# Ensure repository root is in sys.path
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
 
 
-def auto_close_superseded_prs(repo: str, token: str, current_pr_number: int, current_title: str) -> None:
-    """Automatically closes older open PRs that are superseded by current_pr_number."""
+def _get_github_headers(token: Optional[str] = None) -> Dict[str, str]:
+    auth_token = token or os.getenv("GH_PAT") or os.getenv("GITHUB_TOKEN", "")
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "Magda-Auditor/2.0",
+    }
+    if auth_token:
+        headers["Authorization"] = f"Bearer {auth_token}"
+    return headers
+
+
+def get_open_prs(repo: str, token: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Fetches all currently open pull requests for a repository."""
+    headers = _get_github_headers(token)
+    url = f"https://api.github.com/repos/{repo}/pulls?state=open&per_page=100"
     try:
-        headers = {
-            "Authorization": f"token {token}",
-            "Accept": "application/vnd.github.v3+json",
-            "User-Agent": "Magda-Code-Auditor",
-        }
-        req = urllib.request.Request(f"https://api.github.com/repos/{repo}/pulls?state=open", headers=headers)
+        req = urllib.request.Request(url, headers=headers)
         with urllib.request.urlopen(req, timeout=30) as resp:
-            open_prs = json.load(resp)
-        for opr in open_prs:
-            op_num = opr.get("number")
-            op_title = opr.get("title", "")
-            if op_num != current_pr_number:
-                if any(kw in op_title.lower() for kw in ["audit", "hardening", "pr10", "pr12", "pr15", "followup"]) or (len(op_title) > 10 and op_title[:15] in current_title):
-                    req_close = urllib.request.Request(
-                        f"https://api.github.com/repos/{repo}/pulls/{op_num}",
-                        headers=headers,
-                        data=json.dumps({"state": "closed"}).encode(),
-                        method="PATCH",
-                    )
-                    urllib.request.urlopen(req_close, timeout=15)
-                    req_com = urllib.request.Request(
-                        f"https://api.github.com/repos/{repo}/issues/{op_num}/comments",
-                        headers=headers,
-                        data=json.dumps({"body": f"🤖 Magda: Bu PR kapatıldı. Değişiklikler PR #{current_pr_number} altında birleştirildi."}).encode(),
-                        method="POST",
-                    )
-                    urllib.request.urlopen(req_com, timeout=15)
-                    print(f"✅ Auto-closed older superseded PR #{op_num} in favor of PR #{current_pr_number}.")
+            return json.loads(resp.read().decode("utf-8"))
     except Exception as e:
-        print(f"Auto-close check error: {e}")
+        print(f"Error fetching open PRs: {e}")
+        return []
+
+
+def get_closed_prs(repo: str, token: Optional[str] = None, limit: int = 10) -> List[Dict[str, Any]]:
+    """Fetches recently closed pull requests for a repository."""
+    headers = _get_github_headers(token)
+    url = f"https://api.github.com/repos/{repo}/pulls?state=closed&per_page={limit}"
+    try:
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except Exception as e:
+        print(f"Error fetching closed PRs: {e}")
+        return []
+
+
+def print_pr_status_report(repo: str, token: Optional[str] = None) -> None:
+    """Prints a formatted diagnostic status report of the PR queue."""
+    open_prs = get_open_prs(repo, token)
+    closed_prs = get_closed_prs(repo, token, limit=5)
+
+    print("\n" + "=" * 70)
+    print(f"📊 MAGDA PULL REQUEST QUEUE STATUS: {repo}")
+    print("=" * 70)
+    print(f"Açık PR Sayısı: {len(open_prs)}")
+    if open_prs:
+        for pr in open_prs:
+            num = pr.get("number")
+            title = pr.get("title", "")
+            user = pr.get("user", {}).get("login", "")
+            branch = pr.get("head", {}).get("ref", "")
+            created = pr.get("created_at", "")
+            print(f" • PR #{num:2d}: [{user}] {title[:50]} (Branch: {branch}) - {created}")
+    else:
+        print(" ✅ Açık PR kuyruğu tertemiz (0 açık PR).")
+
+    print("\nSon Kapanan / Merge Edilen PR'lar (İlk 5):")
+    for pr in closed_prs:
+        num = pr.get("number")
+        title = pr.get("title", "")
+        status = "MERGED ✅" if pr.get("merged_at") else "CLOSED 🛑"
+        print(f" • PR #{num:2d} [{status}]: {title[:60]}")
+    print("=" * 70 + "\n")
+
+
+def auto_close_superseded_prs(current_pr_number: int, repo: str, token: Optional[str] = None) -> int:
+    """Closes older open PRs that share similar titles or target the same feature."""
+    headers = _get_github_headers(token)
+    open_prs = get_open_prs(repo, token)
+    if not open_prs:
+        return 0
+
+    current_pr = next((p for p in open_prs if p.get("number") == current_pr_number), None)
+    if not current_pr:
+        return 0
+
+    cur_title = current_pr.get("title", "").lower()
+    cur_words = set(re.findall(r"\w+", cur_title)) - {"feat", "fix", "chore", "the", "a", "and", "for", "in", "to"}
+
+    closed_count = 0
+    for pr in open_prs:
+        pr_num = pr.get("number")
+        if pr_num >= current_pr_number:
+            continue
+
+        p_title = pr.get("title", "").lower()
+        p_words = set(re.findall(r"\w+", p_title)) - {"feat", "fix", "chore", "the", "a", "and", "for", "in", "to"}
+
+        is_similar = len(cur_words.intersection(p_words)) >= 2
+        is_jules_batch = "batch-01" in cur_title and "batch-01" in p_title
+        is_push_notif = "push notification" in cur_title and "push notification" in p_title
+
+        if is_similar or is_jules_batch or is_push_notif:
+            try:
+                # Add closing comment
+                comment_payload = {
+                    "body": f"🛑 Closed automatically by Magda AI Auditor: Superseded by PR #{current_pr_number} which contains the updated full implementation."
+                }
+                req_c = urllib.request.Request(
+                    f"https://api.github.com/repos/{repo}/issues/{pr_num}/comments",
+                    data=json.dumps(comment_payload).encode("utf-8"),
+                    headers=headers,
+                )
+                urllib.request.urlopen(req_c, timeout=15)
+
+                # Close PR
+                close_payload = {"state": "closed"}
+                req_close = urllib.request.Request(
+                    f"https://api.github.com/repos/{repo}/pulls/{pr_num}",
+                    data=json.dumps(close_payload).encode("utf-8"),
+                    headers=headers,
+                    method="PATCH",
+                )
+                urllib.request.urlopen(req_close, timeout=15)
+                print(f"✅ Auto-closed older superseded PR #{pr_num} in favor of PR #{current_pr_number}.")
+                closed_count += 1
+            except Exception as e:
+                print(f"Failed to auto-close PR #{pr_num}: {e}")
+
+    return closed_count
 
 
 def review_pr(
@@ -54,67 +146,56 @@ def review_pr(
     repo: str,
     token: str,
     openai_key: str,
-    openai_base: str,
-    model: str,
-    strict_block: bool = True,
+    openai_base: str = "https://api.inceptionlabs.ai/v1",
+    model: str = "mercury-2",
 ) -> Tuple[str, str, bool]:
+    """Audits PR diff against security, syntax, and architectural standards using LLM."""
+    headers = _get_github_headers(token)
+
+    # 1. Auto-close superseded duplicate PRs first
+    auto_close_superseded_prs(pr_number, repo, token)
+
+    # 2. Fetch PR diff
+    diff_headers = {**headers, "Accept": "application/vnd.github.v3.diff"}
+    req_diff = urllib.request.Request(
+        f"https://api.github.com/repos/{repo}/pulls/{pr_number}",
+        headers=diff_headers,
+    )
+    with urllib.request.urlopen(req_diff, timeout=30) as resp:
+        diff_text = resp.read().decode("utf-8")
+
+    # 3. Fetch PR info
+    req_info = urllib.request.Request(
+        f"https://api.github.com/repos/{repo}/pulls/{pr_number}",
+        headers=headers,
+    )
+    with urllib.request.urlopen(req_info, timeout=30) as resp:
+        pr_info = json.loads(resp.read().decode("utf-8"))
+
+    pr_title = pr_info.get("title", "")
+    pr_body = pr_info.get("body", "")
+
+    # Truncate diff if extremely large
+    if len(diff_text) > 40000:
+        diff_text = diff_text[:40000] + "\n...[DIFF TRUNCATED FOR SIZE]..."
+
     print(f"🔍 [Magda AI Quality Gate]: Auditing PR #{pr_number} on {repo} with {model}...")
-    headers = {
-        "Authorization": f"token {token}",
-        "Accept": "application/vnd.github.v3+json",
-        "User-Agent": "Magda-Code-Auditor",
-    }
-
-    pr_url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}"
-    req = urllib.request.Request(pr_url, headers=headers)
-    with urllib.request.urlopen(req) as resp:
-        pr_data = json.load(resp)
-
-    pr_title = pr_data.get("title", "")
-    pr_body = pr_data.get("body", "")
-    head_ref = pr_data.get("head", {}).get("ref", "")
-    head_sha = pr_data.get("head", {}).get("sha", "")
-
-    # Clean up older duplicate PRs
-    auto_close_superseded_prs(repo, token, pr_number, pr_title)
-
-    diff_url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}"
-    diff_headers = headers.copy()
-    diff_headers["Accept"] = "application/vnd.github.v3.diff"
-    req_diff = urllib.request.Request(diff_url, headers=diff_headers)
-    with urllib.request.urlopen(req_diff) as resp:
-        diff_text = resp.read().decode("utf-8", errors="ignore")
-
-    max_chars = 12000
-    if len(diff_text) > max_chars:
-        diff_text = diff_text[:max_chars] + "\n\n[... Diff truncated for context limit ...]"
 
     prompt = f"""PR #{pr_number}: {pr_title}
-BRANCH: {head_ref}
-DESCRIPTION: {pr_body}
+Repository: {repo}
+Description:
+{pr_body}
 
-GIT DIFF:
+DIFF:
 ```diff
 {diff_text}
 ```
 
-DETERMINISTIC ARCHITECTURE & SECURITY RULES:
-- SEC-001 (CSRF): All state-changing mutation endpoints (POST/PUT/DELETE/PATCH) must validate x-csrf-token.
-- SEC-002 (SQL Injection): Raw SQL string interpolation forbidden. Prepared statements (?) mandatory.
-- SEC-003 (Auth Security): Cookie flags (HttpOnly, SameSite, Secure) & JWT expiration limits.
-- SEC-004 (Rate Limiting): Public mutation & auth routes protected with sliding window rate limiters.
-- SEC-005 (CSP): No upgrade-insecure-requests on non-HTTPS environments; valid font/image/style sources.
-- QUAL-001 (Scope Bounding): Changes strictly within allowed_paths.
-- QUAL-002 (Test Coverage): New routes/engines must have corresponding tests in tests/.
-- QUAL-003 (AST Integrity): No broken syntax or invalid JSX tags.
-- QUAL-004 (WCAG Accessibility): Button aria-labels, click div role=button, tabIndex={{0}}, onKeyDown.
-
-DECISION RULES:
-- CRITICAL/HIGH = exploitable vulnerability, auth bypass, injection, secret leak, broken access control, unhandled crash. If ANY remain:
-  Output VERDICT: CHANGES REQUESTED and BLOCKING: YES.
-- MEDIUM/LOW = hardening & polish (signed cookies, dep pinning, log hygiene, docs). List them, but output:
-  VERDICT: CHANGES REQUESTED and BLOCKING: NO.
-- If clean: VERDICT: APPROVED and BLOCKING: NO.
+Evaluate this pull request strictly according to:
+1. Security & Authentication (SEC-001 to SEC-004): No hardcoded secrets, no unauthenticated mutations, CSRF validated, input rate limiting.
+2. Syntax & AST: Clean imports, zero AST syntax breaks, proper error handling.
+3. Quality & Test Coverage: Critical paths covered with tests.
+4. Minimal Diff: Allowed paths respected.
 
 OUTPUT FORMAT (Strict plain text first two lines):
 Line 1: VERDICT: [APPROVED | CHANGES REQUESTED]
@@ -142,7 +223,7 @@ Then follow with Markdown review report."""
         },
     )
 
-    with urllib.request.urlopen(req_llm) as resp:
+    with urllib.request.urlopen(req_llm, timeout=45) as resp:
         llm_resp = json.load(resp)
 
     review_text = llm_resp["choices"][0]["message"]["content"]
@@ -163,7 +244,7 @@ Then follow with Markdown review report."""
         headers=headers,
     )
     try:
-        with urllib.request.urlopen(req_post) as resp:
+        with urllib.request.urlopen(req_post, timeout=15) as resp:
             print(f"✅ Review posted to PR #{pr_number}. Decision: [{verdict}] (Status: {resp.status})")
     except Exception as e:
         print(f"Review comment error: {e}")
@@ -172,30 +253,58 @@ Then follow with Markdown review report."""
 
 
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: python -m magda_agent.guardian.pr_auditor <PR_NUMBER> <REPO>")
-        sys.exit(1)
-
-    pr_num = int(sys.argv[1])
-    repo = sys.argv[2]
+    args = sys.argv[1:]
+    if not args:
+        print("Magda-Agent PR Auditor CLI")
+        print("Usage:")
+        print("  python -m magda_agent.guardian.pr_auditor status [<REPO>]")
+        print("  python -m magda_agent.guardian.pr_auditor cleanup <PR_NUMBER> [<REPO>]")
+        print("  python -m magda_agent.guardian.pr_auditor review <PR_NUMBER> [<REPO>]")
+        print("  python -m magda_agent.guardian.pr_auditor <PR_NUMBER> <REPO>  (legacy compat)")
+        sys.exit(0)
 
     token = os.getenv("GH_PAT") or os.getenv("GITHUB_TOKEN", "")
-    openai_key = os.getenv("OPENAI_API_KEY", "")
-    openai_base = os.getenv("OPENAI_BASE_URL", "https://api.inceptionlabs.ai/v1")
-    model = os.getenv("OPENAI_MODEL", "mercury-2")
+    default_repo = "coruhoorhan/airbnb-app"
 
-    if not token or not openai_key:
-        print("❌ Missing GH_PAT or OPENAI_API_KEY environment variables.")
-        sys.exit(1)
+    cmd = args[0].lower()
 
-    verdict, _, blocking = review_pr(pr_num, repo, token, openai_key, openai_base, model)
-
-    if blocking:
-        print(f"❌ [QUALITY GATE BLOCKED]: PR #{pr_num} has BLOCKING findings. Auto-merge is HALTED.")
-        sys.exit(1)
-    else:
-        print(f"🎉 [QUALITY GATE PASSED]: PR #{pr_num} approved by Auditor. Proceeding to Auto-Merge.")
+    if cmd == "status":
+        repo = args[1] if len(args) > 1 else default_repo
+        print_pr_status_report(repo, token)
         sys.exit(0)
+
+    elif cmd == "cleanup":
+        if len(args) < 2:
+            print("Usage: python -m magda_agent.guardian.pr_auditor cleanup <KEEP_PR_NUMBER> [<REPO>]")
+            sys.exit(1)
+        pr_num = int(args[1])
+        repo = args[2] if len(args) > 2 else default_repo
+        closed = auto_close_superseded_prs(pr_num, repo, token)
+        print(f"✅ Total superseded PRs closed: {closed}")
+        sys.exit(0)
+
+    elif cmd == "review" or cmd.isdigit():
+        pr_num = int(args[1]) if cmd == "review" else int(args[0])
+        repo = args[2] if (cmd == "review" and len(args) > 2) else (args[1] if (cmd.isdigit() and len(args) > 1) else default_repo)
+
+        openai_key = os.getenv("OPENAI_API_KEY", "")
+        openai_base = os.getenv("OPENAI_BASE_URL", "https://api.inceptionlabs.ai/v1")
+        model = os.getenv("OPENAI_MODEL", "mercury-2")
+
+        if not token or not openai_key:
+            print("❌ Missing GH_PAT/GITHUB_TOKEN or OPENAI_API_KEY environment variables.")
+            sys.exit(1)
+
+        verdict, _, blocking = review_pr(pr_num, repo, token, openai_key, openai_base, model)
+        if blocking:
+            print(f"❌ [QUALITY GATE BLOCKED]: PR #{pr_num} has BLOCKING findings. Auto-merge is HALTED.")
+            sys.exit(1)
+        else:
+            print(f"🎉 [QUALITY GATE PASSED]: PR #{pr_num} approved by Auditor. Proceeding to Auto-Merge.")
+            sys.exit(0)
+    else:
+        print(f"Unknown command: {cmd}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

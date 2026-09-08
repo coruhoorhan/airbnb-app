@@ -3,10 +3,6 @@ on:
   pull_request:
     types: [closed]
     branches: [main]
-  push:
-    branches: [main]
-    paths:
-      - "agent_tasks.json"
   workflow_dispatch:
     inputs:
       force:
@@ -19,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     if: >
       github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'push' ||
       (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     steps:
       - name: Checkout repository
@@ -27,20 +22,28 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
 
-      - name: Check task queue and Smart Quota Governor (Max 100 sessions / day)
+      - name: Check task queue, Anti-Repeat Locks & Smart Quota Governor
         id: task_check
         env:
           JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+          GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
           FORCE: ${{ inputs.force }}
         run: |
           python3 - <<'PYEOF'
-          import json, os, sys, urllib.request
+          import json, os, sys, urllib.request, re
           from datetime import datetime, timezone
+
+          out_path = os.environ.get("GITHUB_OUTPUT", "/dev/null")
+          def halt(reason: str):
+              print(f"🛑 [GOVERNOR HALT]: {reason}")
+              with open(out_path, "a", encoding="utf-8") as out:
+                  out.write("should_run=false\n")
+              sys.exit(0)
 
           manifest_path = "agent_tasks.json"
           if not os.path.exists(manifest_path):
-              print("agent_tasks.json missing! Halting.")
-              sys.exit(1)
+              halt("agent_tasks.json missing!")
 
           with open(manifest_path, "r", encoding="utf-8") as f:
               data = json.load(f)
@@ -48,57 +51,73 @@ jobs:
           tasks = data.get("tasks", [])
           todos = [t for t in tasks if t.get("status") == "todo" and t.get("claimed_by") not in ("human", "veyyon")]
 
-          print(f"Total tasks in manifest: {len(tasks)} | Active unblocked TODOs: {len(todos)}")
-          out_path = os.environ.get("GITHUB_OUTPUT", "/dev/null")
-
+          print(f"Total tasks: {len(tasks)} | Active TODOs: {len(todos)}")
           if not todos:
-              print("No remaining TODO tasks in queue. Jules is idle.")
-              with open(out_path, "a", encoding="utf-8") as out:
-                  out.write("should_run=false\n")
-              sys.exit(0)
+              halt("No remaining TODO tasks in queue. Jules is idle.")
 
-          # --- DYNAMIC QUOTA & CONCURRENCY GOVERNOR ---
-          jules_key = os.environ.get("JULES_API_KEY", "").strip()
+          next_t = todos[0]
+          next_id = str(next_t.get("id", "")).strip()
+          next_title = str(next_t.get("title", "")).strip()
           force = os.environ.get("FORCE", "false").lower() == "true"
 
+          print(f"👉 Next Candidate Task: [{next_id}] {next_title}")
+
+          gh_token = os.environ.get("GH_PAT", "").strip()
+          repo = os.environ.get("REPO", "coruhoorhan/airbnb-app").strip()
+
+          # --- 1. ANTI-REPEAT LOCK (Check Open PRs) ---
+          if gh_token and not force:
+              try:
+                  req_pr = urllib.request.Request(
+                      f"https://api.github.com/repos/{repo}/pulls?state=open&per_page=50",
+                      headers={"Authorization": f"Bearer {gh_token}", "Accept": "application/vnd.github+json"}
+                  )
+                  with urllib.request.urlopen(req_pr, timeout=20) as resp:
+                      open_prs = json.loads(resp.read().decode())
+
+                  # If there are open PRs or a PR exists for this task, DO NOT DISPATCH
+                  if len(open_prs) > 0:
+                      halt(f"There are already {len(open_prs)} open PRs pending review/merge. Resolving current PRs first.")
+
+                  for pr in open_prs:
+                      p_title = pr.get("title", "").lower()
+                      p_branch = pr.get("head", {}).get("ref", "").lower()
+                      if next_id.lower() in p_title or next_id.lower() in p_branch:
+                          halt(f"Anti-Repeat Lock: PR #{pr.get('number')} is already open for task [{next_id}].")
+              except Exception as e:
+                  print(f"Warning checking open PRs: {e}")
+
+          # --- 2. JULES SESSION CONCURRENCY & QUOTA GOVERNOR ---
+          jules_key = os.environ.get("JULES_API_KEY", "").strip()
           if jules_key and not force:
               try:
-                  req = urllib.request.Request(
+                  req_s = urllib.request.Request(
                       "https://jules.googleapis.com/v1alpha/sessions?pageSize=50",
                       headers={"X-Goog-Api-Key": jules_key, "Accept": "application/json"}
                   )
-                  with urllib.request.urlopen(req, timeout=30) as resp:
+                  with urllib.request.urlopen(req_s, timeout=20) as resp:
                       raw_s = json.load(resp).get("sessions", [])
 
-                  # 1. Calculate today's session usage
                   today_prefix = datetime.now(timezone.utc).strftime("%Y-%m-%d")
                   today_count = sum(1 for s in raw_s if (s.get("createTime") or "").startswith(today_prefix))
-                  print(f"📊 Jules Daily Session Usage: {today_count} / 100 sessions used today")
+                  print(f"📊 Jules Daily Session Usage: {today_count} / 100 sessions today")
 
-                  # 2. Concurrency Throttle Rule:
-                  # - Normal (< 90): Max 2 concurrent sessions
-                  # - Buffer Zone (>= 90): Max 1 session (reserves remaining 10 slots for PR revisions)
-                  max_concurrent = 1 if today_count >= 90 else 2
+                  # Max 20 automated sessions per day to prevent runaway quota burn
+                  if today_count >= 20:
+                      halt(f"Daily hard quota limit reached ({today_count} sessions). Cooling down until tomorrow.")
 
                   active_states = {"QUEUED", "PLANNING", "IN_PROGRESS", "AWAITING_USER_FEEDBACK", "AWAITING_PLAN_APPROVAL"}
-                  running = [s for s in raw_s if s.get("state") in active_states and "Autonomous Airbnb" in s.get("title", "")]
-
-                  if len(running) >= max_concurrent:
-                      print(f"⚠️ Active Jules sessions ({len(running)}) reached limit ({max_concurrent}).")
-                      if today_count >= 90:
-                          print("🚨 Quota Governor Alert: Usage >= 90. Throttled to reserve revision slots for open PRs.")
-                      with open(out_path, "a", encoding="utf-8") as out:
-                          out.write("should_run=false\n")
-                      sys.exit(0)
+                  running = [s for s in raw_s if s.get("state") in active_states]
+                  if len(running) >= 1:
+                      halt(f"Concurrency Guard: An active Jules session ({len(running)}) is already running.")
               except Exception as e:
-                  print(f"Quota Governor API check error ({e}); proceeding with single dispatch.")
+                  print(f"Warning checking Jules quota: {e}")
 
-          next_t = todos[0]
-          print(f"✅ Dispatching 5-in-1 Super Batch to Jules: [{next_t.get('id')}] {next_t.get('title')}")
+          print(f"✅ Dispatched task to Jules: [{next_id}] {next_title}")
           with open(out_path, "a", encoding="utf-8") as out:
               out.write("should_run=true\n")
-              out.write("next_task_id=" + str(next_t.get("id")) + "\n")
-              out.write("next_task_title=" + str(next_t.get("title")) + "\n")
+              out.write("next_task_id=" + next_id + "\n")
+              out.write("next_task_title=" + next_title + "\n")
           PYEOF
 
       - name: Trigger Google Jules via Official API
@@ -127,7 +146,14 @@ jobs:
           - Every PR must include focused tests for the new behavior; keep the diff minimal (task files + tests only).
           EOF
           )
-          curl -f 'https://jules.googleapis.com/v1alpha/sessions'             -X POST             -H "Content-Type: application/json"             -H "X-Goog-Api-Key: ${{ secrets.JULES_API_KEY }}"             -d "$(jq -n               --arg prompt "$PROMPT"               --arg source "sources/github/${{ github.repository }}"               '{
+          curl -f 'https://jules.googleapis.com/v1alpha/sessions' \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-Goog-Api-Key: ${{ secrets.JULES_API_KEY }}" \
+            -d "$(jq -n \
+              --arg prompt "$PROMPT" \
+              --arg source "sources/github/${{ github.repository }}" \
+              '{
                 "prompt": $prompt,
                 "sourceContext": {"source": $source, "githubRepoContext": {"startingBranch": "main"}},
                 "automationMode": "AUTO_CREATE_PR",
