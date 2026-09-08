@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Search, Menu, Heart, Briefcase, PlusCircle, Home, Bell, Check, Sparkles, Globe, Compass, Waves, MessageCircle, Sun, Moon, Gift, Star } from "lucide-react";
+import { Search, Menu, Heart, Briefcase, PlusCircle, Home, Bell, Check, Sparkles, Globe, Compass, Waves, MessageCircle, Sun, Moon, Gift, Star, BellRing } from "lucide-react";
 import { getAvailableCurrencies } from "../lib/currencyEngine.js";
+import { usePushNotifications } from "./PushNotificationProvider.jsx";
 
 export function Navbar({ 
   currentUser, 
@@ -23,6 +24,7 @@ export function Navbar({
   loyaltyTier = null
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { isSubscribed, subscribe, unsubscribe } = usePushNotifications();
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark" ||
            (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches);
@@ -257,6 +259,24 @@ export function Navbar({
                 </div>
 
                 <div className="py-1">
+                  <button
+                    onClick={() => {
+                      if (isSubscribed) {
+                        unsubscribe();
+                      } else {
+                        subscribe();
+                      }
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-charcoal hover:bg-charcoal-bg dark:text-gray-300 dark:hover:bg-white/5 font-medium flex items-center justify-between cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <BellRing className="w-4 h-4 text-amber-500" />
+                      <span>Anlık Bildirimler</span>
+                    </div>
+                    <div className={`w-8 h-4 rounded-full flex items-center px-0.5 transition-colors ${isSubscribed ? 'bg-airbnb' : 'bg-gray-300 dark:bg-gray-600'}`}>
+                      <div className={`w-3 h-3 bg-white rounded-full transform transition-transform ${isSubscribed ? 'translate-x-4' : 'translate-x-0'}`}></div>
+                    </div>
+                  </button>
                   <button 
                     onClick={() => onViewChange("explore")}
                     className="w-full text-left px-4 py-2.5 text-sm text-charcoal dark:text-white hover:bg-charcoal-bg dark:hover:bg-white/5 font-medium flex items-center gap-2.5 cursor-pointer"
