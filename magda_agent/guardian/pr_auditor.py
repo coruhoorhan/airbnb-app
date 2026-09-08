@@ -152,36 +152,40 @@ def review_pr(
     """Audits PR diff against security, syntax, and architectural standards using LLM."""
     headers = _get_github_headers(token)
 
-    # 1. Auto-close superseded duplicate PRs first
-    auto_close_superseded_prs(pr_number, repo, token)
+    try:
+        # 1. Auto-close superseded duplicate PRs first
+        try:
+            auto_close_superseded_prs(pr_number, repo, token)
+        except Exception as e:
+            print(f"Warning auto-closing superseded PRs: {e}")
 
-    # 2. Fetch PR diff
-    diff_headers = {**headers, "Accept": "application/vnd.github.v3.diff"}
-    req_diff = urllib.request.Request(
-        f"https://api.github.com/repos/{repo}/pulls/{pr_number}",
-        headers=diff_headers,
-    )
-    with urllib.request.urlopen(req_diff, timeout=30) as resp:
-        diff_text = resp.read().decode("utf-8")
+        # 2. Fetch PR diff
+        diff_headers = {**headers, "Accept": "application/vnd.github.v3.diff"}
+        req_diff = urllib.request.Request(
+            f"https://api.github.com/repos/{repo}/pulls/{pr_number}",
+            headers=diff_headers,
+        )
+        with urllib.request.urlopen(req_diff, timeout=30) as resp:
+            diff_text = resp.read().decode("utf-8")
 
-    # 3. Fetch PR info
-    req_info = urllib.request.Request(
-        f"https://api.github.com/repos/{repo}/pulls/{pr_number}",
-        headers=headers,
-    )
-    with urllib.request.urlopen(req_info, timeout=30) as resp:
-        pr_info = json.loads(resp.read().decode("utf-8"))
+        # 3. Fetch PR info
+        req_info = urllib.request.Request(
+            f"https://api.github.com/repos/{repo}/pulls/{pr_number}",
+            headers=headers,
+        )
+        with urllib.request.urlopen(req_info, timeout=30) as resp:
+            pr_info = json.loads(resp.read().decode("utf-8"))
 
-    pr_title = pr_info.get("title", "")
-    pr_body = pr_info.get("body", "")
+        pr_title = pr_info.get("title", "")
+        pr_body = pr_info.get("body", "")
 
-    # Truncate diff if extremely large
-    if len(diff_text) > 40000:
-        diff_text = diff_text[:40000] + "\n...[DIFF TRUNCATED FOR SIZE]..."
+        # Truncate diff if extremely large
+        if len(diff_text) > 40000:
+            diff_text = diff_text[:40000] + "\n...[DIFF TRUNCATED FOR SIZE]..."
 
-    print(f"🔍 [Magda AI Quality Gate]: Auditing PR #{pr_number} on {repo} with {model}...")
+        print(f"🔍 [Magda AI Quality Gate]: Auditing PR #{pr_number} on {repo} with {model}...")
 
-    prompt = f"""PR #{pr_number}: {pr_title}
+        prompt = f"""PR #{pr_number}: {pr_title}
 Repository: {repo}
 Description:
 {pr_body}
@@ -203,54 +207,57 @@ Line 2: BLOCKING: [YES | NO]
 
 Then follow with Markdown review report."""
 
-    llm_payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": "You are Magda AI Principal Code Auditor, an independent security and quality inspector."},
-            {"role": "user", "content": prompt},
-        ],
-        "temperature": 0.2,
-        "max_tokens": 1600,
-    }
+        llm_payload = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": "You are Magda AI Principal Code Auditor, an independent security and quality inspector."},
+                {"role": "user", "content": prompt},
+            ],
+            "temperature": 0.2,
+            "max_tokens": 1600,
+        }
 
-    req_llm = urllib.request.Request(
-        f"{openai_base}/chat/completions",
-        data=json.dumps(llm_payload).encode("utf-8"),
-        headers={
-            "Authorization": f"Bearer {openai_key}",
-            "Content-Type": "application/json",
-            "User-Agent": "Magda-Auditor",
-        },
-    )
+        req_llm = urllib.request.Request(
+            f"{openai_base}/chat/completions",
+            data=json.dumps(llm_payload).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {openai_key}",
+                "Content-Type": "application/json",
+                "User-Agent": "Magda-Auditor",
+            },
+        )
 
-    with urllib.request.urlopen(req_llm, timeout=45) as resp:
-        llm_resp = json.load(resp)
+        with urllib.request.urlopen(req_llm, timeout=45) as resp:
+            llm_resp = json.load(resp)
 
-    review_text = llm_resp["choices"][0]["message"]["content"]
-    v_match = re.search(r"VERDICT:\s*(APPROVED|CHANGES REQUESTED)", review_text, re.I)
-    b_match = re.search(r"BLOCKING:\s*(YES|NO)", review_text, re.I)
+        review_text = llm_resp["choices"][0]["message"]["content"]
+        v_match = re.search(r"VERDICT:\s*(APPROVED|CHANGES REQUESTED)", review_text, re.I)
+        b_match = re.search(r"BLOCKING:\s*(YES|NO)", review_text, re.I)
 
-    verdict = v_match.group(1).upper() if v_match else "CHANGES REQUESTED"
-    blocking = (b_match.group(1).upper() == "YES") if b_match else True
+        verdict = v_match.group(1).upper() if v_match else "CHANGES REQUESTED"
+        blocking = (b_match.group(1).upper() == "YES") if b_match else True
 
-    # Post review comment to GitHub PR
-    review_payload = {
-        "body": f"## 🤖 Magda AI Independent Code Auditor Quality Gate\n\n{review_text}\n\n---\n*Audited autonomously by Inception Labs Mercury-2 Cognitive Quality Gate.*",
-        "event": "COMMENT",
-    }
-    req_post = urllib.request.Request(
-        f"https://api.github.com/repos/{repo}/pulls/{pr_number}/reviews",
-        data=json.dumps(review_payload).encode("utf-8"),
-        headers=headers,
-    )
-    try:
-        with urllib.request.urlopen(req_post, timeout=15) as resp:
-            print(f"✅ Review posted to PR #{pr_number}. Decision: [{verdict}] (Status: {resp.status})")
+        # Post review comment to GitHub PR
+        review_payload = {
+            "body": f"## 🤖 Magda AI Independent Code Auditor Quality Gate\n\n{review_text}\n\n---\n*Audited autonomously by Inception Labs Mercury-2 Cognitive Quality Gate.*",
+            "event": "COMMENT",
+        }
+        req_post = urllib.request.Request(
+            f"https://api.github.com/repos/{repo}/pulls/{pr_number}/reviews",
+            data=json.dumps(review_payload).encode("utf-8"),
+            headers=headers,
+        )
+        try:
+            with urllib.request.urlopen(req_post, timeout=15) as resp:
+                print(f"✅ Review posted to PR #{pr_number}. Decision: [{verdict}] (Status: {resp.status})")
+        except Exception as e:
+            print(f"Review comment error: {e}")
+
+        return verdict, review_text, blocking
     except Exception as e:
-        print(f"Review comment error: {e}")
-
-    return verdict, review_text, blocking
-
+        err_msg = f"Auditor exception during review of PR #{pr_number}: {e}"
+        print(f"❌ {err_msg}")
+        return "CHANGES REQUESTED", err_msg, True
 
 def main():
     args = sys.argv[1:]

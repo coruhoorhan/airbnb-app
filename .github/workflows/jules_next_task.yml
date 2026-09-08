@@ -65,9 +65,10 @@ jobs:
           gh_token = os.environ.get("GH_PAT", "").strip()
           repo = os.environ.get("REPO", "coruhoorhan/airbnb-app").strip()
 
-          # --- 1. ANTI-REPEAT LOCK (Check Open PRs) ---
+          # --- 1. ANTI-REPEAT LOCK (Check Open & Merged PRs) ---
           if gh_token and not force:
               try:
+                  # Check Open PRs: Halt if any PR is open
                   req_pr = urllib.request.Request(
                       f"https://api.github.com/repos/{repo}/pulls?state=open&per_page=50",
                       headers={"Authorization": f"Bearer {gh_token}", "Accept": "application/vnd.github+json"}
@@ -75,18 +76,42 @@ jobs:
                   with urllib.request.urlopen(req_pr, timeout=20) as resp:
                       open_prs = json.loads(resp.read().decode())
 
-                  # If there are open PRs or a PR exists for this task, DO NOT DISPATCH
                   if len(open_prs) > 0:
                       halt(f"There are already {len(open_prs)} open PRs pending review/merge. Resolving current PRs first.")
 
-                  for pr in open_prs:
-                      p_title = pr.get("title", "").lower()
-                      p_branch = pr.get("head", {}).get("ref", "").lower()
-                      if next_id.lower() in p_title or next_id.lower() in p_branch:
-                          halt(f"Anti-Repeat Lock: PR #{pr.get('number')} is already open for task [{next_id}].")
-              except Exception as e:
-                  print(f"Warning checking open PRs: {e}")
+                  # Check recently closed/merged PRs to avoid re-dispatching already merged tasks
+                  req_closed = urllib.request.Request(
+                      f"https://api.github.com/repos/{repo}/pulls?state=closed&per_page=30",
+                      headers={"Authorization": f"Bearer {gh_token}", "Accept": "application/vnd.github+json"}
+                  )
+                  with urllib.request.urlopen(req_closed, timeout=20) as resp:
+                      closed_prs = json.loads(resp.read().decode())
 
+                  candidate_already_merged = False
+                  for cpr in closed_prs:
+                      if not cpr.get("merged_at"):
+                          continue
+                      cp_title = cpr.get("title", "").lower()
+                      cp_branch = cpr.get("head", {}).get("ref", "").lower()
+                      if next_id.lower() in cp_title or next_id.lower() in cp_branch:
+                          candidate_already_merged = True
+                          print(f"⚠️ Task [{next_id}] was already merged in PR #{cpr.get('number')}. Auto-marking done.")
+                          next_t["status"] = "done"
+                          next_t["completed_at"] = time.time()
+                          with open(manifest_path, "w", encoding="utf-8") as f:
+                              json.dump(data, f, indent=2, ensure_ascii=False)
+                          break
+
+                  if candidate_already_merged:
+                      todos = [t for t in tasks if t.get("status") == "todo" and t.get("claimed_by") not in ("human", "veyyon")]
+                      if not todos:
+                          halt("All tasks completed after advancing merged candidate.")
+                      next_t = todos[0]
+                      next_id = str(next_t.get("id", "")).strip()
+                      next_title = str(next_t.get("title", "")).strip()
+                      print(f"👉 Advanced to Next Candidate Task: [{next_id}] {next_title}")
+              except Exception as e:
+                  print(f"Warning checking PR anti-repeat status: {e}")
           # --- 2. JULES SESSION CONCURRENCY & QUOTA GOVERNOR ---
           jules_key = os.environ.get("JULES_API_KEY", "").strip()
           if jules_key and not force:

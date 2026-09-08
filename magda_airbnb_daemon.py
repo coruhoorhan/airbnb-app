@@ -319,8 +319,12 @@ class MagdaAutonomousWatchdog:
                     SELECT b1.id AS b1_id, b2.id AS b2_id, b1.listingId, b1.checkIn, b1.checkOut 
                     FROM bookings b1 
                     JOIN bookings b2 ON b1.listingId = b2.listingId AND b1.id < b2.id 
-                    WHERE b1.status = 'confirmed' AND b2.status = 'confirmed' AND b1.id NOT LIKE '%test%' AND b1.id NOT LIKE 'book_rec_%' AND b2.id NOT LIKE '%test%' AND b2.id NOT LIKE 'book_rec_%' 
-                    AND b1.checkIn < b2.checkOut AND b1.checkOut > b2.checkIn
+                    WHERE b1.status = 'confirmed' AND b2.status = 'confirmed' 
+                      AND b1.id NOT LIKE '%test%' AND b1.id NOT LIKE 'book_%' AND b1.id NOT LIKE 'ical_%' AND b1.id NOT LIKE '%_rec_%'
+                      AND b1.guestId NOT LIKE '%test%' AND b1.guestId NOT LIKE 'guest_%'
+                      AND b2.id NOT LIKE '%test%' AND b2.id NOT LIKE 'book_%' AND b2.id NOT LIKE 'ical_%' AND b2.id NOT LIKE '%_rec_%'
+                      AND b2.guestId NOT LIKE '%test%' AND b2.guestId NOT LIKE 'guest_%'
+                      AND b1.checkIn < b2.checkOut AND b1.checkOut > b2.checkIn
                 """).fetchall()
 
                 for c in conflicts:
@@ -345,7 +349,7 @@ class MagdaAutonomousWatchdog:
             # 2. Zero-Price Listings Auto-Heal
             try:
                 zero_prices = conn.execute(
-                    "SELECT id, title FROM listings WHERE isPublished = 1 AND (pricePerNight <= 0 OR pricePerNight IS NULL)"
+                    "SELECT id, title FROM listings WHERE isPublished = 1 AND (pricePerNight <= 0 OR pricePerNight IS NULL) AND id NOT LIKE '%test%' AND id NOT LIKE 'list_%' AND title NOT LIKE '%test%'"
                 ).fetchall()
 
                 for zp in zero_prices:
@@ -381,7 +385,14 @@ class MagdaAutonomousWatchdog:
                     SELECT b.id AS booking_id, b.totalPrice, b.guestId 
                     FROM bookings b 
                     LEFT JOIN payments p ON b.id = p.bookingId 
-                    WHERE b.status = 'confirmed' AND (p.status = 'failed' OR p.id IS NULL)
+                    WHERE b.status = 'confirmed' 
+                      AND (p.status = 'failed' OR p.id IS NULL)
+                      AND b.id NOT LIKE '%test%' 
+                      AND b.id NOT LIKE 'book_%' 
+                      AND b.id NOT LIKE 'ical_%' 
+                      AND b.id NOT LIKE '%_rec_%'
+                      AND b.guestId NOT LIKE '%test%' 
+                      AND b.guestId NOT LIKE 'guest_%'
                 """).fetchall()
 
                 for fp in failed_payments:
@@ -428,6 +439,10 @@ class MagdaAutonomousWatchdog:
 
     def _git_commit_and_push(self, message: str) -> bool:
         """Commits agent_tasks.json changes and pushes to origin/main with debounce protection."""
+        auto_push = os.getenv("MAGDA_DAEMON_AUTO_GIT_PUSH", "false").lower() in ("true", "1", "yes")
+        if not auto_push:
+            logger.info("MAGDA_DAEMON_AUTO_GIT_PUSH is disabled (default). Skipping git push.")
+            return False
         now = time.time()
         if (now - self._last_push_time) < 1800:
             logger.info(f"Debounce Governor: Skipping git push (cooldown: {int(1800 - (now - self._last_push_time))}s remaining).")
@@ -539,13 +554,19 @@ class MagdaAutonomousWatchdog:
         archived = manifest_data.get("archived_tasks", [])
         existing_ids = {t["id"] for t in tasks}.union({t["id"] for t in archived})
 
-        # LLM Fullstack Review Cycle (run if todo pool is low or periodically)
+        # LLM Fullstack Review Cycle (governed by replenishment policy)
         todo_tasks = [t for t in tasks if t.get("status") == "todo"]
+        todo_count = len(todo_tasks)
+        min_required = manifest_data.get("replenishment_policy", {}).get("minimum_todo_tasks", 3)
+
         self._llm_scan_counter += 1
         llm_proposed_count = 0
 
-        # 7/24 Autonomous Magda Brain: Propose next improvements when queue is low or on schedule
-        should_run_llm = len(todo_tasks) < 5 or (self._llm_scan_counter % 5 == 0)
+        if todo_count >= min_required:
+            logger.info(f"Task pool healthy ({todo_count} active TODOs >= minimum {min_required}). Skipping new task generation.")
+            should_run_llm = False
+        else:
+            should_run_llm = True
         new_llm_tasks = []
         if should_run_llm:
             logger.info("🧠 Triggering Inception Labs Mercury-2 Fullstack AI Code Reviewer...")
