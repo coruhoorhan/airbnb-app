@@ -25,6 +25,57 @@ export function MagdaConciergeWidget({ onSelectListing }) {
     }
   }, [messages, isOpen]);
 
+
+  useEffect(() => {
+    if (isOpen) {
+      scrollToBottom();
+      fetchChatHistory();
+    }
+  }, [isOpen]);
+
+  const fetchChatHistory = async () => {
+    try {
+      const res = await fetch("/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: `
+            query {
+              magdaChatHistory {
+                id
+                text
+                senderId
+                senderName
+                createdAt
+                recommendations {
+                  id
+                  title
+                  city
+                  pricePerNight
+                  rating
+                  imageUrl
+                }
+              }
+            }
+          `
+        }),
+      });
+      const result = await res.json();
+      if (result.data && result.data.magdaChatHistory && result.data.magdaChatHistory.length > 0) {
+        const historyMsgs = result.data.magdaChatHistory.map(msg => ({
+          sender: msg.senderId === "magda" ? "magda" : "user",
+          text: msg.text,
+          recommendations: msg.recommendations || [],
+          timestamp: new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+        }));
+        setMessages(historyMsgs);
+      }
+    } catch (err) {
+      console.error("Failed to fetch chat history:", err);
+    }
+  };
+
+
   const handleSendMessage = async (queryToSend = null) => {
     const query = (queryToSend || inputQuery).trim();
     if (!query || isLoading) return;
@@ -39,21 +90,61 @@ export function MagdaConciergeWidget({ onSelectListing }) {
     setInputQuery("");
     setIsLoading(true);
 
+
     try {
-      const res = await fetch("/api/magda/concierge", {
+      // CSRF token
+      let csrfToken = "";
+      try {
+        const csrfRes = await fetch("/api/csrf-token");
+        const csrfData = await csrfRes.json();
+        csrfToken = csrfData.csrfToken;
+      } catch(e) { console.error(e); }
+
+      const safeQuery = query.substring(0, 500); // Input sanitization via length limit
+
+      const res = await fetch("/graphql", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query }),
+        headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": csrfToken
+        },
+        body: JSON.stringify({
+          query: `
+            mutation($message: String!) {
+              requestAiResponse(message: $message) {
+                id
+                text
+                senderId
+                recommendations {
+                  id
+                  title
+                  city
+                  pricePerNight
+                  rating
+                  imageUrl
+                }
+                createdAt
+              }
+            }
+          `,
+          variables: { message: safeQuery }
+        }),
       });
-      const data = await res.json();
+      const result = await res.json();
+
+      if (result.errors) {
+        throw new Error(result.errors[0].message);
+      }
+
+      const data = result.data.requestAiResponse;
 
       setMessages((prev) => [
         ...prev,
         {
           sender: "magda",
-          text: data.response || "Talebinizi inceledim, işte bulduğum en popüler seçenekler:",
+          text: data.text || "Talebinizi inceledim, işte bulduğum en popüler seçenekler:",
           recommendations: data.recommendations || [],
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          timestamp: new Date(data.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
     } catch (err) {
@@ -61,7 +152,7 @@ export function MagdaConciergeWidget({ onSelectListing }) {
         ...prev,
         {
           sender: "magda",
-          text: "Bağlantı esnasında bir hata oluştu. Lütfen tekrar deneyin.",
+          text: err.message || "Bağlantı esnasında bir hata oluştu. Lütfen tekrar deneyin.",
           recommendations: [],
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },

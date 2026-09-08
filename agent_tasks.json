@@ -590,7 +590,7 @@
     },
     {
       "id": "feat-14-ai-concierge-chat",
-      "status": "todo",
+      "status": "done",
       "area": "fullstack",
       "risk": "medium",
       "title": "AI‑Powered Concierge Chat Integration",
@@ -607,7 +607,9 @@
         "The GraphQL mutation `requestAiResponse` returns a non‑empty `AiMessage` object and respects the global rate‑limit (max 10 requests per minute per user)."
       ],
       "created_at": 1788787637.4706907,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "claimed_by": "jules",
+      "claimed_at": "2026-09-08T04:45:43.247Z"
     },
     {
       "id": "feat-15-graphql-subscriptions",

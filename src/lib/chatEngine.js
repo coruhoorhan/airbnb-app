@@ -1,5 +1,6 @@
 import { WebSocketServer, WebSocket } from "ws";
 import * as db from "./db.js";
+import { generateAiResponse } from "./aiConcierge.js";
 
 /**
  * Real-time WebSocket Chat Engine for Airbnb Fatsa Clone
@@ -155,4 +156,72 @@ class ChatWebSocketEngine {
 export const chatEngine = new ChatWebSocketEngine();
 export function setupChatWebSocketServer(httpServer) {
   return chatEngine.initialize(httpServer);
+}
+
+export async function requestAiResponse(message, user) {
+  const safeMessage = typeof message === "string" ? message.trim().substring(0, 500) : "";
+  if (!safeMessage) {
+    throw new Error("Geçersiz veya boş mesaj.");
+  }
+
+  const userId = user?.id || "guest";
+  const userName = user?.name || "Misafir Kullanıcı";
+  const listingId = "magda_concierge_" + userId;
+
+  // Ensure the dummy listing exists to satisfy foreign key constraints
+  try {
+    const existing = db.getListingById(listingId);
+    if (!existing) {
+            try {
+        if (!db.getUserById("magda")) {
+          db.db.prepare("INSERT INTO users (id, name, email, passwordHash, isHost, role, status, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").run("magda", "Magda AI", "magda@fatsaescapes.com", "virtual", 1, "magda", "active", Date.now());
+        }
+      } catch (e) {
+        console.error("Failed to ensure magda user:", e);
+      }
+      try {
+        const existing = db.getListingById(listingId);
+        if (!existing) {
+          db.db.prepare("INSERT INTO listings (id, hostId, title, description, pricePerNight, city, propertyType, category, address, amenities, images, maxGuests, bedrooms, beds, baths, lat, lng, isPublished, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").run(listingId, "magda", "Magda AI Concierge", "AI Concierge Session", 0, "Virtual", "Virtual", "AI", "Virtual Address", "[]", "[]", 1, 0, 0, 0, 0, 0, 1, Date.now());
+        }
+      } catch (e) {
+        console.error("Failed to ensure AI virtual listing:", e);
+      }
+    }
+  } catch (e) {
+    console.error("Warning: Failed to ensure dummy listing for AI chat", e);
+  }
+
+  // Insert user message
+  const userMsg = db.insertMessage({
+    listingId,
+    senderId: userId,
+    senderName: userName,
+    text: safeMessage
+  });
+
+  // Call AI Concierge
+  const aiResponseData = await generateAiResponse(safeMessage);
+
+  // Insert AI message
+  // Store both text and recommendations by serializing to JSON
+  // Only serialize if recommendations exist, otherwise just text
+  const serializedAiData = JSON.stringify({
+    text: aiResponseData.response,
+    recommendations: aiResponseData.recommendations || []
+  });
+
+  const aiMsg = db.insertMessage({
+    listingId,
+    senderId: "magda",
+    senderName: "Magda AI",
+    text: serializedAiData
+  });
+
+  return aiMsg;
+}
+
+export function getMagdaChatHistoryForUser(userId) {
+  const listingId = "magda_concierge_" + (userId || "guest");
+  return db.getMessagesForListing(listingId);
 }

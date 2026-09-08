@@ -7,8 +7,38 @@ import "express-async-errors";
 import { createHandler } from "graphql-http/lib/use/express";
 import DataLoader from "dataloader";
 import depthLimit from "graphql-depth-limit";
-import { schema } from "./src/lib/graphqlSchema.js";
-import { rootValue } from "./src/lib/graphqlResolvers.js";
+import { schema as originalSchema } from "./src/lib/graphqlSchema.js";
+import { printSchema, buildSchema } from "graphql";
+import { requestAiResponse, getMagdaChatHistoryForUser } from "./src/lib/chatEngine.js";
+import { rootValue as originalRootValue } from "./src/lib/graphqlResolvers.js";
+
+const rootValue = {
+  ...originalRootValue,
+  requestAiResponse: async ({ message }, context) => {
+    const aiMsg = await requestAiResponse(message, context.user);
+    // Deserialize AI message JSON for GraphQL
+    try {
+      const parsed = JSON.parse(aiMsg.text);
+      return { ...aiMsg, text: parsed.text, recommendations: parsed.recommendations };
+    } catch {
+      return { ...aiMsg, recommendations: [] };
+    }
+  },
+  magdaChatHistory: (args, context) => {
+    const history = getMagdaChatHistoryForUser(context.user?.id);
+    return history.map(msg => {
+      if (msg.senderId === 'magda') {
+        try {
+          const parsed = JSON.parse(msg.text);
+          return { ...msg, text: parsed.text, recommendations: parsed.recommendations || [] };
+        } catch {
+          return { ...msg, recommendations: [] };
+        }
+      }
+      return { ...msg, recommendations: [] };
+    });
+  }
+};
 import { getUsersByIds, getReviewsForListings } from "./src/lib/db.js";
 import express from "express";
 import cors from "cors";
@@ -117,6 +147,39 @@ import { authMiddleware, csrfMiddleware, generateToken, generateCsrfToken } from
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
+const schemaString = printSchema(originalSchema);
+const extendedSchemaString = schemaString + `
+  type AiRecommendation {
+    id: ID!
+    title: String!
+    city: String!
+    pricePerNight: Float!
+    rating: Float
+    imageUrl: String
+  }
+
+  type AiMessage {
+    id: ID!
+    text: String!
+    senderId: String!
+    senderName: String!
+    listingId: String!
+    createdAt: Float!
+    isRead: Boolean
+    recommendations: [AiRecommendation]
+  }
+
+  extend type Mutation {
+    requestAiResponse(message: String!): AiMessage!
+  }
+
+  extend type Query {
+    magdaChatHistory: [AiMessage!]!
+  }
+`;
+const schema = buildSchema(extendedSchemaString);
+
 const app = express();
 const PORT = process.env.PORT || 4000;
 
@@ -160,7 +223,18 @@ const authRateLimiter = createRateLimiter({
 
 
 
-app.use("/graphql", authRateLimiter, authMiddleware, createHandler({
+const aiConciergeLimiter = createRateLimiter({
+  windowMs: 60000,
+  maxRequests: 10,
+  message: "Saniyede çok fazla AI isteği gönderildi."
+});
+
+app.use("/graphql", authRateLimiter, authMiddleware, (req, res, next) => {
+  if (req.body && req.body.query && req.body.query.includes("requestAiResponse")) {
+    return aiConciergeLimiter(req, res, next);
+  }
+  next();
+}, createHandler({
   schema,
   rootValue,
   validationRules: [depthLimit(8)],
@@ -1361,21 +1435,6 @@ app.post("/api/experiences/reservations/:id/cancel", authMiddleware, csrfMiddlew
 });
 
 // --- 12.5. Magda-Agent Cognitive AI Engine Integration ---
-app.post("/api/magda/concierge", (req, res) => {
-  const query = req.body?.query || req.body?.prompt || "Fatsa merkezde kiralık ev";
-  execFile("python3", ["/opt/airbnb-app/magda_airbnb_bridge.py", "chat", query], (error, stdout, stderr) => {
-    if (error) {
-      return res.status(500).json({ success: false, error: error.message, details: stderr });
-    }
-    try {
-      const data = JSON.parse(stdout);
-      res.json(data);
-    } catch (parseErr) {
-      res.json({ status: "success", raw: stdout });
-    }
-  });
-});
-
 app.get("/api/magda/guardian/scan", (req, res) => {
   execFile("python3", ["/opt/airbnb-app/magda_airbnb_bridge.py", "guardian_scan"], (error, stdout, stderr) => {
     if (error) {
