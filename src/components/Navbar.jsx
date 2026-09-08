@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Search, Menu, Heart, Briefcase, PlusCircle, Home, Bell, Check, Sparkles, Globe, Compass, Waves, MessageCircle, Sun, Moon, Gift, Star } from "lucide-react";
+import { PushNotificationToggle } from "./PushNotificationProvider.jsx";
+
 import { getAvailableCurrencies } from "../lib/currencyEngine.js";
 
 export function Navbar({ 
@@ -255,6 +257,12 @@ export function Navbar({
                     {currentUser?.isHost ? "★ Ev Sahibi Modu" : "Misafir Hesabı"}
                   </span>
                 </div>
+
+                <div className="px-4 py-2 flex items-center justify-between border-b border-charcoal-border/50 dark:border-white/10">
+                  <span className="text-sm font-medium text-charcoal dark:text-white flex items-center gap-2.5">Bildirimler</span>
+                  <PushNotificationToggle />
+                </div>
+
 
                 <div className="py-1">
                   <button 

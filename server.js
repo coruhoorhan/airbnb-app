@@ -1,6 +1,7 @@
 import fs from "fs";
 import { generateIcsFeed, syncExternalIcal } from "./src/lib/calendarSync.js";
 import { saveSubscription, removeSubscription, getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
+import { saveSubscription as savePushSub, removeSubscription as removePushSub, sendNotification } from "./src/lib/pushNotificationEngine.js";
 import http from "http";
 import { setupChatWebSocketServer, chatEngine } from "./src/lib/chatEngine.js";
 import "express-async-errors";
@@ -945,7 +946,14 @@ app.put("/api/bookings/:id/status", authMiddleware, csrfMiddleware, (req, res) =
     }
   }
 
+
+  // Push Notification for booking status change
+  if (updated && updated.guestId) {
+    sendNotification(updated.guestId, { title: 'Rezervasyon Güncellemesi', body: 'Rezervasyon durumunuz değişti: ' + status }).catch(e => console.error(e));
+  }
+
   res.json({ success: true, data: updated });
+
 });
 
 // --- 11a. Rezervasyon İptal & İade API ---
@@ -1129,23 +1137,36 @@ app.put("/api/listings/:id/last-minute", (req, res) => {
 
 
 // --- Push Notification Endpoints ---
-app.post('/api/notifications/subscribe', (req, res) => {
-  const { userId, subscription } = req.body;
-  if (!userId || !subscription) {
-    return res.status(400).json({ success: false, error: "userId ve subscription alanları zorunludur." });
+
+
+
+// --- Push Notification API ---
+app.post("/api/notifications/subscribe", authMiddleware, csrfMiddleware, (req, res) => {
+  try {
+    const subscription = req.body.subscription || req.body;
+    const userId = req.body.userId || req.user.id;
+    if (!subscription || !subscription.endpoint) {
+      return res.status(400).json({ success: false, error: "Geçersiz abonelik verisi." });
+    }
+    const id = savePushSub(userId, subscription);
+    res.status(200).json({ success: true, id });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
-  const result = saveSubscription(userId, subscription);
-  res.json({ success: true, data: result });
 });
 
-app.post('/api/notifications/unsubscribe', (req, res) => {
-  const { userId, endpoint } = req.body;
-  if (!userId) {
-    return res.status(400).json({ success: false, error: "userId zorunludur." });
+app.post("/api/notifications/unsubscribe", authMiddleware, csrfMiddleware, (req, res) => {
+  try {
+    const userId = req.body.userId || req.user.id;
+    const endpoint = req.body.endpoint;
+    removePushSub(userId);
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
-  const result = removeSubscription(userId, endpoint);
-  res.json({ success: true, data: result });
 });
+
+
 
 
 // --- iCal Calendar Sync Endpoints ---
@@ -1234,7 +1255,17 @@ app.post("/api/messages", authMiddleware, csrfMiddleware, messageRateLimiter, (r
     }
     const msg = insertMessage({ listingId, senderId, senderName: user.name, text });
     broadcastToListing(listingId, msg);
+
+    // Push Notification for new message
+    const msgListing = getListingById(listingId);
+    if (msgListing) {
+      if (senderId !== msgListing.hostId) {
+         sendNotification(msgListing.hostId, { title: 'Yeni Mesaj (' + msgListing.title + ')', body: user.name + ': ' + text }).catch(e => console.error(e));
+      }
+    }
+
     res.status(201).json({ success: true, data: msg });
+
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
