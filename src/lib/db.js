@@ -34,10 +34,6 @@ try {
   db.exec("ALTER TABLE reviews ADD COLUMN moderationReason TEXT");
 } catch (e) {}
 
-try {
-  db.exec("ALTER TABLE bookings ADD COLUMN approvalStatus TEXT DEFAULT 'pending'");
-} catch (e) {}
-
 
 // Enable WAL mode for high performance concurrency
 db.pragma("journal_mode = WAL");
@@ -147,6 +143,7 @@ db.exec(`
     paymentStatus TEXT DEFAULT 'unpaid', -- 'unpaid', 'paid', 'refunded'
     paymentId TEXT,
     status TEXT NOT NULL DEFAULT 'pending', -- 'pending', 'confirmed', 'cancelled', 'completed'
+    approvalStatus TEXT DEFAULT 'pending',
     cancelReason TEXT,
     createdAt INTEGER NOT NULL,
     FOREIGN KEY(listingId) REFERENCES listings(id) ON DELETE CASCADE,
@@ -373,6 +370,9 @@ try {
   }
   if (!columnNames.includes("paymentId")) {
     db.exec("ALTER TABLE bookings ADD COLUMN paymentId TEXT");
+  }
+  if (!columnNames.includes("approvalStatus")) {
+    db.exec("ALTER TABLE bookings ADD COLUMN approvalStatus TEXT DEFAULT 'pending'");
   }
   const msgCols = db.prepare("PRAGMA table_info(messages)").all().map((c) => c.name);
   if (!msgCols.includes("isRead")) {

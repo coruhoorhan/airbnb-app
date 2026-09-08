@@ -123,6 +123,11 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(helmet({
+  strictTransportSecurity: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  },
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
