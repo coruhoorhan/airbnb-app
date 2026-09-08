@@ -47671,7 +47671,121 @@
       ],
       "created_at": 1788831666.7139587,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788831669083",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788831669083",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788831669083 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788831764.7676723,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788831669088",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788831669088",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788831669088 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788831764.809173,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788831669083_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788831669083_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788831669083_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788831764.851007,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788831669127",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788831669127",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788831669127 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788831764.8911672,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788831670111",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788831670111",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788831670111 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788831764.9336138,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-10-multi-currency-checkout",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Multi‑Currency Checkout Support",
+      "description": "Add end‑to‑end multi‑currency handling for the booking flow. Update the UI to display a currency selector and format all monetary values according to the selected currency. Extend the GraphQL schema and related DB tables to store the booking currency and exchange rate. Modify the checkout engine (src/lib/paymentEngine.js) to pass the chosen currency to the iyzico request and to calculate the total amount using the exchange rate from src/lib/currencyEngine.js. Update server.js to expose the new fields via GraphQL and ensure the resolver correctly saves and retrieves currency data. Adjust tests and documentation accordingly.",
+      "allowed_paths": [
+        "server.js",
+        "src/components/CheckoutModal.jsx",
+        "src/lib/paymentEngine.js",
+        "src/lib/currencyEngine.js",
+        "src/lib/bookingEngine.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js"
+      ],
+      "acceptance": [
+        "The listing detail page shows a dropdown of supported currencies and all displayed prices (nightly rate, fees, total) update instantly when a different currency is selected.",
+        "When a booking is created, the booking record contains the fields `currency` and `exchangeRate` and the total amount stored matches the selected currency conversion.",
+        "The payment request sent to iyzico includes the correct currency code and amount, and a successful payment results in a booking marked as paid in the chosen currency."
+      ],
+      "created_at": 1788831770.9949892,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788831666.713961
+  "updated_at": 1788831770.994992
 }
