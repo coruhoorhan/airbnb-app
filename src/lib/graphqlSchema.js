@@ -1,6 +1,7 @@
 import { buildSchema } from "graphql";
 import * as db from "./db.js";
 
+// Note: GraphQL query depth limit is set to 8 in server.js to mitigate DoS attacks.
 export const schema = buildSchema(`
   type User {
     id: ID!
