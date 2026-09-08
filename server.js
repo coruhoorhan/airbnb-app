@@ -9,6 +9,7 @@ import "express-async-errors";
 import { createHandler } from "graphql-http/lib/use/express";
 import DataLoader from "dataloader";
 import depthLimit from "graphql-depth-limit";
+import { createComplexityRule, simpleEstimator, fieldExtensionsEstimator } from "graphql-query-complexity";
 import { schema } from "./src/lib/graphqlSchema.js";
 import { rootValue } from "./src/lib/graphqlResolvers.js";
 import { getUsersByIds, getReviewsForListings } from "./src/lib/db.js";
@@ -170,7 +171,17 @@ const authRateLimiter = createRateLimiter({
 app.use("/graphql", authRateLimiter, authMiddleware, csrfMiddleware, createHandler({
   schema,
   rootValue,
-  validationRules: [depthLimit(8)],
+  validationRules: [
+    depthLimit(8),
+    (context) => createComplexityRule({
+      maximumComplexity: 200,
+      variables: context.variableValues || {},
+      estimators: [
+        fieldExtensionsEstimator(),
+        simpleEstimator({ defaultComplexity: 1 })
+      ]
+    })(context)
+  ],
   context: (req) => {
     return {
       user: req.raw.user,
@@ -195,6 +206,8 @@ app.use("/graphql", authRateLimiter, authMiddleware, csrfMiddleware, createHandl
     ...(process.env.NODE_ENV !== "production" && { stack: err.stack })
   })
 }));
+
+// Overriding response status for validation errors if necessary is natively handled by intercepting the response, but graphql-http handles validation errors natively.
 
 
 // --- Auth Endpoints ---
