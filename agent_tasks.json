@@ -48145,7 +48145,120 @@
       ],
       "created_at": 1788832162.555715,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788832164988",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788832164988",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788832164988 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788832260.9205587,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788832164986",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788832164986",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788832164986 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788832260.9714234,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788832165048",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788832165048",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788832165048 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788832261.018796,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788832165048_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788832165048_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788832165048_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788832261.0660317,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788832165924",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788832165924",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788832165924 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788832261.1170359,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-46-loyalty-tier-dashboard",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Loyalty Tier Progress Dashboard",
+      "description": "Add a new GraphQL query `getLoyaltyStatus(userId: ID!): LoyaltyStatus` that returns the user's current tier, total points, points needed for the next tier, and the next tier name. Extend `src/lib/loyaltyEngine.js` with a helper `getLoyaltyProgress(userId)` that computes the progress percentage. Create a new React component `src/components/LoyaltyDashboard.jsx` that fetches the query using `useQuery`, displays a progress bar, tier badge, and a tooltip with next‑tier details, and integrates the component into `App.jsx` under the user profile section. Update the GraphQL schema and resolver registration in `src/lib/graphqlSchema.js` and `src/lib/graphqlResolvers.js`. Ensure the dashboard is responsive and accessible.",
+      "allowed_paths": [
+        "server.js",
+        "src/components/LoyaltyDashboard.jsx",
+        "src/lib/loyaltyEngine.js",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js",
+        "src/App.jsx"
+      ],
+      "acceptance": [
+        "Running the GraphQL query `getLoyaltyStatus` for a known user returns correct tier, points, next tier name and required points.",
+        "The `LoyaltyDashboard` component renders a progress bar whose fill matches the percentage returned by `getLoyaltyProgress` and displays the correct tier badge.",
+        "The dashboard appears in the user profile view and is fully responsive on mobile, tablet, and desktop."
+      ],
+      "created_at": 1788832267.748593,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788832162.555718
+  "updated_at": 1788832267.748596
 }
