@@ -320,10 +320,10 @@ class MagdaAutonomousWatchdog:
                     FROM bookings b1 
                     JOIN bookings b2 ON b1.listingId = b2.listingId AND b1.id < b2.id 
                     WHERE b1.status = 'confirmed' AND b2.status = 'confirmed' 
-                      AND b1.id NOT LIKE '%test%' AND b1.id NOT LIKE 'book_%' AND b1.id NOT LIKE 'ical_%' AND b1.id NOT LIKE '%_rec_%'
-                      AND b1.guestId NOT LIKE '%test%' AND b1.guestId NOT LIKE 'guest_%'
-                      AND b2.id NOT LIKE '%test%' AND b2.id NOT LIKE 'book_%' AND b2.id NOT LIKE 'ical_%' AND b2.id NOT LIKE '%_rec_%'
-                      AND b2.guestId NOT LIKE '%test%' AND b2.guestId NOT LIKE 'guest_%'
+                      AND b1.id NOT LIKE '%test%' AND b1.id NOT LIKE 'book_%' AND b1.id NOT LIKE 'bkg_%' AND b1.id NOT LIKE 'ical_%' AND b1.id NOT LIKE '%_rec_%'
+                      AND b1.guestId NOT LIKE '%test%' AND b1.guestId NOT LIKE 'guest_%' AND b1.guestId NOT LIKE 'usr_%' AND b1.guestId NOT LIKE 'user_%'
+                      AND b2.id NOT LIKE '%test%' AND b2.id NOT LIKE 'book_%' AND b2.id NOT LIKE 'bkg_%' AND b2.id NOT LIKE 'ical_%' AND b2.id NOT LIKE '%_rec_%'
+                      AND b2.guestId NOT LIKE '%test%' AND b2.guestId NOT LIKE 'guest_%' AND b2.guestId NOT LIKE 'usr_%' AND b2.guestId NOT LIKE 'user_%'
                       AND b1.checkIn < b2.checkOut AND b1.checkOut > b2.checkIn
                 """).fetchall()
 
@@ -389,12 +389,14 @@ class MagdaAutonomousWatchdog:
                       AND (p.status = 'failed' OR p.id IS NULL)
                       AND b.id NOT LIKE '%test%' 
                       AND b.id NOT LIKE 'book_%' 
+                      AND b.id NOT LIKE 'bkg_%' 
                       AND b.id NOT LIKE 'ical_%' 
                       AND b.id NOT LIKE '%_rec_%'
                       AND b.guestId NOT LIKE '%test%' 
                       AND b.guestId NOT LIKE 'guest_%'
+                      AND b.guestId NOT LIKE 'usr_%'
+                      AND b.guestId NOT LIKE 'user_%'
                 """).fetchall()
-
                 for fp in failed_payments:
                     task_id = f"reconcile-payment-booking-{fp['booking_id']}"
                     desc = f"Ödemesi başarısız veya eksik olan onaylı rezervasyon: #{fp['booking_id']} (Tutar: {fp['totalPrice']} TL)"
