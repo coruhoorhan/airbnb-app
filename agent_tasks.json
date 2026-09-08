@@ -306,7 +306,7 @@
     },
     {
       "id": "security-hsts-header",
-      "status": "todo",
+      "status": "in_progress",
       "area": "security",
       "risk": "medium",
       "title": "Enforce HTTP Strict Transport Security",
