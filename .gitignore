@@ -9,3 +9,9 @@ dist/
 .harness/plans/
 .harness/sessions/
 .harness/backup/
+__pycache__/
+*.pyc
+*.tmp
+*.bak
+*.swp
+.pytest_cache/

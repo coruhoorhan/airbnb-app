@@ -1,5 +1,3 @@
-import shutil
-from magda_agent.guardian.guardian_runner import MagdaGuardianEngine
 #!/usr/bin/env python3
 """
 Magda-Agent 7/24 Autonomous Fullstack Guardian Daemon.
@@ -7,9 +5,14 @@ Magda-Agent 7/24 Autonomous Fullstack Guardian Daemon.
 Continuously monitors:
 1. Frontend & Backend codebase with Inception Labs Mercury-2 LLM Code Reviewer.
 2. Codebase syntax & AST integrity (Aider Smoke Tester).
-3. Database consistency, booking date conflicts & 0 TL price auto-healing.
-4. Task queue in agent_tasks.json for autonomous Jules/Codex execution.
+3. Database consistency, booking date conflicts & 0 TL price auto-healing (Tier-1 Auto-Healer).
+4. Task queue in agent_tasks.json for autonomous Jules/Codex execution (Tier-2 Escalation).
 """
+
+import shutil
+from magda_agent.guardian.guardian_runner import MagdaGuardianEngine
+from magda_agent.guardian.auto_healer import AutoHealer
+from magda_agent.guardian.commit_guardian import CommitGuardian
 
 import ast
 import asyncio
@@ -274,8 +277,12 @@ class MagdaAutonomousWatchdog:
         self.code_indexer = AirbnbCodebaseIndexer(app_root) if AirbnbCodebaseIndexer else None
         self.llm_reviewer = FullstackLLMCodeReviewer(app_root)
         self.guardian_engine = MagdaGuardianEngine(app_root=self.app_root, db_path=self.db_path)
+        self.auto_healer = AutoHealer(
+            app_root=self.app_root,
+            db_path=self.db_path,
+            tasks_manifest_path=self.manifest_mgr.manifest_path
+        )
         self._last_scan_result: Dict[str, Any] = {}
-        self._is_running = False
         self._llm_scan_counter = 0
         self._scan_count = 0
         self._last_push_time = 0
