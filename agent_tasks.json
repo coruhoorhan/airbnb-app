@@ -285,7 +285,7 @@
     },
     {
       "id": "security-secure-cookie-flags",
-      "status": "todo",
+      "status": "in_progress",
       "area": "security",
       "risk": "medium",
       "title": "Set secure cookie attributes for auth tokens",
