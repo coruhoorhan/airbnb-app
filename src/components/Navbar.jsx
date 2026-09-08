@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Search, Menu, Heart, Briefcase, PlusCircle, Home, Bell, Check, Sparkles, Globe, Compass, Waves, MessageCircle, Sun, Moon, Gift, Star } from "lucide-react";
+import { Search, Menu, Heart, Briefcase, PlusCircle, Home, Bell, Check, Sparkles, Globe, Compass, Waves, MessageCircle, Sun, Moon, Gift, Star, BellRing } from "lucide-react";
 import { getAvailableCurrencies } from "../lib/currencyEngine.js";
+import { usePushNotifications } from "./PushNotificationProvider.jsx";
 
 export function Navbar({ 
   currentUser, 
@@ -27,6 +28,8 @@ export function Navbar({
     return localStorage.getItem("theme") === "dark" ||
            (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches);
   });
+
+  const { isSupported, isSubscribed, enableNotifications, disableNotifications } = usePushNotifications();
 
   useEffect(() => {
     if (isDarkMode) {
@@ -255,6 +258,27 @@ export function Navbar({
                     {currentUser?.isHost ? "★ Ev Sahibi Modu" : "Misafir Hesabı"}
                   </span>
                 </div>
+
+                {isSupported && (
+                  <div className="px-4 py-2 border-b border-charcoal-border/50 dark:border-white/10 flex items-center justify-between">
+                    <span className="text-xs font-bold text-charcoal dark:text-white flex items-center gap-2">
+                       <BellRing className="w-3.5 h-3.5 text-airbnb" />
+                       Anlık Bildirimler
+                    </span>
+                    <button
+                      onClick={() => {
+                        if (isSubscribed) {
+                          disableNotifications();
+                        } else {
+                          enableNotifications();
+                        }
+                      }}
+                      className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${isSubscribed ? 'bg-airbnb' : 'bg-gray-300 dark:bg-gray-600'}`}
+                    >
+                      <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${isSubscribed ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
+                    </button>
+                  </div>
+                )}
 
                 <div className="py-1">
                   <button 

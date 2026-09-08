@@ -379,7 +379,7 @@
     },
     {
       "id": "feat-06-push-notification-engine",
-      "status": "todo",
+      "status": "done",
       "area": "fullstack",
       "risk": "medium",
       "title": "Web Push Notification Engine for Real‑time Guest/Host Alerts",
@@ -396,7 +396,9 @@
         "When a new chat message is inserted for that user, a push notification appears on the device even if the browser tab is closed."
       ],
       "created_at": 1788785549.5191903,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "claimed_by": "jules",
+      "claimed_at": "2026-09-08T02:25:56.888629+00:00"
     },
     {
       "id": "feat-07-map-clustering",

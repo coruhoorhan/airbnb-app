@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Navbar } from "./components/Navbar.jsx";
+import { PushNotificationProvider } from "./components/PushNotificationProvider.jsx";
 import { CategoryBar } from "./components/CategoryBar.jsx";
 import { ListingCard } from "./components/ListingCard.jsx";
 import { SortBar, SORT_OPTIONS } from "./components/SortBar.jsx";
@@ -478,6 +479,7 @@ export function App() {
   };
 
   return (
+    <PushNotificationProvider currentUserId={currentUserId}>
     <div className="min-h-[100dvh] flex flex-col bg-white dark:bg-charcoal-dark">
       {/* Coastal Navbar */}
       <Navbar
@@ -942,5 +944,6 @@ export function App() {
       <MagdaConciergeWidget onSelectListing={(id) => setSelectedListing(id)} />
 
     </div>
+    </PushNotificationProvider>
   );
 }

@@ -16,5 +16,16 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        app: 'index.html',
+        sw: 'src/service-worker.js'
+      },
+      output: {
+        entryFileNames: (info) => info.name === 'sw' ? 'service-worker.js' : 'assets/[name]-[hash].js'
+      }
+    }
   }
 });

@@ -3,16 +3,29 @@ import request from "supertest";
 import { app } from "../server.js";
 import * as db from "../src/lib/db.js";
 
+import { vi } from "vitest";
+
+// Bypass auth and csrf middleware for testing ease
+vi.mock('../src/lib/auth.js', () => ({
+  authMiddleware: (req, res, next) => {
+    req.user = { id: `test_notif_user` }; // Mock logged in user
+    next();
+  },
+  csrfMiddleware: (req, res, next) => next()
+}));
+
 describe("Push Notification Engine API", () => {
-  const testUserId = `test_notif_user_${Date.now()}`;
+  const testUserId = `test_notif_user`;
 
   beforeAll(() => {
-    db.insertUser({
-      id: testUserId,
-      name: "Notification Test User",
-      email: `notif_${Date.now()}@test.com`,
-      isHost: false
-    });
+    try {
+      db.insertUser({
+        id: testUserId,
+        name: "Notification Test User",
+        email: `notif_test@test.com`,
+        isHost: false
+      });
+    } catch(e) {}
   });
 
   it("should reject subscription requests without userId or subscription", async () => {
