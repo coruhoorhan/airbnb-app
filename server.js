@@ -135,6 +135,11 @@ app.use(helmet({
     },
   },
   crossOriginResourcePolicy: { policy: "cross-origin" },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  }
 }));
 app.use(cors({
   origin: true,
