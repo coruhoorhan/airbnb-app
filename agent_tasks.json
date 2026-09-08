@@ -44907,7 +44907,118 @@
       ],
       "created_at": 1788828703.2606559,
       "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_ical_1788828705692",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_ical_1788828705692",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_ical_1788828705692 (Tutar: 3900.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788828798.775484,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_appr_1788828705720",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_appr_1788828705720",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_appr_1788828705720 (Tutar: 2075.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788828798.8781924,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rev_2_1788828705724",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rev_2_1788828705724",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rev_2_1788828705724 (Tutar: 1700.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788828798.9209876,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-ical_sync_list_ical_1788828705692_2026-11-10_2026-11-15",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #ical_sync_list_ical_1788828705692_2026-11-10_2026-11-15",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #ical_sync_list_ical_1788828705692_2026-11-10_2026-11-15 (Tutar: 0.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788828798.9610167,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "reconcile-payment-booking-book_rec_1788828706773",
+      "status": "todo",
+      "area": "backend",
+      "risk": "high",
+      "title": "Reconcile Payment for Booking #book_rec_1788828706773",
+      "description": "Ödemesi başarısız veya eksik olan onaylı rezervasyon: #book_rec_1788828706773 (Tutar: 15750.0 TL)",
+      "allowed_paths": [
+        "server.js",
+        "src/lib/db.js",
+        "agent_tasks.json"
+      ],
+      "acceptance": [
+        "Payment reconciliation verified with iyzico payment gateway API."
+      ],
+      "created_at": 1788828799.0038853,
+      "created_by": "Magda Fullstack LLM Watchdog"
+    },
+    {
+      "id": "feat-41-host-payout-analytics-dashboard",
+      "status": "todo",
+      "area": "fullstack",
+      "risk": "medium",
+      "title": "Host Payout & Revenue Analytics Dashboard",
+      "description": "Create a new fullstack feature that provides hosts with a dashboard showing their earnings, payout schedules, and revenue trends. Add a GraphQL query `hostPayoutAnalytics(hostId: ID!): PayoutAnalytics` in `src/lib/graphqlSchema.js`. Implement resolver logic in `src/lib/graphqlResolvers.js` that aggregates data from `bookings`, `payments`, and `listings` tables using optimized SQL queries with indexes. Build a React component `HostPayoutAnalytics.jsx` under `src/components/` that fetches the data via the new GraphQL endpoint, displays monthly earnings, pending payouts, and a line chart using a charting library (e.g., Recharts). Add route handling in `server.js` to serve the dashboard page, and secure it with existing JWT middleware. Update UI navigation to link the dashboard from the host dashboard. Ensure all new files are imported correctly and the GraphQL schema is extended without breaking existing queries.",
+      "allowed_paths": [
+        "server.js",
+        "src/components/HostPayoutAnalytics.jsx",
+        "src/lib/graphqlSchema.js",
+        "src/lib/graphqlResolvers.js",
+        "src/lib/db.js"
+      ],
+      "acceptance": [
+        "Visiting /host/payouts shows a dashboard with monthly earnings chart and pending payouts list.",
+        "GraphQL query `hostPayoutAnalytics` returns correct aggregated data for a known host ID."
+      ],
+      "created_at": 1788828804.212689,
+      "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788828703.260659
+  "updated_at": 1788828804.212692
 }
