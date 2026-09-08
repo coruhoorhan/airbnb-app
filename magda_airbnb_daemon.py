@@ -26,6 +26,7 @@ import re
 import sqlite3
 import subprocess
 import sys
+import urllib.request
 import time
 from typing import Any, Dict, List, Optional, Set, Tuple
 
@@ -746,47 +747,32 @@ class MagdaAutonomousWatchdog:
     def _sync_jules_and_github_prs(self) -> None:
         """Polls Jules sessions and active GitHub PRs to auto-steer, audit, and auto-merge."""
         try:
-            scripts_dir = os.path.join(self.app_root, "scripts")
-            if scripts_dir not in sys.path:
-                sys.path.insert(0, scripts_dir)
-            import jules_responder
+            token = os.environ.get("GH_PAT") or os.environ.get("GITHUB_TOKEN", "")
+            repo = os.environ.get("TARGET_REPO", "coruhoorhan/airbnb-app")
+            manifest_data = self.manifest_mgr.load_manifest()
+            tasks = manifest_data.get("tasks", [])
+            in_prog = [t for t in tasks if t.get("status") == "in_progress"]
 
-            if not os.environ.get("TARGET_REPO"):
-                os.environ["TARGET_REPO"] = "coruhoorhan/airbnb-app"
-            if not os.environ.get("OPENAI_BASE_URL"):
-                os.environ["OPENAI_BASE_URL"] = "https://api.inceptionlabs.ai/v1"
-            if not os.environ.get("OPENAI_MODEL"):
-                os.environ["OPENAI_MODEL"] = "mercury-2"
-
-            api_key = os.environ.get("JULES_API_KEY", "")
-            if api_key:
-                sessions = jules_responder.list_sessions(api_key, page_size=100)
-                openai_key = os.environ.get("OPENAI_API_KEY", "")
-                base = os.environ.get("OPENAI_BASE_URL", "https://api.inceptionlabs.ai/v1")
-                model = os.environ.get("OPENAI_MODEL", "mercury-2")
-                for s in sessions:
-                    sid = s.get("id") or s.get("name", "").split("/")[-1]
-                    state = s.get("state", "")
-                    title = s.get("title", "")
-                    if state in ("AWAITING_USER_FEEDBACK", "AWAITING_PLAN_APPROVAL"):
-                        logger.info(f"Auto-responding to Jules session {sid} [{title}] ({state})...")
-                        if state == "AWAITING_PLAN_APPROVAL":
-                            try:
-                                jules_responder.jules_request("POST", f"/sessions/{sid}:approvePlan", api_key, {})
-                                logger.info(f"Plan approved for session {sid}.")
-                            except Exception as pe:
-                                logger.warning(f"Plan approval error: {pe}")
-
-                        activities = jules_responder.get_activities(api_key, sid)
-                        agent_text, is_q = jules_responder.latest_agent_text(activities)
-                        if agent_text:
-                            answer = jules_responder.draft_answer(openai_key, base, model, title, agent_text)
-                            final_msg = f"{jules_responder.MARKER}\n{answer}"
-                            jules_responder.jules_request("POST", f"/sessions/{sid}:sendMessage", api_key, {"prompt": final_msg})
-                            logger.info(f"Steering message sent to Jules session {sid}!")
+            if token and in_prog:
+                req = urllib.request.Request(
+                    f"https://api.github.com/repos/{repo}/actions/workflows/jules_responder.yml/dispatches",
+                    data=json.dumps({"ref": "main", "inputs": {"dry_run": "false"}}).encode("utf-8"),
+                    headers={
+                        "Authorization": f"Bearer {token}",
+                        "User-Agent": "MagdaDaemon",
+                        "Accept": "application/vnd.github.v3+json",
+                        "Content-Type": "application/json"
+                    },
+                    method="POST"
+                )
+                try:
+                    with urllib.request.urlopen(req, timeout=10) as resp:
+                        if resp.status in (200, 204):
+                            logger.info(f"⚡ [20s Auto-Pilot]: Dispatched Jules Auto-Responder for active task [{in_prog[0]['id']}]")
+                except Exception:
+                    pass
         except Exception as e:
             logger.error(f"Error in Jules sync cycle: {e}")
-
     async def run_loop(self, interval_seconds: int = 60) -> None:
         """7/24 Continuous Autonomous Background Loop."""
         self._is_running = True
