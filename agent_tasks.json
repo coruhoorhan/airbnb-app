@@ -379,7 +379,7 @@
     },
     {
       "id": "feat-06-push-notification-engine",
-      "status": "in_progress",
+      "status": "done",
       "area": "fullstack",
       "risk": "medium",
       "title": "Web Push Notification Engine for Real\u2011time Guest/Host Alerts",
@@ -43899,5 +43899,5 @@
       "created_by": "Magda Fullstack LLM Watchdog"
     }
   ],
-  "updated_at": 1788827664.5366354
+  "updated_at": 1788843908.743566
 }
