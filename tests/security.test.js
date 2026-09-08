@@ -56,6 +56,17 @@ describe("Security - Rate Limiter & Input Sanitization", () => {
     expect(res1.status).toBeGreaterThanOrEqual(400);
   });
 
+  it("should enforce Strict-Transport-Security header on HTTPS requests", async () => {
+    const res = await request(app)
+      .get("/api/health")
+      .set("x-forwarded-proto", "https");
+
+    expect(res.headers["strict-transport-security"]).toBeDefined();
+    expect(res.headers["strict-transport-security"]).toContain("max-age=31536000");
+    expect(res.headers["strict-transport-security"]).toContain("includeSubDomains");
+    expect(res.headers["strict-transport-security"]).toContain("preload");
+  });
+
   it("should rate limit requests over 100 per minute globally on /api", async () => {
     let lastStatus = 200;
     // Send 101 requests to /api/health
