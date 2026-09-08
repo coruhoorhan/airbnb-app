@@ -156,7 +156,7 @@ app.use(globalRateLimiter);
 
 const authRateLimiter = createRateLimiter({
   windowMs: 60000,
-  maxRequests: 10,
+  maxRequests: process.env.NODE_ENV === "test" ? 500 : 20,
   message: "Çok fazla giriş denemesi. Lütfen 1 dakika bekleyin."
 });
 
