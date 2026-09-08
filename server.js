@@ -213,16 +213,16 @@ app.post("/api/auth/oauth/callback", authRateLimiter, (req, res) => {
   }
 
   const token = generateToken(user);
-  res.cookie("token", token, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  res.cookie("token", token, { httpOnly: true, sameSite: "strict", secure: true });
   const csrfToken = generateCsrfToken();
-  res.cookie("_csrf_secret", csrfToken, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  res.cookie("_csrf_secret", csrfToken, { httpOnly: true, sameSite: "strict", secure: true });
   res.setHeader("x-csrf-token", csrfToken);
   res.json({ success: true, token, user });
 });
 
 app.post("/api/auth/logout", csrfMiddleware, (req, res) => {
-  res.clearCookie("token", { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
-  res.clearCookie("_csrf_secret", { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  res.clearCookie("token", { httpOnly: true, sameSite: "strict", secure: true });
+  res.clearCookie("_csrf_secret", { httpOnly: true, sameSite: "strict", secure: true });
   res.json({ success: true, message: "Çıkış yapıldı." });
 });
 
@@ -238,20 +238,20 @@ app.post("/api/auth/login", authRateLimiter, async (req, res) => {
   }
 
   const token = generateToken(user);
-  res.cookie("token", token, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  res.cookie("token", token, { httpOnly: true, sameSite: "strict", secure: true });
   res.json({ success: true, token, user });
 });
 
 app.get("/api/auth/csrf", (req, res) => {
   const csrfToken = generateCsrfToken();
-  res.cookie("_csrf_secret", csrfToken, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+  res.cookie("_csrf_secret", csrfToken, { httpOnly: true, sameSite: "strict", secure: true });
   res.setHeader("x-csrf-token", csrfToken);
   
   // Auto-issue guest session token if user has no token cookie yet
   if (!req.cookies?.token) {
     const guestUser = { id: "usr_guest_01", email: "guest@fatsa.bel.tr", isHost: false };
     const authToken = generateToken(guestUser);
-    res.cookie("token", authToken, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+    res.cookie("token", authToken, { httpOnly: true, sameSite: "strict", secure: true });
   }
 
   res.json({ success: true, csrfToken: csrfToken });
