@@ -456,8 +456,14 @@ app.get("/api/listings/:id", (req, res) => {
   });
 });
 
-app.post("/api/listings", authMiddleware, csrfMiddleware, listingsRateLimiter, (req, res) => {
+app.post("/api/listings", authMiddleware, csrfMiddleware, listingsRateLimiter, async (req, res) => {
   try {
+    const { listingSchema } = await import("./src/lib/db.js");
+    const { error } = listingSchema.validate(req.body, { allowUnknown: true });
+    if (error) {
+      return res.status(400).json({ success: false, error: error.details[0].message });
+    }
+
     const newId = `list_${Date.now()}`;
     const created = insertListing({
       ...req.body,
@@ -478,6 +484,14 @@ app.put("/api/listings/:id/toggle-status", authMiddleware, csrfMiddleware, (req,
 
 app.put("/api/listings/:id/quick-update", authMiddleware, csrfMiddleware, (req, res) => {
   const { pricePerNight, cleaningFee } = req.body;
+
+  if (pricePerNight !== undefined && Number(pricePerNight) < 0) {
+    return res.status(400).json({ success: false, error: "Fiyat 0'dan küçük olamaz." });
+  }
+  if (cleaningFee !== undefined && Number(cleaningFee) < 0) {
+    return res.status(400).json({ success: false, error: "Temizlik ücreti 0'dan küçük olamaz." });
+  }
+
   const listingBefore = getListingById(req.params.id);
   const updated = quickUpdateListingPrice(req.params.id, pricePerNight, cleaningFee);
   if (!updated) return res.status(404).json({ success: false, error: "İlan bulunamadı." });
@@ -834,8 +848,14 @@ app.get("/api/payments/:bookingId", (req, res) => {
 });
 
 // --- 10. Bookings API ---
-app.post("/api/bookings", authMiddleware, csrfMiddleware, (req, res) => {
+app.post("/api/bookings", authMiddleware, csrfMiddleware, async (req, res) => {
   try {
+  const { bookingSchema } = await import("./src/lib/db.js");
+  const { error } = bookingSchema.validate(req.body, { allowUnknown: true });
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
   const { listingId, guestId, checkIn, checkOut, numGuests, couponCode, giftCardCode } = req.body;
 
   const listing = getListingById(listingId);

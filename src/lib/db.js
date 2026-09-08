@@ -22,6 +22,8 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { randomUUID } from "node:crypto";
 import Joi from "joi";
+import DOMPurify from "dompurify";
+import { JSDOM } from "jsdom";
 import { INITIAL_USERS } from "../data/users.js";
 import { INITIAL_LISTINGS } from "../data/listings.js";
 import { INITIAL_EXPERIENCES } from "../data/experiences.js";
@@ -72,21 +74,35 @@ export const getDbConnection = () => {
   return readPool[poolIndex];
 };
 
-// HTML Strip Regex for sanitization
-const htmlRegex = /<[^>]*>?/gm;
+const window = new JSDOM("").window;
+const purify = DOMPurify(window);
 
-const listingSchema = Joi.object({
+const sanitizeHtml = (value, helpers) => {
+  if (typeof value !== 'string') return value;
+  const clean = purify.sanitize(value, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+  if (clean !== value && !clean) {
+    return helpers.error("any.invalid");
+  }
+  return clean;
+};
+
+export const listingSchema = Joi.object({
   hostId: Joi.string().required(),
-  title: Joi.string().trim().replace(htmlRegex, '').required(),
-  description: Joi.string().trim().replace(htmlRegex, '').optional(),
+  title: Joi.string().trim().custom(sanitizeHtml, "DOMPurify sanitization").min(1).max(255).required(),
+  description: Joi.string().trim().custom(sanitizeHtml, "DOMPurify sanitization").max(5000).optional(),
   pricePerNight: Joi.number().min(0).required()
 });
 
-const bookingSchema = Joi.object({
+export const bookingSchema = Joi.object({
   listingId: Joi.string().required(),
   guestId: Joi.string().required(),
-  checkIn: Joi.string().trim().replace(htmlRegex, '').required(),
-  checkOut: Joi.string().trim().replace(htmlRegex, '').required()
+  checkIn: Joi.string().trim().custom(sanitizeHtml, "DOMPurify sanitization").max(50).required(),
+  checkOut: Joi.string().trim().custom(sanitizeHtml, "DOMPurify sanitization").max(50).required(),
+  nightlyPrice: Joi.number().min(0).optional(),
+  cleaningFee: Joi.number().min(0).optional(),
+  serviceFee: Joi.number().min(0).optional(),
+  totalPrice: Joi.number().min(0).optional(),
+  discountAmount: Joi.number().min(0).optional()
 });
 
 // --- Schema Initialization with Real SQL Tables & Indexes ---
@@ -580,7 +596,7 @@ export function getListingById(id) {
 }
 
 export function insertListing(item) {
-  const { error } = listingSchema.validate(item, { allowUnknown: true });
+  const { error, value } = listingSchema.validate(item, { allowUnknown: true });
   if (error) throw new Error(error.details[0].message);
 
   db.prepare(`
@@ -597,6 +613,7 @@ export function insertListing(item) {
     )
   `).run({
     ...item,
+    ...value,
     amenities: JSON.stringify(item.amenities || []),
     images: JSON.stringify(item.images || []),
     instantBook: item.instantBook ? 1 : 0,
@@ -638,7 +655,7 @@ export function getActiveBookingsForListing(listingId) {
 }
 
 export function insertBooking(b) {
-  const { error } = bookingSchema.validate(b, { allowUnknown: true });
+  const { error, value } = bookingSchema.validate(b, { allowUnknown: true });
   if (error) throw new Error(error.details[0].message);
 
   db.prepare(`
@@ -657,7 +674,8 @@ export function insertBooking(b) {
     paymentStatus: "unpaid",
     paymentId: null,
     approvalStatus: b.approvalStatus || (b.status === "confirmed" ? "approved" : "pending"),
-    ...b
+    ...b,
+    ...value
   });
   return db.prepare("SELECT * FROM bookings WHERE id = ?").get(b.id);
 }
