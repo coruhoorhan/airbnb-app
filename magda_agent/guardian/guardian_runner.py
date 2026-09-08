@@ -18,6 +18,7 @@ from magda_agent.guardian.base.universal_syntax_guard import UniversalSyntaxGuar
 from magda_agent.guardian.base.universal_security_guard import UniversalSecurityGuardian
 from magda_agent.guardian.base.universal_data_integrity_guard import UniversalDataIntegrityGuardian
 from magda_agent.guardian.base.universal_infra_guard import UniversalInfraGuardian
+from magda_agent.guardian.synthetic_qa import SyntheticQAGuardian
 from magda_agent.guardian.plugins.airbnb_domain_guard import AirbnbDomainGuardian
 
 logger = logging.getLogger("MagdaGuardianEngine")
@@ -36,6 +37,7 @@ class MagdaGuardianEngine:
             UniversalSecurityGuardian(),
             UniversalDataIntegrityGuardian(),
             UniversalInfraGuardian(),
+            SyntheticQAGuardian(),
         ]
 
         # 2. Tier 2: Project-Specific Domain Plugins (Pluggable)

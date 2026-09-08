@@ -28,6 +28,7 @@ Commands:
   route <goal>        — Ask-matt router: task → flow + skills
   fetch <skill>       — Fetch + eject a single skill from GitHub
   orchestrate <goal>  — Full workflow: route → fetch → eject → catalog
+  workflow-run <desc> — Run Meteoras & Agent-Stack 7-phase autonomous workflow
   watchdog <sid> [s] — Check subagent is alive (detects silent 429 death)
   git <cmd> [args]    — Pass-through to git (e.g., run.sh git status)
 EOF
@@ -303,7 +304,16 @@ EOF
         GOAL="${2:-}"
         OUT_DIR="${3:-$SCRIPT_DIR}"
         if [ -z "$GOAL" ]; then echo "Usage: run.sh orchestrate <goal> [out-dir]"; exit 1; fi
-        bash "${SCRIPT_DIR}/skill-orchestrator.sh" "$GOAL" "$OUT_DIR"
+        if [ -f "${SCRIPT_DIR}/orchestrator-src/orchestrator.py" ]; then
+            python3 "${SCRIPT_DIR}/orchestrator-src/orchestrator.py" "$GOAL" --project-root "$OUT_DIR"
+        else
+            bash "${SCRIPT_DIR}/skill-orchestrator.sh" "$GOAL" "$OUT_DIR"
+        fi
+        ;;
+
+    workflow-run)
+        shift
+        python3 "${SCRIPT_DIR}/orchestrator-src/orchestrator.py" "$@"
         ;;
 
     git) shift; git "$@" ;;

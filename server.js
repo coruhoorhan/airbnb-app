@@ -1,5 +1,6 @@
 import fs from "fs";
 import { generateIcsFeed, syncExternalIcal } from "./src/lib/calendarSync.js";
+import { getAvailableCurrencies, convertCurrency } from "./src/lib/currencyEngine.js";
 import { saveSubscription as saveSubOld, removeSubscription as removeSubOld, getUserNotifications, markNotificationRead } from "./src/lib/notifications.js";
 import { saveSubscription, removeSubscription, sendNotification } from "./src/lib/pushNotificationEngine.js";
 import http from "http";
@@ -1409,7 +1410,7 @@ app.post("/api/experiences/reservations/:id/cancel", authMiddleware, csrfMiddlew
 // --- 12.5. Magda-Agent Cognitive AI Engine Integration ---
 app.post("/api/magda/concierge", csrfMiddleware, (req, res) => {
   const query = req.body?.query || req.body?.prompt || "Fatsa merkezde kiralık ev";
-  execFile("python3", ["/opt/airbnb-app/magda_airbnb_bridge.py", "chat", query], (error, stdout, stderr) => {
+  execFile("python3", [path.join(__dirname, "magda_airbnb_bridge.py"), "chat", query], (error, stdout, stderr) => {
     if (error) {
       return res.status(500).json({ success: false, error: error.message, details: stderr });
     }
@@ -1423,7 +1424,7 @@ app.post("/api/magda/concierge", csrfMiddleware, (req, res) => {
 });
 
 app.get("/api/magda/guardian/scan", (req, res) => {
-  execFile("python3", ["/opt/airbnb-app/magda_airbnb_bridge.py", "guardian_scan"], (error, stdout, stderr) => {
+  execFile("python3", [path.join(__dirname, "magda_airbnb_bridge.py"), "guardian_scan"], (error, stdout, stderr) => {
     if (error) {
       return res.status(500).json({ success: false, error: error.message, details: stderr });
     }
@@ -1437,13 +1438,13 @@ app.get("/api/magda/guardian/scan", (req, res) => {
 });
 
 app.get("/api/magda/status", (req, res) => {
-  execFile("python3", ["/opt/airbnb-app/magda_airbnb_bridge.py", "analytics"], (error, stdout, stderr) => {
+  execFile("python3", [path.join(__dirname, "magda_airbnb_bridge.py"), "analytics"], (error, stdout, stderr) => {
     if (error) {
       return res.status(500).json({ success: false, error: error.message, details: stderr });
     }
     try {
       const data = JSON.parse(stdout);
-      res.json({ status: "active", engine: "Magda-Agent Cognitive Core V2", analytics: data });
+      res.json({ status: "active", engine: "Meteoras Cognitive Core V2", analytics: data });
     } catch (parseErr) {
       res.json({ status: "active", raw: stdout });
     }
@@ -1463,7 +1464,7 @@ app.get("/api/magda/backend-tasks", (req, res) => {
   }
 });
 app.get("/api/magda/tasks", (req, res) => {
-  execFile("python3", ["/opt/airbnb-app/magda_airbnb_daemon.py", "tasks"], (error, stdout, stderr) => {
+  execFile("python3", [path.join(__dirname, "magda_airbnb_daemon.py"), "tasks"], (error, stdout, stderr) => {
     if (error) {
       return res.status(500).json({ success: false, error: error.message, details: stderr });
     }
@@ -1503,12 +1504,12 @@ print(json.dumps({'success': True, 'task_id': t['id']}))
   });
 });
 app.get("/api/magda/codebase-knowledge", (req, res) => {
-  execFile("python3", ["/opt/airbnb-app/magda_airbnb_codebase_indexer.py"], (error, stdout, stderr) => {
+  execFile("python3", [path.join(__dirname, "magda_airbnb_codebase_indexer.py")], (error, stdout, stderr) => {
     if (error) {
       return res.status(500).json({ success: false, error: error.message, details: stderr });
     }
     try {
-      execFile("python3", ["/opt/airbnb-app/magda_airbnb_bridge.py", "codebase"], (err2, out2) => {
+      execFile("python3", [path.join(__dirname, "magda_airbnb_bridge.py"), "codebase"], (err2, out2) => {
         try {
           const fullData = JSON.parse(out2);
           res.json(fullData);

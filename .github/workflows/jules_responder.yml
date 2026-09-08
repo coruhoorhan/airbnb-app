@@ -45,7 +45,7 @@ jobs:
           OPENAI_MODEL: mercury-2
           GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
           TARGET_REPO: ${{ github.repository }}
-          TARGET_TITLE: Autonomous Airbnb,Revise airbnb-app PR,Revise PR #
+          TARGET_TITLE: "Autonomous Airbnb,Airbnb,Revise,Feature,Brain Module,agent_tasks"
           STEER_SESSION: ${{ inputs.steer_session }}
           STEER_MESSAGE: ${{ inputs.steer_message }}
         run: |

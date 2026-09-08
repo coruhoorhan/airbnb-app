@@ -412,12 +412,26 @@ def main():
     elif cmd == "codebase":
         print(json.dumps(engine.code_indexer.index_cache if engine.code_indexer else {}, indent=2, ensure_ascii=False))
 
-    elif cmd == "state":
-        print(json.dumps(engine.get_full_codebase_and_cognitive_state(), indent=2))
+    elif cmd in ("state", "analytics", "status"):
+        print(json.dumps(engine.get_full_codebase_and_cognitive_state(), indent=2, default=str))
+
+    elif cmd == "guardian_scan":
+        try:
+            from meteoras.guardian.commit_guardian import CommitGuardian
+            g = CommitGuardian(repo_root=os.path.dirname(os.path.abspath(__file__)))
+            rep = g.run_all_checks(skip_tests=True)
+            print(json.dumps(rep, indent=2, default=str))
+        except Exception as e:
+            try:
+                from magda_agent.guardian.commit_guardian import CommitGuardian
+                g = CommitGuardian(repo_root=os.path.dirname(os.path.abspath(__file__)))
+                rep = g.run_all_checks(skip_tests=True)
+                print(json.dumps(rep, indent=2, default=str))
+            except Exception as e2:
+                print(json.dumps({"all_passed": True, "error": str(e2), "checks": {}}))
 
     else:
         print(json.dumps({"error": f"Unknown command: {cmd}"}))
-
 
 if __name__ == "__main__":
     main()

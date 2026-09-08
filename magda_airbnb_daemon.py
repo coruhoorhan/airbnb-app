@@ -1,5 +1,3 @@
-import shutil
-from magda_agent.guardian.guardian_runner import MagdaGuardianEngine
 #!/usr/bin/env python3
 """
 Magda-Agent 7/24 Autonomous Fullstack Guardian Daemon.
@@ -7,10 +5,16 @@ Magda-Agent 7/24 Autonomous Fullstack Guardian Daemon.
 Continuously monitors:
 1. Frontend & Backend codebase with Inception Labs Mercury-2 LLM Code Reviewer.
 2. Codebase syntax & AST integrity (Aider Smoke Tester).
-3. Database consistency, booking date conflicts & 0 TL price auto-healing.
-4. Task queue in agent_tasks.json for autonomous Jules/Codex execution.
+3. Database consistency, booking date conflicts & 0 TL price auto-healing (Tier-1 Auto-Healer).
+4. Task queue in agent_tasks.json for autonomous Jules/Codex execution (Tier-2 Escalation).
 """
 
+import shutil
+from magda_agent.guardian.guardian_runner import MagdaGuardianEngine
+from magda_agent.guardian.auto_healer import AutoHealer
+from magda_agent.guardian.commit_guardian import CommitGuardian
+from magda_agent.autonomous.live_engine import AutonomousLiveEngine
+from magda_agent.autonomous.task_executor import HeadlessTaskExecutor
 import ast
 import asyncio
 from datetime import datetime, timezone
@@ -274,8 +278,14 @@ class MagdaAutonomousWatchdog:
         self.code_indexer = AirbnbCodebaseIndexer(app_root) if AirbnbCodebaseIndexer else None
         self.llm_reviewer = FullstackLLMCodeReviewer(app_root)
         self.guardian_engine = MagdaGuardianEngine(app_root=self.app_root, db_path=self.db_path)
+        self.auto_healer = AutoHealer(
+            app_root=self.app_root,
+            db_path=self.db_path,
+            tasks_manifest_path=self.manifest_mgr.manifest_path
+        )
+        self.live_engine = AutonomousLiveEngine(app_root=self.app_root, db_path=self.db_path)
+        self.task_executor = HeadlessTaskExecutor(app_root=self.app_root, manifest_path=self.manifest_mgr.manifest_path)
         self._last_scan_result: Dict[str, Any] = {}
-        self._is_running = False
         self._llm_scan_counter = 0
         self._scan_count = 0
         self._last_push_time = 0
@@ -439,6 +449,106 @@ class MagdaAutonomousWatchdog:
         except Exception as e:
             logger.error(f"Failed to record guardian issue: {e}")
 
+    def run_synthetic_qa_scan(self, base_url: Optional[str] = None) -> Tuple[Dict[str, Any], int]:
+        """Runs live Synthetic QA Probes and automatically creates bug tasks on regressions."""
+        target_url = base_url or os.environ.get("AIRBNB_BASE_URL", "http://127.0.0.1:5173")
+        logger.info(f"🧪 Executing Autonomous Synthetic QA Scan on {target_url}...")
+
+        try:
+            from magda_agent.guardian.synthetic_qa import SyntheticQAGuardian
+            guardian = SyntheticQAGuardian(base_url=target_url)
+            probe_report = guardian.run_synthetic_qa_probe()
+        except Exception as e:
+            logger.warning(f"SyntheticQAGuardian import/run error: {e}. Executing fallback script...")
+            script_path = os.path.join(self.app_root, "scripts", "autonomous_synthetic_qa.py")
+            if os.path.exists(script_path):
+                proc = subprocess.run([sys.executable, script_path, "--url", target_url, "--json"], capture_output=True, text=True, timeout=30)
+                try:
+                    probe_report = json.loads(proc.stdout)
+                except Exception:
+                    probe_report = {"all_passed": False, "failed_journeys": [f"Probe execution failed: {proc.stderr or proc.stdout}"], "total_journeys": 7, "passed_journeys": 0}
+            else:
+                probe_report = {"all_passed": False, "failed_journeys": [f"Synthetic QA script missing: {e}"], "total_journeys": 7, "passed_journeys": 0}
+
+        tasks_added = 0
+        if not probe_report.get("all_passed"):
+            logger.warning(f"🚨 Synthetic QA Scan detected {len(probe_report.get('failed_journeys', []))} failure(s)!")
+            manifest_data = self.manifest_mgr.load_manifest()
+            tasks = manifest_data.get("tasks", [])
+            existing_ids = {t["id"] for t in tasks}
+
+            for failure in probe_report.get("failed_journeys", []):
+                journey_key = failure.split(":")[0].strip().replace(" ", "-").replace("_", "-").lower()
+                task_id = f"autofix-synthetic-failure-{journey_key}"
+
+                if task_id not in existing_ids:
+                    title = f"Fix Broken User Journey: {journey_key}"
+                    desc = (
+                        f"Autonomous Synthetic QA detected a live regression on {target_url}: {failure}.\n"
+                        f"Latency diagnostics: {json.dumps(probe_report.get('latency_ms', {}))}.\n"
+                        f"Reproduction command: python3 scripts/autonomous_synthetic_qa.py --url {target_url}\n"
+                        f"Please investigate the corresponding REST / GraphQL / DB endpoints and fix the issue so that "
+                        f"all 7 synthetic E2E journeys pass completely."
+                    )
+                    success = self.manifest_mgr.add_task(
+                        task_id=task_id,
+                        title=title,
+                        description=desc,
+                        area="bugfix",
+                        risk="high",
+                        allowed_paths=["server.js", "src/lib/", "tests/synthetic_e2e_journey.test.js", "agent_tasks.json"],
+                        acceptance=[
+                            f"Synthetic user journey '{journey_key}' passes without errors.",
+                            "npx vitest run tests/synthetic_e2e_journey.test.js passes 100%."
+                        ]
+                    )
+                    if success:
+                        tasks_added += 1
+                        existing_ids.add(task_id)
+                        logger.info(f"🚨 Filed High-Priority Defect Task: [{task_id}] {title}")
+                        conn = self.get_connection()
+                        if conn:
+                            try:
+                                self._record_guardian_issue(
+                                    conn=conn,
+                                    title=title,
+                                    description=failure,
+                                    severity="high",
+                                    auto_heal=False
+                                )
+                            finally:
+                                conn.close()
+        else:
+            logger.info(f"✅ Autonomous Synthetic QA: All {probe_report.get('passed_journeys')}/{probe_report.get('total_journeys')} Journeys Passed (100% Healthy).")
+    def poll_and_answer_jules_sessions(self) -> int:
+        """Polls for pending Jules sessions and auto-answers immediately to bypass cron delays."""
+        script_path = os.path.join(self.app_root, "scripts", "jules_responder.py")
+        if not os.path.exists(script_path):
+            return 0
+        try:
+            res = subprocess.run(
+                [sys.executable, script_path],
+                cwd=self.app_root,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            if "Done. Sessions acted on:" in res.stdout:
+                for line in res.stdout.splitlines():
+                    if "Sessions acted on:" in line:
+                        count_str = line.split(":")[-1].strip()
+                        try:
+                            c = int(count_str)
+                            if c > 0:
+                                logger.info(f"⚡ Auto-answered {c} waiting Jules session(s) in <30s!")
+                            return c
+                        except ValueError:
+                            pass
+            return 0
+        except Exception as e:
+            logger.debug(f"Jules auto-responder check: {e}")
+            return 0
+
     def _git_commit_and_push(self, message: str) -> bool:
         """Commits agent_tasks.json changes and pushes to origin/main with debounce protection."""
         auto_push = os.getenv("MAGDA_DAEMON_AUTO_GIT_PUSH", "false").lower() in ("true", "1", "yes")
@@ -530,10 +640,12 @@ class MagdaAutonomousWatchdog:
             )
             logger.info(f"Git pull result: {res.stdout.strip()}")
 
-            # 3. If pull brought updates, rebuild frontend
+            # 3. If pull brought updates, rebuild frontend and run autonomous synthetic QA
             if "Already up to date." not in res.stdout:
                 logger.info("New updates pulled from main. Triggering npm run build...")
                 subprocess.run(["npm", "run", "build"], cwd=self.app_root, capture_output=True, text=True, timeout=60)
+                logger.info("Running post-pull Synthetic QA scan...")
+                self.run_synthetic_qa_scan()
 
             return True
         except subprocess.CalledProcessError as e:
@@ -550,8 +662,8 @@ class MagdaAutonomousWatchdog:
         diag_report = self.guardian_engine.run_full_diagnostics()
         db_issues, healed_count, db_tasks_added = self.scan_database_and_payments()
         syntax_errors = self.scan_codebase_syntax()
-
-        manifest_data = self.manifest_mgr.load_manifest()
+        qa_report, qa_tasks_added = self.run_synthetic_qa_scan()
+        jules_answered = self.poll_and_answer_jules_sessions()
         tasks = manifest_data.get("tasks", [])
         archived = manifest_data.get("archived_tasks", [])
         existing_ids = {t["id"] for t in tasks}.union({t["id"] for t in archived})
@@ -603,17 +715,20 @@ class MagdaAutonomousWatchdog:
                 "db_issues_detected": len(db_issues),
                 "auto_healed_count": healed_count,
                 "syntax_errors_detected": len(syntax_errors),
+                "synthetic_qa_passed": qa_report.get("all_passed", False),
+                "synthetic_qa_passed_journeys": f"{qa_report.get('passed_journeys', 0)}/{qa_report.get('total_journeys', 7)}",
                 "llm_tasks_proposed": llm_proposed_count,
                 "total_tasks_in_manifest": len(tasks),
                 "todo_tasks_count": len(todo_tasks),
                 "done_tasks_count": len(done_tasks),
             },
+            "synthetic_qa": qa_report,
             "database_issues": db_issues,
             "syntax_errors": syntax_errors,
             "active_todo_tasks": todo_tasks[:5],
         }
 
-        total_new_tasks = llm_proposed_count + db_tasks_added
+        total_new_tasks = llm_proposed_count + db_tasks_added + qa_tasks_added
         if total_new_tasks > 0:
             commit_msg = f"chore(daemon): auto-sync task queue — {total_new_tasks} new task(s)"
             logger.info(f"New tasks detected ({total_new_tasks}). Triggering auto-sync commit & push...")

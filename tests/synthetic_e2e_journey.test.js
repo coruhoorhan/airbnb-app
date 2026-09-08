@@ -249,6 +249,7 @@ describe("Autonomous Synthetic Full-Stack E2E User Journey Suite", () => {
         .set("x-csrf-token", csrfToken)
         .set("Cookie", csrfCookie)
         .send({
+          listingId: testListing.id,
           guestId: guestUser.id,
           checkIn: payCheckIn,
           checkOut: payCheckOut,
