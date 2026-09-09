@@ -1543,17 +1543,20 @@ app.get("/api/magda/backend-tasks", (req, res) => {
   }
 });
 app.get("/api/magda/tasks", (req, res) => {
-  execFile("python3", [path.join(__dirname, "magda_airbnb_daemon.py"), "tasks"], (error, stdout, stderr) => {
-    if (error) {
-      return res.status(500).json({ success: false, error: error.message, details: stderr });
+  const p = path.join(__dirname, "agent_tasks.json");
+  if (!fs.existsSync(p)) {
+    const fallback = path.join(__dirname, "backend_tasks.json");
+    if (fs.existsSync(fallback)) {
+      return res.json(JSON.parse(fs.readFileSync(fallback, "utf8")));
     }
-    try {
-      const data = JSON.parse(stdout);
-      res.json(data);
-    } catch (parseErr) {
-      res.json({ tasks: [] });
-    }
-  });
+    return res.json({ schema_version: 1, tasks: [] });
+  }
+  try {
+    const data = JSON.parse(fs.readFileSync(p, "utf8"));
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 app.post("/api/magda/tasks/create", csrfMiddleware, (req, res) => {
