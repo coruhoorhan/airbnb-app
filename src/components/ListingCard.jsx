@@ -65,14 +65,12 @@ export function ListingCard({ listing, onSelect, isFavorite, onToggleFavorite, c
   return (
     <div
       onClick={() => onSelect(listing)}
-      className={`flex flex-col gap-3 group cursor-pointer select-none animate-in fade-in duration-300 ${
+      className={`flex flex-col gap-3 group cursor-pointer select-none animate-in fade-in duration-300 transition-[transform] hover:-translate-y-1 ${
         featured ? "sm:col-span-2 lg:col-span-2 lg:row-span-2" : ""
       }`}
      role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}>
       {/* Cinematic Image Container with 3D Hover Depth */}
-      <div className={`relative w-full overflow-hidden rounded-3xl bg-charcoal-bg shadow-border group-hover:shadow-xl transition-shadow duration-500 ${
-        featured ? "aspect-[16/10] lg:aspect-[16/9]" : "aspect-[4/3] sm:aspect-square"
-      }`}>
+      <div className={`relative w-full overflow-hidden rounded-2xl bg-charcoal-bg shadow-sm group-hover:shadow-md transition-shadow duration-500 aspect-[16/10]`}>
         <img
           src={images[currentImgIndex]}
           alt={listing.title}
