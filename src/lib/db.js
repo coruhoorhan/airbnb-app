@@ -336,6 +336,18 @@ db.exec(`
     keysAuth TEXT
   );
 
+  CREATE TABLE IF NOT EXISTS refresh_tokens (
+    id TEXT PRIMARY KEY,
+    userId TEXT,
+    tokenHash TEXT UNIQUE,
+    replacedByTokenHash TEXT,
+    revokedAt INTEGER,
+    createdAt INTEGER,
+    expiresAt INTEGER
+  );
+  CREATE INDEX IF NOT EXISTS idx_refresh_tokens_hash ON refresh_tokens(tokenHash);
+  CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(userId);
+
   CREATE INDEX IF NOT EXISTS idx_loyalty_tx_user ON loyalty_transactions(userId);
   CREATE INDEX IF NOT EXISTS idx_gift_cards_buyer ON gift_cards(buyerId);
   CREATE INDEX IF NOT EXISTS idx_price_watches_user ON price_watches(userId);
@@ -1270,4 +1282,39 @@ export function setListingCalendarSyncUrl(listingId, url) {
 export function removeListingCalendarSync(listingId) {
   db.prepare("UPDATE listings SET calendarSyncUrl = NULL, calendarSyncStatus = 'disabled', lastSyncedAt = NULL WHERE id = ?").run(listingId);
   return getListingById(listingId);
+}
+
+export function insertRefreshToken({ id, userId, tokenHash, createdAt, expiresAt }) {
+  const tid = id || randomUUID();
+  const cAt = createdAt || Date.now();
+  const exp = expiresAt || (cAt + 30 * 24 * 60 * 60 * 1000);
+  db.prepare(`
+    INSERT INTO refresh_tokens (id, userId, tokenHash, replacedByTokenHash, revokedAt, createdAt, expiresAt)
+    VALUES (?, ?, ?, NULL, NULL, ?, ?)
+  `).run(tid, userId, tokenHash, cAt, exp);
+  return getRefreshTokenByHash(tokenHash);
+}
+
+export function getRefreshTokenByHash(tokenHash) {
+  if (!tokenHash) return null;
+  const row = db.prepare("SELECT * FROM refresh_tokens WHERE tokenHash = ?").get(tokenHash);
+  return row || null;
+}
+
+export function revokeRefreshToken(tokenHash, replacedByTokenHash = null) {
+  if (!tokenHash) return false;
+  const now = Date.now();
+  const res = db.prepare(`
+    UPDATE refresh_tokens
+    SET revokedAt = ?, replacedByTokenHash = ?
+    WHERE tokenHash = ? AND revokedAt IS NULL
+  `).run(now, replacedByTokenHash, tokenHash);
+  return res.changes > 0;
+}
+
+export function isTokenRevoked(tokenHash) {
+  if (!tokenHash) return true;
+  const row = getRefreshTokenByHash(tokenHash);
+  if (!row) return true;
+  return row.revokedAt !== null;
 }

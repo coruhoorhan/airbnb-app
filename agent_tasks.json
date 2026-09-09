@@ -423,12 +423,12 @@
       ],
       "created_at": 1788768697.3870652,
       "created_by": "Magda Fullstack LLM Watchdog",
-      "claimed_by": "jules",
-      "claimed_at": "2026-09-08T16:06:09.822Z"
+      "completed_at": 1788936000,
+      "completed_by": "Veyyon & Codex Subagent"
     },
     {
       "id": "security-refresh-token-rotation",
-      "status": "todo",
+      "status": "done",
       "area": "security",
       "risk": "medium",
       "title": "Implement refresh‑token rotation and revocation list",
@@ -444,7 +444,9 @@
         "Revoked tokens are persisted and checked on each refresh request."
       ],
       "created_at": 1788768697.3884633,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "completed_at": 1788936000,
+      "completed_by": "Veyyon & Codex Subagent"
     },
     {
       "id": "backend-graphql-complexity-limit",

@@ -70,7 +70,9 @@ export function ListingCard({ listing, onSelect, isFavorite, onToggleFavorite, c
       }`}
      role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}>
       {/* Cinematic Image Container with 3D Hover Depth */}
-      <div className={`relative w-full overflow-hidden rounded-2xl bg-charcoal-bg shadow-sm group-hover:shadow-md transition-shadow duration-500 aspect-[16/10]`}>
+      <div className={`relative w-full overflow-hidden rounded-2xl bg-charcoal-bg shadow-sm group-hover:shadow-md transition-shadow duration-500 ${
+        featured ? "aspect-[16/10] lg:aspect-[16/9]" : "aspect-[16/10] sm:aspect-[16/10]"
+      }`}>
         <img
           src={images[currentImgIndex]}
           alt={listing.title}

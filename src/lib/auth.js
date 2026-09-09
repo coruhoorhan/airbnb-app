@@ -1,3 +1,4 @@
+import { isTokenRevoked as dbIsTokenRevoked } from './db.js';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 
@@ -27,6 +28,30 @@ export function verifyToken(token) {
   } catch (error) {
     return null;
   }
+}
+
+export function hashToken(token) {
+  if (!token) return "";
+  return crypto.createHash('sha256').update(String(token)).digest('hex');
+}
+export function generateRefreshToken(user) {
+  return jwt.sign(
+    { id: user.id, email: user.email, type: 'refresh', jti: crypto.randomBytes(16).toString('hex') },
+    JWT_SECRET,
+    { expiresIn: '30d' }
+  );
+}
+
+export function verifyRefreshToken(token) {
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch (error) {
+    return null;
+  }
+}
+
+export function isTokenRevoked(tokenHash) {
+  return dbIsTokenRevoked(tokenHash);
 }
 
 export function generateCsrfToken() {

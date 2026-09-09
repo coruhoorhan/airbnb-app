@@ -308,7 +308,7 @@
     },
     {
       "id": "backend-graphql-depth-limit",
-      "status": "todo",
+      "status": "done",
       "area": "backend",
       "risk": "medium",
       "title": "Add GraphQL query depth limiting",
@@ -324,11 +324,13 @@
         "Performance tests show no noticeable latency increase for valid queries."
       ],
       "created_at": 1788768697.3870652,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "completed_at": 1788936000,
+      "completed_by": "Veyyon & Codex Subagent"
     },
     {
       "id": "security-refresh-token-rotation",
-      "status": "todo",
+      "status": "done",
       "area": "security",
       "risk": "medium",
       "title": "Implement refresh‑token rotation and revocation list",
@@ -344,7 +346,9 @@
         "Revoked tokens are persisted and checked on each refresh request."
       ],
       "created_at": 1788768697.3884633,
-      "created_by": "Magda Fullstack LLM Watchdog"
+      "created_by": "Magda Fullstack LLM Watchdog",
+      "completed_at": 1788936000,
+      "completed_by": "Veyyon & Codex Subagent"
     },
     {
       "id": "backend-graphql-complexity-limit",

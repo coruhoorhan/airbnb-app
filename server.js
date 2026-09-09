@@ -58,7 +58,12 @@ import {
   insertMessage,
   getMessagesForListing,
   markMessagesRead,
-  getConversationsForUser
+  getConversationsForUser,
+  getUserById,
+  insertRefreshToken,
+  getRefreshTokenByHash,
+  revokeRefreshToken,
+  isTokenRevoked
 } from "./src/lib/db.js";
 import { calculateBookingPrice, validateBookingConflict, calculateCancellationRefund } from "./src/lib/bookingEngine.js";
 import { validateAndCalculateDiscount } from "./src/lib/couponEngine.js";
@@ -113,7 +118,7 @@ import { createRateLimiter } from "./src/lib/rateLimiter.js";
 
 import cookieParser from "cookie-parser";
 import validator from "validator";
-import { authMiddleware, csrfMiddleware, generateToken, generateCsrfToken } from "./src/lib/auth.js";
+import { authMiddleware, csrfMiddleware, generateToken, generateCsrfToken, generateRefreshToken, verifyRefreshToken, hashToken } from "./src/lib/auth.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -226,7 +231,12 @@ app.post("/api/auth/oauth/callback", authRateLimiter, (req, res) => {
 });
 
 app.post("/api/auth/logout", csrfMiddleware, (req, res) => {
+  const refreshToken = req.body?.refreshToken || req.cookies?.refreshToken;
+  if (refreshToken) {
+    revokeRefreshToken(hashToken(refreshToken));
+  }
   res.clearCookie("token", { httpOnly: true, sameSite: "strict", secure: true });
+  res.clearCookie("refreshToken", { httpOnly: true, sameSite: "strict", secure: true });
   res.clearCookie("_csrf_secret", { httpOnly: true, sameSite: "strict", secure: true });
   res.json({ success: true, message: "Çıkış yapıldı." });
 });
@@ -243,8 +253,52 @@ app.post("/api/auth/login", authRateLimiter, async (req, res) => {
   }
 
   const token = generateToken(user);
+  const refreshToken = generateRefreshToken(user);
+  const tokenHash = hashToken(refreshToken);
+  insertRefreshToken({ userId: user.id, tokenHash });
+
   res.cookie("token", token, { httpOnly: true, sameSite: "strict", secure: true });
-  res.json({ success: true, token, user });
+  res.cookie("refreshToken", refreshToken, { httpOnly: true, sameSite: "strict", secure: true });
+  res.json({ success: true, token, accessToken: token, refreshToken, user });
+});
+
+app.post("/api/auth/refresh", authRateLimiter, async (req, res) => {
+  try {
+    const refreshToken = req.body?.refreshToken || req.cookies?.refreshToken;
+    if (!refreshToken) {
+      return res.status(401).json({ success: false, error: "No refresh token provided." });
+    }
+
+    const decoded = verifyRefreshToken(refreshToken);
+    if (!decoded) {
+      return res.status(401).json({ success: false, error: "Invalid refresh token." });
+    }
+
+    const currentHash = hashToken(refreshToken);
+    const record = getRefreshTokenByHash(currentHash);
+    if (!record || record.revokedAt !== null) {
+      return res.status(401).json({ success: false, error: "Refresh token is revoked or expired." });
+    }
+
+    const user = (getUserById && getUserById(decoded.id)) || getUserByEmail(decoded.email);
+    if (!user) {
+      return res.status(401).json({ success: false, error: "User not found." });
+    }
+
+    const newAccessToken = generateToken(user);
+    const newRefreshToken = generateRefreshToken(user);
+    const newHash = hashToken(newRefreshToken);
+
+    revokeRefreshToken(currentHash, newHash);
+    insertRefreshToken({ userId: user.id, tokenHash: newHash });
+
+    res.cookie("token", newAccessToken, { httpOnly: true, sameSite: "strict", secure: true });
+    res.cookie("refreshToken", newRefreshToken, { httpOnly: true, sameSite: "strict", secure: true });
+    res.json({ success: true, accessToken: newAccessToken, token: newAccessToken, refreshToken: newRefreshToken, user });
+  } catch (err) {
+    console.error("REFRESH ERROR:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 app.get("/api/auth/csrf", (req, res) => {

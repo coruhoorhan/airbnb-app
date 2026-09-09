@@ -74,6 +74,22 @@ jobs:
           print('AST Smoke Check Passed.')
           "
 
+      - name: Report CI Failure to PR & Trigger Auto-Revise
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "## 🛑 Automated CI Test / Build Failure
+
+CI verification failed during auto-validation of this PR.
+
+**Triggering autonomous revision to fix the failure.**
+
+VERDICT: CHANGES REQUESTED
+BLOCKING: YES" || true
+
       - name: Auto-approve and Merge PR
         if: success()
         env:
