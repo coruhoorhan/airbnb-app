@@ -48,7 +48,7 @@ export function Navbar({
   const currentCurrencyObj = currencies.find((c) => c.code === currency) || currencies[0];
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0D0F12]/95 backdrop-blur-md border-b border-charcoal-border/50 dark:border-white/10 shadow-xs transition-all">
+    <header className="sticky top-0 z-40 bg-white/70 dark:bg-[#0D0F12]/70 backdrop-blur-xl border-b border-charcoal-border/50 dark:border-white/10 shadow-xs transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
         {/* Coastal Modernist Brand Logo */}
         <div 
@@ -71,7 +71,7 @@ export function Navbar({
         {/* Central Kinetic Search Pill */}
         <div 
           onClick={onOpenSearch}
-          className="hidden lg:flex items-center bg-charcoal-bg/70 dark:bg-white/5 hover:bg-charcoal-bg border border-charcoal-border dark:border-white/10 rounded-full py-2 px-4 shadow-xs hover:shadow-md transition-all cursor-pointer text-xs font-semibold divide-x divide-charcoal-border/80 dark:divide-white/10"
+          className="hidden lg:flex items-center bg-charcoal-bg/70 dark:bg-white/5 hover:bg-charcoal-bg border border-charcoal-border dark:border-white/10 rounded-full py-2 px-4 shadow-xs hover:shadow-md hover:scale-[1.02] active:scale-95 transition-all duration-300 cursor-pointer text-xs font-semibold divide-x divide-charcoal-border/80 dark:divide-white/10"
          role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}>
           <div className="px-3 text-charcoal dark:text-white font-bold">Fatsa & Karadeniz</div>
           <div className="px-3 text-charcoal dark:text-white">İstediğiniz Tarih</div>
@@ -88,7 +88,7 @@ export function Navbar({
           {/* Dark Mode Toggle */}
           <button
             onClick={onToggleDarkMode}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-charcoal-border dark:border-white/10 hover:bg-charcoal-bg dark:hover:bg-white/10 text-xs font-bold text-charcoal dark:text-white transition-colors active:scale-95"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-charcoal-border dark:border-white/10 hover:bg-charcoal-bg dark:hover:bg-white/10 text-xs font-bold text-charcoal dark:text-white transition-all duration-300 hover:rotate-12 hover:scale-110 active:rotate-0 active:scale-95"
             title={isDarkMode ? "Aydınlık Moda Geç" : "Karanlık Moda Geç"}
           >
             {isDarkMode ? (
@@ -111,7 +111,7 @@ export function Navbar({
 
             {currencyOpen && (
               <div 
-                className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#16191E] rounded-2xl shadow-xl border border-charcoal-border dark:border-white/10 p-2 z-50 animate-in fade-in"
+                className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#16191E] rounded-2xl shadow-xl border border-charcoal-border dark:border-white/10 p-2 z-50 animate-in fade-in zoom-in-95 duration-200 ease-out"
                 onClick={() => setCurrencyOpen(false)}
                role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}>
                 <div className="px-3 py-1.5 text-[10px] font-extrabold text-charcoal-light dark:text-gray-600 uppercase border-b border-charcoal-border/50 dark:border-white/10">
@@ -198,7 +198,7 @@ export function Navbar({
             </button>
 
             {notifOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-[#16191E] rounded-2xl shadow-xl border border-charcoal-border dark:border-white/10 p-3 z-50 animate-in fade-in slide-in-from-top-2">
+              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-[#16191E] rounded-2xl shadow-xl border border-charcoal-border dark:border-white/10 p-3 z-50 animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-200 ease-out">
                 <div className="flex items-center justify-between pb-2 border-b border-charcoal-border/60 dark:border-white/10">
                   <h4 className="font-bold text-xs text-charcoal dark:text-white">Bildirimler ({notifications.length})</h4>
                   {unreadCount > 0 && (
@@ -247,7 +247,7 @@ export function Navbar({
 
             {menuOpen && (
               <div 
-                className="absolute right-0 mt-2 w-64 bg-white dark:bg-[#16191E] rounded-2xl shadow-xl border border-charcoal-border/80 dark:border-white/10 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
+                className="absolute right-0 mt-2 w-64 bg-white dark:bg-[#16191E] rounded-2xl shadow-xl border border-charcoal-border/80 dark:border-white/10 py-2 z-50 animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-200 ease-out"
                 onClick={() => setMenuOpen(false)}
                role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}>
                 <div className="px-4 py-2.5 border-b border-charcoal-border/50 dark:border-white/10">
