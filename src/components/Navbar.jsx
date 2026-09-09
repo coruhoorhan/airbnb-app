@@ -48,7 +48,7 @@ export function Navbar({
   const currentCurrencyObj = currencies.find((c) => c.code === currency) || currencies[0];
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0D0F12]/95 backdrop-blur-md border-b border-charcoal-border/50 dark:border-white/10 shadow-xs transition-all">
+    <header className="sticky top-0 z-40 bg-white/80 dark:bg-[#0D0F12]/80 backdrop-blur-xl border-b border-charcoal-border/50 dark:border-white/10 shadow-sm transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
         {/* Coastal Modernist Brand Logo */}
         <div 
@@ -71,7 +71,7 @@ export function Navbar({
         {/* Central Kinetic Search Pill */}
         <div 
           onClick={onOpenSearch}
-          className="hidden lg:flex items-center bg-charcoal-bg/70 dark:bg-white/5 hover:bg-charcoal-bg border border-charcoal-border dark:border-white/10 rounded-full py-2 px-4 shadow-xs hover:shadow-md transition-all cursor-pointer text-xs font-semibold divide-x divide-charcoal-border/80 dark:divide-white/10"
+          className="hidden lg:flex items-center bg-charcoal-bg/70 dark:bg-white/5 hover:bg-charcoal-bg border border-charcoal-border dark:border-white/10 rounded-full py-2 px-4 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer text-xs font-semibold divide-x divide-charcoal-border/80 dark:divide-white/10"
          role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}>
           <div className="px-3 text-charcoal dark:text-white font-bold">Fatsa & Karadeniz</div>
           <div className="px-3 text-charcoal dark:text-white">İstediğiniz Tarih</div>
@@ -88,13 +88,13 @@ export function Navbar({
           {/* Dark Mode Toggle */}
           <button
             onClick={onToggleDarkMode}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-charcoal-border dark:border-white/10 hover:bg-charcoal-bg dark:hover:bg-white/10 text-xs font-bold text-charcoal dark:text-white transition-colors active:scale-95"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-charcoal-border dark:border-white/10 hover:bg-charcoal-bg dark:hover:bg-white/10 text-xs font-bold text-charcoal dark:text-white transition-all duration-300 transform hover:scale-105 active:scale-95 group"
             title={isDarkMode ? "Aydınlık Moda Geç" : "Karanlık Moda Geç"}
           >
             {isDarkMode ? (
-              <Sun className="w-3.5 h-3.5 text-amber-400" />
+              <Sun className="w-3.5 h-3.5 text-amber-400 transition-transform duration-500 rotate-0 group-hover:rotate-90" />
             ) : (
-              <Moon className="w-3.5 h-3.5 text-charcoal-light" />
+              <Moon className="w-3.5 h-3.5 text-charcoal-light transition-transform duration-500 rotate-0 group-hover:-rotate-12" />
             )}
           </button>
 
@@ -102,10 +102,10 @@ export function Navbar({
           <div className="relative">
             <button
               onClick={() => setCurrencyOpen(!currencyOpen)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-charcoal-border dark:border-white/10 hover:bg-charcoal-bg dark:hover:bg-white/10 text-xs font-bold text-charcoal dark:text-white transition-colors active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-charcoal-border dark:border-white/10 hover:bg-charcoal-bg dark:hover:bg-white/10 text-xs font-bold text-charcoal dark:text-white transition-all duration-300 transform hover:scale-105 active:scale-95 group"
               title="Para Birimi Değiştir"
             >
-              <Globe className="w-3.5 h-3.5 text-charcoal-light dark:text-gray-600" />
+              <Globe className="w-3.5 h-3.5 text-charcoal-light dark:text-gray-600 group-hover:animate-pulse" />
               <span>{currentCurrencyObj.symbol} {currentCurrencyObj.code}</span>
             </button>
 
@@ -230,7 +230,7 @@ export function Navbar({
           <div className="relative">
             <button 
               onClick={() => setMenuOpen(!menuOpen)}
-              className="flex items-center gap-2.5 border border-charcoal-border dark:border-white/10 rounded-full p-1.5 pl-3 hover:shadow-md transition-all bg-white dark:bg-[#16191E] cursor-pointer active:scale-95"
+              className="flex items-center gap-2.5 border border-charcoal-border dark:border-white/10 rounded-full p-1.5 pl-3 shadow-xs hover:shadow-md transition-all duration-300 transform hover:scale-105 bg-white dark:bg-[#16191E] cursor-pointer active:scale-95"
             >
               <Menu className="w-4 h-4 text-charcoal dark:text-white" />
               <img 
